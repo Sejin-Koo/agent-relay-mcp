@@ -4,6 +4,7 @@
 //   ① initialize 버전 협상(지원 목록과 대조) ② 미지원 MCP-Protocol-Version 헤더에 400 ③ 알림에 202
 
 const { BACKENDS, ROUTE } = require("../lib/backends");
+const usage = require("../lib/usage");
 
 const SERVER_INFO = { name: "agent-relay-mcp", version: "1.0.0" };
 // @modelcontextprotocol/sdk 1.32.1 의 SUPPORTED_PROTOCOL_VERSIONS 와 같은 값으로 맞춘다
@@ -16,6 +17,10 @@ const GATE_MODE = (process.env.MCP_GATE_MODE || "observe").trim().toLowerCase();
 const LIST_TTL_MS = 10 * 60 * 1000;   // 백엔드 도구 정의 캐시
 const CALL_TIMEOUT_MS = 280 * 1000;   // vercel.json maxDuration(300초)보다 짧게
 const LIST_TIMEOUT_MS = 20 * 1000;
+
+// 사용현황 도구(relay_usage)를 볼 수 있는 키 식별자. 키 형식 plk_<식별자>_… 의 식별자 부분이다.
+const ADMIN_LABELS = (process.env.RELAY_ADMIN_LABELS || "koo").split(",").map(s => s.trim()).filter(Boolean);
+const isAdmin = (caller) => ADMIN_LABELS.includes(caller);
 
 function keyLabel(k) {
   if (!k) return "(none)";
@@ -101,15 +106,82 @@ async function backendTools(id) {
   }
 }
 
-async function listTools() {
+async function listTools(caller) {
   const ids = Object.keys(BACKENDS);
   const parts = await Promise.all(ids.map(backendTools));
-  return [].concat(...parts);
+  const tools = [].concat(...parts);
+  if (isAdmin(caller)) tools.push(USAGE_TOOL);
+  return tools;
+}
+
+// ---------- 관리자 전용: 사용자별 사용현황 ----------
+const USAGE_TOOL = {
+  name: "relay_usage",
+  description: "업무 에이전트 중계 서버의 사용자별 사용현황을 조회합니다(관리자 전용). 사용자는 게이트키 식별자(예: kangyunkyung)로 표시되며, 호출 수·실패 수·평균 소요시간을 집계합니다. 질문 내용은 기록되지 않습니다. 기록은 한국시간 날짜 기준이며 " + usage.RETENTION_DAYS + "일이 지나면 자동 삭제됩니다.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      from: { type: "string", description: "시작일 YYYY-MM-DD (기본: 오늘 포함 최근 30일의 첫날)" },
+      to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user"], description: "집계 단위 — user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자" }
+    },
+    additionalProperties: false
+  },
+  annotations: { readOnlyHint: true }
+};
+
+async function usageReport(args) {
+  const DAY = /^\d{4}-\d{2}-\d{2}$/;
+  const to = args.to || usage.kstDate();
+  const from = args.from || usage.kstDate(new Date(Date.now() - 29 * 86400000));
+  if (!DAY.test(from) || !DAY.test(to)) throw new Error("from·to는 YYYY-MM-DD 형식이어야 합니다");
+  if (from > to) throw new Error("from이 to보다 늦습니다");
+  const by = args.group_by || "user";
+  const rows = await usage.readUsage(from, to);
+  const keyOf = { user: r => [r.caller], user_tool: r => [r.caller, r.tool], day: r => [r.date], day_user: r => [r.date, r.caller] }[by];
+  if (!keyOf) throw new Error(`group_by 값이 올바르지 않습니다: ${by}`);
+  const cols = { user: ["사용자"], user_tool: ["사용자", "도구"], day: ["날짜"], day_user: ["날짜", "사용자"] }[by];
+  const agg = new Map();
+  for (const r of rows) {
+    const k = keyOf(r);
+    const id = k.join("\u0000");
+    const a = agg.get(id) || { key: k, calls: 0, errors: 0, ms: 0, tools: new Set(), days: new Set() };
+    a.calls += r.calls; a.errors += r.errors; a.ms += r.ms; a.tools.add(r.tool); a.days.add(r.date);
+    agg.set(id, a);
+  }
+  const list = [...agg.values()].sort((x, y) => (by.startsWith("day") ? (x.key[0] < y.key[0] ? -1 : x.key[0] > y.key[0] ? 1 : y.calls - x.calls) : y.calls - x.calls));
+  const out = list.map(a => {
+    const o = {};
+    cols.forEach((c, i) => { o[c] = a.key[i]; });
+    o["호출"] = a.calls; o["실패"] = a.errors;
+    o["평균 소요(초)"] = a.calls ? Math.round(a.ms / a.calls / 100) / 10 : 0;
+    if (by === "user") { o["사용일수"] = a.days.size; o["사용 도구 수"] = a.tools.size; }
+    return o;
+  });
+  const total = rows.reduce((s, r) => s + r.calls, 0);
+  const head = Object.keys(out[0] || Object.fromEntries(cols.map(c => [c, ""]).concat([["호출", 0], ["실패", 0], ["평균 소요(초)", 0]])));
+  const md = [
+    `중계 서버 사용현황 ${from} ~ ${to} (한국시간, ${by} 기준) — 총 ${total}회`,
+    "",
+    "| " + head.join(" | ") + " |",
+    "|" + head.map(() => "---").join("|") + "|",
+    ...out.map(o => "| " + head.map(h => o[h]).join(" | ") + " |")
+  ];
+  if (!out.length) md.push("| " + head.map(() => "-").join(" | ") + " |", "", "이 기간에 기록된 도구 호출이 없습니다.");
+  return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { from, to, group_by: by, total_calls: total, rows: out } };
 }
 
 // ---------- tools/call: 담당 서버로 그대로 넘긴다 ----------
 async function callTool(params, caller) {
   const name = params && params.name;
+  if (name === "relay_usage") {
+    if (!isAdmin(caller)) return { error: { code: -32602, message: `이 서버에서 쓸 수 없는 도구입니다: ${name}` } };
+    try {
+      return { result: await usageReport((params && params.arguments) || {}) };
+    } catch (e) {
+      return { result: { isError: true, content: [{ type: "text", text: `사용현황 조회 오류: ${e.message}` }] } };
+    }
+  }
   const id = ROUTE[name];
   if (!id) {
     return { error: { code: -32602, message: `이 서버에서 쓸 수 없는 도구입니다: ${name}` } };
@@ -118,11 +190,14 @@ async function callTool(params, caller) {
   const t0 = Date.now();
   try {
     const msg = await rpcToBackend(b, "tools/call", { name, arguments: (params && params.arguments) || {} }, CALL_TIMEOUT_MS);
-    console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${!msg.error && !(msg.result && msg.result.isError)}`);
+    const ok = !msg.error && !(msg.result && msg.result.isError);
+    console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${ok}`);
+    await usage.recordCall(caller, name, Date.now() - t0, ok);
     if (msg.error) return { error: msg.error };
     return { result: msg.result };
   } catch (e) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
+    await usage.recordCall(caller, name, Date.now() - t0, false);
     return { result: { isError: true, content: [{ type: "text", text: `중계 오류: ${e.message}` }] } };
   }
 }
@@ -147,7 +222,7 @@ async function handleMessage(m, caller) {
     case "ping":
       return reply({ result: {} });
     case "tools/list":
-      return reply({ result: { tools: await listTools() } });
+      return reply({ result: { tools: await listTools(caller) } });
     case "tools/call":
       return reply(await callTool(m.params, caller));
     default:
