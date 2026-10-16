@@ -5,6 +5,7 @@
 
 const { BACKENDS, ROUTE } = require("../lib/backends");
 const usage = require("../lib/usage");
+const CATALOG = require("../lib/agents.json");
 
 const SERVER_INFO = { name: "agent-relay-mcp", version: "1.0.0" };
 // @modelcontextprotocol/sdk 1.32.1 의 SUPPORTED_PROTOCOL_VERSIONS 와 같은 값으로 맞춘다
@@ -110,8 +111,37 @@ async function listTools(caller) {
   const ids = Object.keys(BACKENDS);
   const parts = await Promise.all(ids.map(backendTools));
   const tools = [].concat(...parts);
+  tools.push(CONFIG_TOOL, CALL_TOOL);
   if (isAdmin(caller)) tools.push(USAGE_TOOL);
   return tools;
+}
+
+// ---------- 에이전트 페이지 전용: 설정 내려주기 · 대신 호출 ----------
+// 페이지 사본에는 이 두 도구 이름만 적어 두고, 에이전트 목록·도구 배정·규칙(lib/agents.json)과
+// 실제로 부를 수 있는 도구(lib/backends.js)는 이 서버가 정한다. 그래서 이 서버만 고치면 사본에도 반영된다.
+const CONFIG_TOOL = {
+  name: "relay_config",
+  description: "업무 에이전트 페이지 전용: 에이전트 목록, 에이전트별 도구 배정과 조회 규칙을 돌려준다. since_version이 현재 버전과 같으면 unchanged만 돌려준다. 일반 질문에는 쓰지 않는다.",
+  inputSchema: { type: "object", properties: { since_version: { type: "string", description: "페이지가 이미 가진 설정 버전" } }, additionalProperties: false },
+  annotations: { readOnlyHint: true }
+};
+const CALL_TOOL = {
+  name: "relay_call",
+  description: "업무 에이전트 페이지 전용: 이 서버가 연 다른 도구를 이름으로 대신 호출한다. tool에 도구 이름, arguments에 그 도구의 인자 객체를 넣는다. 결과는 그 도구를 직접 부른 것과 같다. 일반 채팅에서는 해당 도구를 직접 부르면 된다.",
+  inputSchema: { type: "object", properties: {
+    tool: { type: "string", description: "호출할 도구 이름(이 서버 tools/list에 있는 이름)" },
+    arguments: { type: "object", description: "그 도구의 인자" }
+  }, required: ["tool"], additionalProperties: false }
+};
+function configResult(args) {
+  const since = args && args.since_version;
+  if (since && since === CATALOG.version) {
+    return { content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 변경 없음` }], structuredContent: { version: CATALOG.version, unchanged: true } };
+  }
+  return {
+    content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 에이전트 ${CATALOG.agents.length}개(${CATALOG.agents.map(a => a.name).join(", ")}). 전체 내용은 structuredContent에 있다.` }],
+    structuredContent: CATALOG
+  };
 }
 
 // ---------- 관리자 전용: 사용자별 사용현황 ----------
@@ -181,6 +211,20 @@ async function callTool(params, caller) {
     } catch (e) {
       return { result: { isError: true, content: [{ type: "text", text: `사용현황 조회 오류: ${e.message}` }] } };
     }
+  }
+  if (name === "relay_config") return { result: configResult((params && params.arguments) || {}) };
+  if (name === "relay_call") {
+    const a = (params && params.arguments) || {};
+    const inner = String(a.tool || "");
+    if (!inner || inner.startsWith("relay_") || !ROUTE[inner]) {
+      return { result: { isError: true, content: [{ type: "text", text: `relay_call로 부를 수 없는 도구입니다: ${inner || "(없음)"}` }] } };
+    }
+    let innerArgs = a.arguments;
+    if (typeof innerArgs === "string") { try { innerArgs = JSON.parse(innerArgs); } catch (e) { innerArgs = null; } }
+    if (innerArgs !== undefined && (innerArgs === null || typeof innerArgs !== "object" || Array.isArray(innerArgs))) {
+      return { result: { isError: true, content: [{ type: "text", text: "arguments는 JSON 객체여야 합니다" }] } };
+    }
+    return callTool({ name: inner, arguments: innerArgs || {} }, caller);
   }
   const id = ROUTE[name];
   if (!id) {
