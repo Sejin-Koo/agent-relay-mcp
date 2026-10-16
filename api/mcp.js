@@ -216,13 +216,35 @@ module.exports = async (req, res) => {
     return;
   }
 
-  if (Array.isArray(body)) {
-    const out = (await Promise.all(body.map(m => handleMessage(m, caller)))).filter(Boolean);
-    if (!out.length) { res.statusCode = 202; res.end(); return; }
-    sendJson(res, 200, out);
+  const msgs = Array.isArray(body) ? body : [body];
+  const hasRequest = msgs.some(m => m && m.id !== undefined);
+  if (!hasRequest) {
+    await Promise.all(msgs.map(m => handleMessage(m, caller)));
+    res.statusCode = 202; res.end(); return;
+  }
+
+  // 오래 걸리는 호출(공시 원문·나라장터 7일 조회 등)은 30초를 넘는다. 그동안 바이트가 전혀 흐르지 않으면
+  // 중간 프록시가 연결을 끊는 일이 실측됐다(2026-10-16). 클라이언트가 SSE를 받으면 10초마다
+  // keepalive 주석을 보내고 끝에 결과 한 건을 event로 보낸다. 백엔드 서버들과 같은 방식이다.
+  const accept = String(req.headers["accept"] || "");
+  if (/text\/event-stream/i.test(accept)) {
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("Connection", "keep-alive");
+    if (res.flushHeaders) res.flushHeaders();
+    const ka = setInterval(() => { try { res.write(": keepalive\n\n"); } catch (e) {} }, 10000);
+    try {
+      const outs = (await Promise.all(msgs.map(m => handleMessage(m, caller)))).filter(Boolean);
+      const payload = Array.isArray(body) ? outs : outs[0];
+      res.write(`event: message\ndata: ${JSON.stringify(payload)}\n\n`);
+    } finally {
+      clearInterval(ka);
+      res.end();
+    }
     return;
   }
-  const out = await handleMessage(body, caller);
-  if (!out) { res.statusCode = 202; res.end(); return; }
-  sendJson(res, 200, out);
+
+  const outs = (await Promise.all(msgs.map(m => handleMessage(m, caller)))).filter(Boolean);
+  sendJson(res, 200, Array.isArray(body) ? outs : outs[0]);
 };
