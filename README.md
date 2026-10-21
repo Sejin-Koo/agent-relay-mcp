@@ -35,6 +35,7 @@
 
 - `dcf_calculate`(DCF 계산기)는 **dart-mcp에 있고** 이 서버는 그대로 넘겨 준다. 계산 코드는 dart-mcp 한 벌만 둔다(2026-10-21 이전).
 - 키를 보내면 안 되는 서버(외부 서버)는 `lib/backends.js` 항목에 `noKey: true`를 둔다.
+- `dcfpeer`는 외부 공개 서버(DCF Peer Group)다. 우리 소유가 아니므로 `noKey: true`로 접근 키를 보내지 않는다. 운영자가 서버를 바꾸거나 내리면 이 도구들도 같이 멈춘다.
 
 ## 환경변수
 
