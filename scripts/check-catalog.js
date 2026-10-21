@@ -60,7 +60,12 @@ if (cat.agents_v2) {
     if (a.status === "soon" && !n) e2.push(`${a.id}: 준비 중 에이전트에 도구가 비어 있음`);
     if ((a.status || "live") === "live" && !n && a.attach === false) e2.push(`${a.id}: 도구도 첨부도 없음`);
     if ((a.status || "live") !== "soon" && typeof a.rules !== "string") e2.push(`${a.id}: rules 없음`);
+    if (a.tier && !["quick", "default", "complex"].includes(a.tier)) e2.push(`${a.id}: tier는 quick|default|complex`);
+    const OUTL = (cat.prompts_v2 && cat.prompts_v2.outlines) || {};
+    (a.outlines || []).forEach(t => { if (!OUTL[t]) e2.push(`${a.id}: prompts_v2.outlines에 없는 골격 ${t}`); });
+    if (a.rules && /\bMCP\b|plk_|vercel/i.test(a.rules)) e2.push(`${a.id}: 규칙에 내부 서버·키 표기`);
   }
+  if (cat.prompts_v2 && cat.prompts_v2.report && !Array.isArray(cat.prompts_v2.report)) e2.push("prompts_v2.report는 문장 배열");
   for (const a of cat.agents_v2) {
     (a.consult || []).forEach(id => { if (!v2ids.has(id)) e2.push(`${a.id}: consult 대상 없음 ${id}`); });
     (a.pro || []).forEach(p => { if (p.via && !v2ids.has(p.via)) e2.push(`${a.id}: pro.via 대상 없음 ${p.via}`); });

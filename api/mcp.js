@@ -126,7 +126,8 @@ const CONFIG_TOOL = {
   inputSchema: { type: "object", properties: {
     since_version: { type: "string", description: "페이지가 이미 가진 설정 버전" },
     page: { type: "string", description: "페이지 버전(새 페이지만 보낸다)" },
-    part: { type: "string", enum: ["catalog", "tools"], description: "tools면 도구 찾기용 전체 도구 목록만 돌려준다" }
+    part: { type: "string", enum: ["catalog", "tools", "rules"], description: "tools면 도구 찾기용 전체 도구 목록만, rules면 agents에 적은 에이전트의 상세 지침만 돌려준다" },
+    agents: { type: "array", items: { type: "string" }, description: "part=rules일 때 지침을 받을 에이전트 id 목록" }
   }, additionalProperties: false },
   annotations: { readOnlyHint: true }
 };
@@ -191,6 +192,16 @@ async function configResult(args, caller) {
       structuredContent: { version: CATALOG.version, tools }
     };
   }
+  // 페이지 3 이상은 설정에서 에이전트별 상세 지침을 빼고 받은 뒤, 쓰는 에이전트의 지침만 따로 받는다(설정 응답 크기를 줄임)
+  if (args && args.part === "rules") {
+    const want = new Set((Array.isArray(args.agents) ? args.agents : []).map(String).slice(0, 40));
+    const rules = {};
+    (CATALOG.agents_v2 || []).forEach(a => { if (want.has(a.id) && typeof a.rules === "string") rules[a.id] = a.rules; });
+    return {
+      content: [{ type: "text", text: `에이전트 지침 ${Object.keys(rules).length}개 (설정 ${CATALOG.version}). 전체 내용은 structuredContent에 있다.` }],
+      structuredContent: { version: CATALOG.version, rules }
+    };
+  }
   const since = args && args.since_version;
   if (since && since === CATALOG.version) {
     return { content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 변경 없음` }], structuredContent: { version: CATALOG.version, unchanged: true } };
@@ -202,6 +213,10 @@ async function configResult(args, caller) {
   if (page) V1_ONLY.forEach(k => { delete out[k]; });
   else V2_KEYS.forEach(k => { delete out[k]; });
   if (page) out.notices = noticesFor(caller, page);
+  if (page && Number(page) >= 3 && Array.isArray(out.agents_v2)) {
+    out.agents_v2 = out.agents_v2.map(a => { const b = Object.assign({}, a); if (typeof b.rules === "string") { b.rules_len = b.rules.length; delete b.rules; } return b; });
+    out.rules_lazy = true;
+  }
   return {
     content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 에이전트 ${(page && CATALOG.agents_v2 ? CATALOG.agents_v2 : CATALOG.agents).length}개. 전체 내용은 structuredContent에 있다.` }],
     structuredContent: out
