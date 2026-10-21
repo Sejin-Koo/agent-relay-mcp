@@ -66,6 +66,16 @@ if (cat.agents_v2) {
     if (a.rules && /\bMCP\b|plk_|vercel/i.test(a.rules)) e2.push(`${a.id}: 규칙에 내부 서버·키 표기`);
   }
   if (cat.prompts_v2 && cat.prompts_v2.report && !Array.isArray(cat.prompts_v2.report)) e2.push("prompts_v2.report는 문장 배열");
+  const P2 = cat.prompts_v2 || {};
+  if (P2.figure && !(Array.isArray(P2.figure) && P2.figure.every(x => typeof x === "string"))) e2.push("prompts_v2.figure는 문장 배열");
+  if (P2.doc) for (const k of ["rules", "pptx", "other", "tail"]) if (P2.doc[k] && !(Array.isArray(P2.doc[k]) && P2.doc[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.doc.${k}는 문장 배열`);
+  if (cat.doc_style) {
+    const ds = cat.doc_style, HEXC = /^([0-9A-Fa-f]{6}|auto)$/;
+    Object.entries(ds.colors || {}).forEach(([k, v]) => { if (!HEXC.test(String(v))) e2.push(`doc_style.colors.${k} 형식(6자리 색)`); });
+    ((ds.chart || {}).colors || []).forEach((v, i) => { if (!/^[0-9A-Fa-f]{6}$/.test(String(v))) e2.push(`doc_style.chart.colors[${i}] 형식`); });
+    const walk = (o, path) => Object.entries(o || {}).forEach(([k, v]) => { if (typeof v === "number" && (!isFinite(v) || v < 0 || v > 100000)) e2.push(`doc_style.${path}${k} 범위`); else if (v && typeof v === "object" && !Array.isArray(v)) walk(v, path + k + "."); });
+    walk(ds, "");
+  }
   for (const a of cat.agents_v2) {
     (a.consult || []).forEach(id => { if (!v2ids.has(id)) e2.push(`${a.id}: consult 대상 없음 ${id}`); });
     (a.pro || []).forEach(p => { if (p.via && !v2ids.has(p.via)) e2.push(`${a.id}: pro.via 대상 없음 ${p.via}`); });
