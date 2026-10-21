@@ -123,7 +123,11 @@ async function listTools(caller) {
 const CONFIG_TOOL = {
   name: "relay_config",
   description: "업무 에이전트 페이지 전용: 에이전트 목록, 에이전트별 도구 배정과 조회 규칙을 돌려준다. since_version이 현재 버전과 같으면 unchanged만 돌려준다. 일반 질문에는 쓰지 않는다.",
-  inputSchema: { type: "object", properties: { since_version: { type: "string", description: "페이지가 이미 가진 설정 버전" } }, additionalProperties: false },
+  inputSchema: { type: "object", properties: {
+    since_version: { type: "string", description: "페이지가 이미 가진 설정 버전" },
+    page: { type: "string", description: "페이지 버전(새 페이지만 보낸다)" },
+    part: { type: "string", enum: ["catalog", "tools"], description: "tools면 도구 찾기용 전체 도구 목록만 돌려준다" }
+  }, additionalProperties: false },
   annotations: { readOnlyHint: true }
 };
 const CALL_TOOL = {
@@ -131,18 +135,81 @@ const CALL_TOOL = {
   description: "업무 에이전트 페이지 전용: 이 서버가 연 다른 도구를 이름으로 대신 호출한다. tool에 도구 이름, arguments에 그 도구의 인자 객체를 넣는다. 결과는 그 도구를 직접 부른 것과 같다. 일반 채팅에서는 해당 도구를 직접 부르면 된다.",
   inputSchema: { type: "object", properties: {
     tool: { type: "string", description: "호출할 도구 이름(이 서버 tools/list에 있는 이름)" },
-    arguments: { type: "object", description: "그 도구의 인자" }
+    arguments: { type: "object", description: "그 도구의 인자" },
+    page: { type: "string", description: "페이지 버전(새 페이지만 보낸다)" }
   }, required: ["tool"], additionalProperties: false }
 };
-function configResult(args) {
+// 공지는 받는 사람과 페이지에 맞는 것만 내려보낸다. audience: "all"(기본) | "v1"(옛 페이지) | "v2"(새 페이지) | 키 식별자 배열
+function noticesFor(caller, page) {
+  return (CATALOG.notices || []).filter(n => {
+    const au = n && n.audience;
+    if (!au || au === "all") return true;
+    if (au === "v1") return !page;
+    if (au === "v2") return !!page;
+    if (Array.isArray(au)) return au.includes(caller);
+    return false;
+  });
+}
+// 도구 찾기(8-2)용 전체 도구 목록. 설명과 인자 설명은 길이를 줄여 보낸다
+const TOOLCAT_DESC = 400, TOOLCAT_ARG = 70;
+function slimSchema(sc) {
+  if (!sc || typeof sc !== "object") return { type: "object" };
+  const out = { type: "object" };
+  if (sc.properties && typeof sc.properties === "object") {
+    out.properties = {};
+    for (const [k, v] of Object.entries(sc.properties)) {
+      const p = {};
+      if (v && typeof v === "object") {
+        if (v.type) p.type = v.type;
+        if (Array.isArray(v.enum)) p.enum = v.enum.slice(0, 30);
+        if (v.items && v.items.type) p.items = { type: v.items.type };
+        if (v.description) p.description = String(v.description).slice(0, TOOLCAT_ARG);
+      }
+      out.properties[k] = p;
+    }
+  }
+  if (Array.isArray(sc.required)) out.required = sc.required;
+  return out;
+}
+async function toolCatalog() {
+  const ids = Object.keys(BACKENDS);
+  const parts = await Promise.all(ids.map(backendTools));
+  const tools = [];
+  ids.forEach((id, i) => (parts[i] || []).forEach(t => tools.push({
+    name: t.name, server: BACKENDS[id].label,
+    description: String(t.description || "").replace(/\s+/g, " ").slice(0, TOOLCAT_DESC),
+    inputSchema: slimSchema(t.inputSchema)
+  })));
+  return tools;
+}
+async function configResult(args, caller) {
+  const page = args && args.page ? String(args.page).slice(0, 20) : "";
+  if (args && args.part === "tools") {
+    const tools = await toolCatalog();
+    return {
+      content: [{ type: "text", text: `도구 목록 ${tools.length}개 (설정 ${CATALOG.version}). 전체 내용은 structuredContent에 있다.` }],
+      structuredContent: { version: CATALOG.version, tools }
+    };
+  }
   const since = args && args.since_version;
   if (since && since === CATALOG.version) {
     return { content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 변경 없음` }], structuredContent: { version: CATALOG.version, unchanged: true } };
   }
+  // 옛 페이지에는 옛 항목만, 새 페이지에는 새 항목과 공통 항목만 보낸다(응답 크기를 줄이고 서로 영향이 없게)
+  const V2_KEYS = ["ui_v2", "sections_v2", "groups_v2", "agents_v2", "sources", "features", "notices", "page_min", "tool_labels", "tool_notes", "prompts_v2"];
+  const V1_ONLY = ["ui", "groups", "agents", "servers", "prompts"];
+  const out = Object.assign({}, CATALOG);
+  if (page) V1_ONLY.forEach(k => { delete out[k]; });
+  else V2_KEYS.forEach(k => { delete out[k]; });
+  if (page) out.notices = noticesFor(caller, page);
   return {
-    content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 에이전트 ${CATALOG.agents.length}개(${CATALOG.agents.map(a => a.name).join(", ")}). 전체 내용은 structuredContent에 있다.` }],
-    structuredContent: CATALOG
+    content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 에이전트 ${(page && CATALOG.agents_v2 ? CATALOG.agents_v2 : CATALOG.agents).length}개. 전체 내용은 structuredContent에 있다.` }],
+    structuredContent: out
   };
+}
+// 옛 페이지 종료(설계서 10절): legacy_until(한국시간 날짜)이 지나면 page 표시가 없는 relay_call을 거절한다
+function legacyClosed(page) {
+  return !page && CATALOG.legacy_until && usage.kstDate() > String(CATALOG.legacy_until);
 }
 
 // ---------- 관리자 전용: 사용자별 사용현황 ----------
@@ -154,7 +221,7 @@ const USAGE_TOOL = {
     properties: {
       from: { type: "string", description: "시작일 YYYY-MM-DD (기본: 오늘 포함 최근 30일의 첫날)" },
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user"], description: "집계 단위 — user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자" }
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page"], description: "집계 단위 — user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지)" }
     },
     additionalProperties: false
   },
@@ -168,10 +235,12 @@ async function usageReport(args) {
   if (!DAY.test(from) || !DAY.test(to)) throw new Error("from·to는 YYYY-MM-DD 형식이어야 합니다");
   if (from > to) throw new Error("from이 to보다 늦습니다");
   const by = args.group_by || "user";
-  const rows = await usage.readUsage(from, to);
-  const keyOf = { user: r => [r.caller], user_tool: r => [r.caller, r.tool], day: r => [r.date], day_user: r => [r.date, r.caller] }[by];
+  const all = await usage.readUsage(from, to);
+  const isPage = r => r.tool.startsWith("@page:");
+  const rows = by === "user_page" ? all.filter(isPage).map(r => Object.assign({}, r, { tool: r.tool.slice(6) })) : all.filter(r => !isPage(r));
+  const keyOf = { user: r => [r.caller], user_tool: r => [r.caller, r.tool], day: r => [r.date], day_user: r => [r.date, r.caller], user_page: r => [r.caller, r.tool] }[by];
   if (!keyOf) throw new Error(`group_by 값이 올바르지 않습니다: ${by}`);
-  const cols = { user: ["사용자"], user_tool: ["사용자", "도구"], day: ["날짜"], day_user: ["날짜", "사용자"] }[by];
+  const cols = { user: ["사용자"], user_tool: ["사용자", "도구"], day: ["날짜"], day_user: ["날짜", "사용자"], user_page: ["사용자", "페이지"] }[by];
   const agg = new Map();
   for (const r of rows) {
     const k = keyOf(r);
@@ -203,7 +272,7 @@ async function usageReport(args) {
 }
 
 // ---------- tools/call: 담당 서버로 그대로 넘긴다 ----------
-async function callTool(params, caller) {
+async function callTool(params, caller, page) {
   const name = params && params.name;
   if (name === "relay_usage") {
     if (!isAdmin(caller)) return { error: { code: -32602, message: `이 서버에서 쓸 수 없는 도구입니다: ${name}` } };
@@ -213,10 +282,20 @@ async function callTool(params, caller) {
       return { result: { isError: true, content: [{ type: "text", text: `사용현황 조회 오류: ${e.message}` }] } };
     }
   }
-  if (name === "relay_config") return { result: configResult((params && params.arguments) || {}) };
+  if (name === "relay_config") {
+    try {
+      return { result: await configResult((params && params.arguments) || {}, caller) };
+    } catch (e) {
+      return { result: { isError: true, content: [{ type: "text", text: `설정 조회 오류: ${e.message}` }] } };
+    }
+  }
   if (name === "relay_call") {
     const a = (params && params.arguments) || {};
     const inner = String(a.tool || "");
+    const page = a.page ? String(a.page).slice(0, 20) : "";
+    if (legacyClosed(page)) {
+      return { result: { isError: true, content: [{ type: "text", text: CATALOG.legacy_message || "이 페이지는 종료되었습니다. 새 페이지 주소로 옮겨 주세요." }] } };
+    }
     if (!inner || inner.startsWith("relay_") || !ROUTE[inner]) {
       return { result: { isError: true, content: [{ type: "text", text: `relay_call로 부를 수 없는 도구입니다: ${inner || "(없음)"}` }] } };
     }
@@ -225,7 +304,7 @@ async function callTool(params, caller) {
     if (innerArgs !== undefined && (innerArgs === null || typeof innerArgs !== "object" || Array.isArray(innerArgs))) {
       return { result: { isError: true, content: [{ type: "text", text: "arguments는 JSON 객체여야 합니다" }] } };
     }
-    return callTool({ name: inner, arguments: innerArgs || {} }, caller);
+    return callTool({ name: inner, arguments: innerArgs || {} }, caller, page || "v1");
   }
   const id = ROUTE[name];
   if (!id) {
@@ -237,12 +316,12 @@ async function callTool(params, caller) {
     const msg = await rpcToBackend(b, "tools/call", { name, arguments: (params && params.arguments) || {} }, CALL_TIMEOUT_MS);
     const ok = !msg.error && !(msg.result && msg.result.isError);
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${ok}`);
-    await usage.recordCall(caller, name, Date.now() - t0, ok);
+    await usage.recordCall(caller, name, Date.now() - t0, ok, page);
     if (msg.error) return { error: msg.error };
     return { result: msg.result };
   } catch (e) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
-    await usage.recordCall(caller, name, Date.now() - t0, false);
+    await usage.recordCall(caller, name, Date.now() - t0, false, page);
     return { result: { isError: true, content: [{ type: "text", text: `중계 오류: ${e.message}` }] } };
   }
 }
@@ -261,7 +340,7 @@ async function handleMessage(m, caller) {
         protocolVersion: SUPPORTED.includes(req) ? req : LATEST,
         capabilities: { tools: { listChanged: false } },
         serverInfo: SERVER_INFO,
-        instructions: "업무 에이전트 중계 서버입니다. 공시·기업정보·법령·거래소 규정·회계기준·나라장터·네이버 뉴스·기상청 도구를 한 주소에서 제공합니다."
+        instructions: "업무 에이전트 중계 서버입니다. 공시·기업정보·법령·거래소 규정·회계기준·나라장터·공공데이터·건설·상권·시장지표·네이버·YouTube·기상청 도구를 한 주소에서 제공합니다."
       } });
     }
     case "ping":

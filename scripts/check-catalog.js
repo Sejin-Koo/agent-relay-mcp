@@ -31,3 +31,52 @@ for (const k of ["single", "composite", "doc_on", "doc_off"]) if (cat.prompts &&
 for (const [k, v] of Object.entries(cat.icons || {})) if (!/^\s*<svg[\s>]/i.test(v) || v.length > 8000) errs.push(`icons.${k}: <svg>로 시작하는 8000자 이내 SVG여야 함`);
 if (errs.length) { console.error(errs.join("\n")); process.exit(1); }
 console.log(`catalog ${cat.version}: 에이전트 ${cat.agents.length}개, 도구 참조 모두 허용 목록 안`);
+
+// ---------- 새 페이지(v2) 설정 검사 ----------
+if (cat.agents_v2) {
+  const e2 = [];
+  const gids = new Set((cat.groups_v2 || []).map(g => g.id));
+  const v2ids = new Set();
+  const src = cat.sources || {};
+  (cat.sections_v2 || []).forEach(s => (s.groups || []).forEach(g => { if (!gids.has(g)) e2.push(`sections_v2.${s.id}: 없는 그룹 ${g}`); }));
+  const FMT = ["docx", "pptx", "pdf", "xlsx", "hwpx", "html"], KINDS = ["doc", "sheet", "slide", "image", "zip"];
+  for (const a of cat.agents_v2) {
+    if (!a.id || !SAFE_ID.test(a.id)) e2.push(`agents_v2: 잘못된 id ${a.id}`);
+    if (v2ids.has(a.id)) e2.push(`agents_v2: id 중복 ${a.id}`);
+    v2ids.add(a.id);
+    if (!gids.has(a.group)) e2.push(`${a.id}: groups_v2에 없는 group ${a.group}`);
+    if (!["live", "soon", "demo"].includes(a.status || "live")) e2.push(`${a.id}: status는 live|soon|demo`);
+    (a.src || []).forEach(k => { if (!src[k]) e2.push(`${a.id}: sources에 없는 출처 키 ${k}`); });
+    if (a.color) for (const k of ["hue", "tint", "hue_dark", "tint_dark"]) if (a.color[k] && !COLOR.test(a.color[k])) e2.push(`${a.id}: color.${k} 형식`);
+    (a.out || []).forEach(f => { if (!FMT.includes(f)) e2.push(`${a.id}: out 형식 ${f}`); });
+    if (a.attach && a.attach.types) a.attach.types.forEach(t => { if (!KINDS.includes(t)) e2.push(`${a.id}: attach.types ${t}`); });
+    const use = a.use || {};
+    let n = 0;
+    for (const k of Object.keys(use)) for (const t of use[k]) {
+      n++;
+      if (!ROUTE[t]) e2.push(`${a.id}: 허용 목록에 없는 도구 ${t}`);
+      else if (ROUTE[t] !== k) e2.push(`${a.id}: 도구 ${t}는 묶음 ${ROUTE[t]} 소속인데 ${k}에 적힘`);
+    }
+    if (a.status === "soon" && !n) e2.push(`${a.id}: 준비 중 에이전트에 도구가 비어 있음`);
+    if ((a.status || "live") === "live" && !n && a.attach === false) e2.push(`${a.id}: 도구도 첨부도 없음`);
+    if ((a.status || "live") !== "soon" && typeof a.rules !== "string") e2.push(`${a.id}: rules 없음`);
+  }
+  for (const a of cat.agents_v2) {
+    (a.consult || []).forEach(id => { if (!v2ids.has(id)) e2.push(`${a.id}: consult 대상 없음 ${id}`); });
+    (a.pro || []).forEach(p => { if (p.via && !v2ids.has(p.via)) e2.push(`${a.id}: pro.via 대상 없음 ${p.via}`); });
+    const links = String(a.rules || "").match(/agent:([a-z0-9_-]+)/g) || [];
+    links.forEach(l => { if (!v2ids.has(l.slice(6))) e2.push(`${a.id}: 규칙 속 agent: 링크 대상 없음 ${l}`); });
+  }
+  const day = /^\d{4}-\d{2}-\d{2}$/;
+  (cat.notices || []).forEach((n, i) => {
+    if (!n.title) e2.push(`notices[${i}]: title 없음`);
+    if (n.from && !day.test(n.from)) e2.push(`notices[${i}]: from은 YYYY-MM-DD`);
+    if (n.to && !day.test(n.to)) e2.push(`notices[${i}]: to는 YYYY-MM-DD`);
+    if (n.from && n.to && n.from > n.to) e2.push(`notices[${i}]: 기간이 거꾸로(${n.from} > ${n.to})`);
+    if (n.level && !["안내", "주의", "장애"].includes(n.level)) e2.push(`notices[${i}]: level은 안내|주의|장애`);
+    (n.agents || []).forEach(id => { if (!v2ids.has(id)) e2.push(`notices[${i}]: 없는 에이전트 ${id}`); });
+  });
+  if (cat.legacy_until && !day.test(cat.legacy_until)) e2.push("legacy_until은 YYYY-MM-DD");
+  if (e2.length) { console.error(e2.join("\n")); process.exit(1); }
+  console.log(`새 페이지 설정: 에이전트 ${cat.agents_v2.length}개, 출처 ${Object.keys(src).length}개, 공지 ${(cat.notices || []).length}건 검사 통과`);
+}

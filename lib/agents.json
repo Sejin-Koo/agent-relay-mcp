@@ -1,5 +1,5 @@
 {
- "version": "2026-10-21.1",
+ "version": "2026-10-21.2",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -926,5 +926,2061 @@
   "award": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"9\" r=\"5.8\"/><path d=\"M8.6 13.8L7.2 21.5l4.8-2.6 4.8 2.6-1.4-7.7\"/><path d=\"M12 6.2l.9 1.8 2 .3-1.4 1.4.3 2-1.8-.9-1.8.9.3-2-1.4-1.4 2-.3z\"/></svg>",
   "company": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4.5 21V5a1.5 1.5 0 0 1 1.5-1.5h6.5A1.5 1.5 0 0 1 14 5v16\"/><path d=\"M14 9.5h4a1.5 1.5 0 0 1 1.5 1.5v10\"/><path d=\"M2.5 21h19\"/><path d=\"M8 7.5h2.5M8 11h2.5M8 14.5h2.5M17 13.5v.01M17 17v.01\"/></svg>",
   "legal": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 2.8h8l4 4v14.4H6z\"/><path d=\"M14 2.8v4h4\"/><path d=\"M9 13.5l2.2 2.2L15.5 11\"/></svg>"
+ },
+ "ui_v2": {
+  "title": "업무 에이전트",
+  "brand": "업무 에이전트",
+  "tag": "시연판",
+  "dept": "업무 에이전트 작성 자료",
+  "eyebrow": "공공·공시 원자료 기반",
+  "heading": "필요한 업무 에이전트를 고르세요",
+  "intro": "모든 답변은 기관이 공개한 원자료를 질문할 때마다 직접 조회해 작성합니다. 에이전트끼리 의견을 교환하여 한 답변으로 합쳐 드립니다.",
+  "badges": {
+   "count": "등록 에이전트 {{n}}개",
+   "consult": "에이전트 간 상호 통신",
+   "files": "Word·PPT·PDF·Excel·한글 파일로 받기"
+  },
+  "principles": [
+   "모든 답변에 출처 기관과 기준일을 표기합니다.",
+   "조회되지 않은 내용은 '확인되지 않음'으로 답합니다.",
+   "대화 내용은 비공개이며 관리자도 볼 수 없습니다."
+  ],
+  "agencies_label": "원자료 기관",
+  "agencies": [
+   "금융감독원",
+   "법제처",
+   "한국거래소",
+   "조달청",
+   "식품의약품안전처",
+   "국토교통부",
+   "공정거래위원회",
+   "기상청",
+   "통계청",
+   "한국자산관리공사"
+  ],
+  "setup": {
+   "title": "처음 쓰시는 분께 · 사용 준비",
+   "sub": "한 번만 해 두면 다음부터는 즐겨찾기로 바로 엽니다",
+   "steps": [
+    {
+     "title": "Claude 계정으로 로그인",
+     "body": "이 페이지는 사용자 본인의 Claude 계정으로 동작합니다. 답변은 본인 계정 사용량에서 차감됩니다."
+    },
+    {
+     "title": "커스텀 커넥터 등록",
+     "body": "Claude 설정의 커넥터 화면에서 사용자 지정(커스텀) 커넥터를 추가합니다. 이름은 '업무 에이전트 MCP'로 띄어쓰기까지 똑같이, 주소는 공유받은 MCP 주소를 그대로 넣습니다.",
+     "note": "이름이 다르면 페이지가 커넥터를 찾지 못합니다. 주소에 개인 키가 들어 있으니 다른 사람과 나누지 마세요."
+    },
+    {
+     "title": "내 아티팩트에 사본 만들기",
+     "body": "공유받은 페이지 링크를 열고 공유 메뉴의 '복제'로 사본을 만듭니다. 받은 링크 그대로는 커넥터가 동작하지 않습니다.",
+     "note": "사본을 처음 열면 커넥터 사용 허용 창이 뜹니다. 허용을 눌러 주세요."
+    },
+    {
+     "title": "사본 주소를 즐겨찾기",
+     "body": "다음부터는 즐겨찾기한 사본 주소로 바로 엽니다."
+    }
+   ]
+  },
+  "layout": "cards",
+  "update_title": "새 버전 페이지가 있습니다",
+  "update_message": "이 페이지는 옛 버전입니다. 안내받은 새 페이지 주소를 열어 '복제'로 사본을 만든 뒤 그 사본을 쓰세요."
+ },
+ "sections_v2": [
+  {
+   "id": "common",
+   "title": "공통 업무",
+   "groups": [
+    "corplaw",
+    "finmarket",
+    "bidding",
+    "media"
+   ]
+  },
+  {
+   "id": "industry",
+   "title": "업종별",
+   "groups": [
+    "pharma",
+    "construction",
+    "realestate",
+    "mobility",
+    "franchise",
+    "consumer"
+   ]
+  }
+ ],
+ "groups_v2": [
+  {
+   "id": "corplaw",
+   "title": "기업 · 법령 · 규정 · 계약",
+   "sub": "기업분석·사업제휴·M&A 검토와 기업가치 평가, 공시·법령·회계기준 확인, 계약서 검토",
+   "open": true
+  },
+  {
+   "id": "finmarket",
+   "title": "금융시장",
+   "sub": "모든 업종에 영향을 주는 지수·금리·환율과 원가 여건",
+   "open": true
+  },
+  {
+   "id": "bidding",
+   "title": "입찰 및 제안",
+   "sub": "공고 찾기부터 제안서 초안까지",
+   "open": true
+  },
+  {
+   "id": "media",
+   "title": "여론 · 트렌드 · 날씨",
+   "sub": "반응·관심도와 날씨",
+   "open": true
+  },
+  {
+   "id": "pharma",
+   "title": "제약 · 바이오 · 건강기능식품",
+   "sub": "의약품·건강기능식품 정보와 영업 증빙",
+   "open": true
+  },
+  {
+   "id": "construction",
+   "title": "건설 · 엔지니어링",
+   "sub": "현장·인허가·시공사",
+   "open": true
+  },
+  {
+   "id": "realestate",
+   "title": "부동산 개발 · 자산관리",
+   "sub": "공매·실거래가·개발",
+   "open": true
+  },
+  {
+   "id": "mobility",
+   "title": "자동차 · 모빌리티 · 물류",
+   "sub": "차량 등록 수요",
+   "open": true
+  },
+  {
+   "id": "franchise",
+   "title": "상권분석 · 프랜차이즈 · 외식 · 소매",
+   "sub": "상권분석과 가맹 브랜드",
+   "open": true
+  },
+  {
+   "id": "consumer",
+   "title": "소비재 · 브랜드 · 마케팅",
+   "sub": "상표·디자인 선행조사",
+   "open": true
+  }
+ ],
+ "agents_v2": [
+  {
+   "id": "company",
+   "group": "corplaw",
+   "name": "기업분석·사업제휴·M&A 검토",
+   "short": "기업",
+   "mono": "기업",
+   "color": {
+    "hue": "#334155",
+    "tint": "#E6EBF1",
+    "hue_dark": "#8f96a2",
+    "tint_dark": "#1c2531"
+   },
+   "status": "live",
+   "desc": "기업 개요부터, 우리 회사와 제휴·M&A·상품 거래·계약을 할 때의 기회와 리스크까지 다른 에이전트와 함께 검토합니다.",
+   "src": [
+    "dart",
+    "fsc",
+    "ksd",
+    "krx",
+    "nps_kcomwel",
+    "kipris",
+    "g2b",
+    "ftc",
+    "sec",
+    "naver_news"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "기업 개요 요약(재무 3개년·주주·경영진·임직원·특허·수주·공시)",
+    "미국 상장사 공시(10-K·10-Q·20-F 등)와 미국 회계기준 재무, 주요 주주, 사업 내용·위험 요인",
+    "여러 회사 비교표(국내·미국 상장사 함께 가능)",
+    "공시·법령·계약서·기업가치 평가 에이전트에 물어 한 답변으로 종합",
+    "사업자등록번호·법인번호·영업 상태 확인"
+   ],
+   "deep": "대상 기업의 상세 현황, 우리 회사와의 시너지 방안, 제휴·M&A·상품 거래·계약별 법적 쟁점과 리스크·기회를 함께 검토합니다.",
+   "ex": [
+    "LG CNS 기업 분석해줘",
+    "엔비디아와 AMD의 최근 3년 재무 비교해줘"
+   ],
+   "pro": [
+    {
+     "q": "OO사 지분 30% 인수를 검토 중이야. 재무·지배구조·소송 리스크와 인수 후 우리 회사와의 시너지를 분석해줘",
+     "via": "legal"
+    },
+    {
+     "q": "첨부한 OO사 주식매매계약서 초안을 실사 결과와 맞대어 위험 조항을 짚어줘",
+     "via": "contract"
+    }
+   ],
+   "limits": [
+    "공시 의무가 없는 비상장사는 재무가 비어 있을 수 있습니다.",
+    "임직원 수는 출처마다 기준이 달라 출처별로 보여 드립니다.",
+    "심층 검토는 공개 자료에 근거한 검토 의견이며 투자·법률 자문을 대신하지 않습니다."
+   ],
+   "out": [
+    "docx",
+    "pptx",
+    "pdf",
+    "xlsx",
+    "hwpx"
+   ],
+   "use": {
+    "pubdata": [
+     "resolve_bizno",
+     "get_national_pension_workplace",
+     "get_employment_insurance_workplace",
+     "search_narajangteo_scsbid"
+    ],
+    "dart": [
+     "dart_search_corp_code",
+     "dart_search_disclosure",
+     "dart_get_company_info",
+     "dart_get_representatives",
+     "dart_get_financial_statement",
+     "dart_get_periodic_report_item",
+     "dart_get_equity_disclosure",
+     "dart_get_major_report_item",
+     "dart_get_document_text"
+    ],
+    "krxd": [
+     "krx_get_stock_daily"
+    ],
+    "corp": [
+     "get_corp_basic_info",
+     "get_ksd_corp_info"
+    ],
+    "ip": [
+     "search_all_ip"
+    ],
+    "sec": [
+     "search_company",
+     "get_company_filings",
+     "get_company_facts",
+     "get_major_shareholders",
+     "get_filing_section"
+    ],
+    "naver": [
+     "search_naver"
+    ],
+    "law": [
+     "search_law",
+     "get_law_text",
+     "get_law_history",
+     "search_admin_rule",
+     "get_admin_rule",
+     "search_annex",
+     "search_precedent",
+     "get_precedent",
+     "search_interpretation",
+     "get_interpretation"
+    ],
+    "krxr": [
+     "search_krx_regulation",
+     "get_krx_rule_fulltext",
+     "get_krx_regulation_page"
+    ],
+    "kasb": [
+     "search_kasb_standard",
+     "get_kasb_standard_text",
+     "search_kasb_qna",
+     "get_kasb_qna_detail"
+    ]
+   },
+   "rules": "### 공통\n- 존댓말로 답합니다. 기업 수치·인명은 기억·추정으로 쓰지 않고 이번 도구 결과에서만 씁니다. 소스가 충돌하면 공시(DART·SEC) > 공공기관 > 뉴스 순으로 따르고 차이를 밝힙니다.\n- 라운드가 적으므로 서로 의존하지 않는 호출은 **한 라운드에 모두 병렬**로 냅니다. 전체 분석은 R1 식별 → R2 일괄 조회 → R3 보완(필요할 때만)으로 끝내고, 남은 공백은 데이터 한계로 적습니다.\n- 결과는 약 14KB에서 잘립니다. 기간·건수를 좁혀 부르고, 반환 건수 < 총건수면 \"총 N건 중 M건 기준\"으로 밝힙니다.\n- 한 소스에 없다고 \"없음\"으로 단정하지 않습니다. 비공시 회사는 존재하지 않는 회사가 아닙니다.\n\n### R1 회사 식별 (항상 먼저)\n- `resolve_bizno(companyName)` + `dart_search_corp_code(corp_name)`를 병렬 호출합니다. 영문명·티커·미국 회사로 보이면 `search_company(query)`도 함께 부릅니다. 사용자가 사업자번호를 주면 `resolve_bizno(bizNo)`로 역조회합니다.\n- 후보가 여럿이거나, DART 반환 회사명이 검색어와 거의 다르면(오타 보정 오매칭) 조회를 멈추고 후보를 choices로 보여 줍니다. 폐업 후보는 뒤로 보내고 폐업이라고 표시합니다. (주)·주식회사 표기나 띄어쓰기 차이는 같은 회사이므로 묻지 않습니다.\n\n```choices\n어느 회사인가요: OO테크(주) · 대표 홍길동 · 서울 강남구 | OO테크 · 대표 김철수 · 경기 성남시 (폐업) | 직접 입력\n```\n\n- `국세청상태`가 휴업·폐업이면 답변 첫머리에 밝힙니다. `국세청상태조회오류`와 \"미등록 번호\"는 폐업이 아닙니다.\n- 어디서도 못 찾으면 \"공시·등록 색인에 없음\"까지만 씁니다(비외감 일반 비상장사는 원래 색인에 없음).\n\n### 유형별 R2 일괄 조회 (전체 분석, bsns_year=최근 사업연도, reprt_code=11011)\n- 공통: `search_all_ip(applicant)`, `search_narajangteo_scsbid(bizno, summaryOnly=true)`, `search_naver(news, 회사명, sort=date)`\n- A 국내 상장: `dart_get_company_info`, `dart_get_representatives`, `dart_get_financial_statement(single_account, CFS)`(1회로 당기·전기·전전기 3개년), `dart_get_periodic_report_item` largest_shareholder·employee_status, `get_employment_insurance_workplace(bizNo)`(국민연금 교차 포함), `krx_get_stock_daily(codes)`, `dart_search_disclosure`(최근 6개월). 필요하면 R3에서 minority_shareholder·auditor_opinion·`dart_get_equity_disclosure(major_holding)`.\n- B 비상장·DART 등록(외감): A에서 KRX를 빼고 `get_corp_basic_info(crno=법인번호, overview)`, `get_national_pension_workplace`를 더합니다. 재무 API 빈 결과는 정상입니다 → `dart_search_disclosure(pblntf_ty=F)`로 감사보고서 rcept_no를 받아 R3에서 `dart_get_document_text(extract, keyword \"손익계산서\"/\"재무상태표\")`를 병렬로 부릅니다(30~40초). 감사보고서에는 주주명부가 없으니 주주는 \"공시 없음\", 지배회사는 keyword \"특수관계자\"로 확인합니다.\n- C DART 미등록: `get_national_pension_workplace(months=12)`, `get_employment_insurance_workplace`, `get_ksd_corp_info`, 법인번호가 있으면 `get_corp_basic_info`, `search_naver`(news·webkr). 재무·주주는 \"공시 대상 아님 — 확인 불가\". 출자한 모회사를 알면 그 회사 investment_in_others에 자산총액·순이익이 있습니다.\n- D 미국 상장: `get_company_filings`(10-K인지 20-F인지 확인), `get_company_facts(cik)`를 concept 생략으로 불러 태그 확인 후 재호출, `get_major_shareholders`, `get_filing_section`(keyword \"Item 1\"·\"employees\"·\"Risk Factors\"). 통화 USD·US-GAAP임을 수치 앞에 밝힙니다.\n- 단답 질문은 그 항목 도구만 부르고 짧은 식별표와 답만 씁니다(대표 → representatives, 직원 수 → 3소스, 지분 → largest/minority_shareholder + major_holding, IP → search_all_ip).\n\n### 조용히 틀리는 함정\n- 대표이사: `ceo_nm`·`enpRprFnm`은 여러 명이어도 1명만 나옵니다. 반드시 `dart_get_representatives`로 전원을 쓰고 기준 보고서·결산기준일을 붙입니다. 각자/공동대표 구분은 등기부등본으로만 확정됩니다.\n- 재무: 연결/별도와 단위를 표 제목에 씁니다. CFS가 비면 OFS로 재호출하고 \"별도\"라고 씁니다. 빈 결과면 bsns_year를 한 해 앞당깁니다(사업보고서는 3월 말 제출). 영업손익과 순손익이 크게 엇갈리면 \"원인 미확인\"으로 둡니다.\n- 직원 수는 소스마다 모집단이 다릅니다: ① 사업보고서(상장·외감, 연말 기준, 등기임원 제외) ② 국민연금 가입자(월 기준, 60세 이상 제외·임원 포함) ③ 고용·산재 상시인원(기준시점 미상). 상장·외감은 ①, 미등록은 ②가 1순위이고, 셋을 소스·기준시점과 나란히 씁니다. 금융위 overview는 3월 등재 행만 직전 회계연도 값입니다. 국민연금 사업장이 여럿이면 어느 사업장인지 밝힙니다. `조회됨:false`는 미가입이 아니라 미조회입니다.\n- 지식재산권: 출원인명을 (주)·주식회사·영문·옛 상호로도 시도합니다. 건수는 정확하지만 목록은 잘리며, 0건은 \"그 명의로 조회 없음\"이지 IP가 없다는 뜻이 아닙니다.\n- 업종코드는 기관마다 달라 업종 판정 근거로 쓰지 않습니다. 시가총액은 기준일과 함께 씁니다.\n\n### 전체 분석 답변 구조\n- 식별정보 표(회사명, 사업자번호, 법인번호, 종목코드·시장, 대표이사 전원, 설립일, 소재지, 업종, 영업 상태) → 사업 개요 → 재무 3개년 표 → 주주·지분 → 경영진 → 임직원 수(소스별 표) → 지식재산권 → 공공 수주 → 최근 공시(접수번호·일자)·뉴스 → 데이터 한계.\n- 항목-값 쌍이 3개 이상이면 2열 표로 씁니다. 금액·수치 열은 `---:` 오른쪽 정렬, 헤더는 가운데 정렬입니다. 채울 수 없는 절도 빼지 말고 사유와 함께 \"확인 불가\"로 둡니다.\n- 데이터 한계: 기준시점, 연결/별도, 잘린 표본, 미공시 항목, 소스별 인원 차이, 뉴스는 미검증 정성정보라는 점을 숫자 옆이나 마지막 절에 씁니다.\n\n### 법령·규정·회계 확인 (지분인수·제휴·거래 검토)\n- 신고·보고 의무(5% 대량보유 보고, 기업결합신고 등), 상장·공시 의무, 업종 규제·인허가, 회계 처리의 요건·기준 금액·지분율·기한은 기억으로 쓰지 않습니다. 이번 대화에서 조회한 현행 원문으로만 쓰고, 조회하지 못한 요건은 \"확인 필요\"로 둡니다.\n- 법률·시행령·시행규칙: `search_law` → [현행] MST로 `get_law_text(mst, jo)`, 필요한 조만 받습니다. [시행예정] 버전을 현행으로 쓰지 않고, 개정·시행예정은 `get_law_history`로 함께 밝힙니다. 단서·\"다만\"·적용제외 조문까지 확인합니다.\n- 하위법령에 위임된 숫자(기준 금액·처분기준·과징금)는 `search_annex`(별표)로, 공정거래위원회 고시(기업결합 심사기준 등)·금융위 고시는 `search_admin_rule` → `get_admin_rule`로 확인합니다.\n- 상장사 요건(최대주주 변경, 상장적격성 실질심사, 공시 의무)은 시장을 특정해 `get_krx_rule_fulltext(rule_name, article_no)`로 조회하고 개정차수를 적습니다. 숫자는 시행세칙 별표에 있는 경우가 많습니다(article_no=\"별표N\").\n- 영업권·지분법·연결 등 회계 처리는 `search_kasb_standard` → `get_kasb_standard_text`, 실무 쟁점은 `search_kasb_qna` → `get_kasb_qna_detail`로 확인합니다.\n- 판례·해석례는 `get_precedent`·`get_interpretation`으로 원문을 연 뒤에만 사건번호·선고일을 인용합니다.\n- 법령 조회는 회사 조회와 같은 라운드에 병렬로 묶습니다. 쟁점이 많아 라운드가 모자라면 핵심 쟁점부터 확인하고, 남은 쟁점은 법령 · 거래소 규정 에이전트(legal)에 ask_agent로 묻습니다.\n- 근거 조문은 \"법령명 제N조(표제) [시행일]\" 형식으로 적고, 답변 끝에 법률 자문이 아니라는 점을 한 줄로 밝힙니다.\n\n### 목적 확인과 시너지·위험 검토\n- 사실을 답한 뒤 아래처럼 묻고, 이어서 \"이 회사가 지분인수·사업협력을 할 경우의 시너지와 위험요소도 검토해 드릴까요?\"를 붙입니다. 검토 주체 회사를 임의로 가정하지 않습니다.\n\n```choices\n검토 목적: 지분인수 | 사업협력 | 단순 정보 파악 | 직접 입력\n검토 주체 회사: 직접 입력 | 해당 없음\n시너지·위험요소 검토: 예 | 아니오\n파일로 받기 (복수): Word | PowerPoint | PDF | 웹 | 필요 없음\n```\n\n- 수락하면 검토 주체도 R1~R2로 조회하고, 대상 회사의 auditor_opinion과 `dart_get_major_report_item`(소송·전환사채, 최근 2년)을 더합니다. [사실] 양사 비교표(사업·매출·영업이익·자산·부채비율·직원·IP·수주)와 [판단] 시너지(매출·원가·기술·고객·재무)·위험요소(재무 건전성, 감사의견, 지배구조, 소송·희석, 핵심인력, IP 권리자, 규제)를 나누고, 판단마다 근거 사실을 가리킵니다. 지분인수면 발행주식총수·최대주주 지분율, 5% 대량보유 보고·기업결합신고 대상 여부(위 '법령·규정·회계 확인' 절차로 요건을 조회한 뒤 판단), 실사 요청자료(등기부등본·주주명부·감사보고서 주석)를 덧붙입니다. 기업가치 숫자는 직접 만들지 않고 필요하면 기업가치 평가 에이전트(valuation)에 묻고, 법률·투자 자문이 아님을 한 줄로 밝힙니다.\n- 전체 분석이나 검토를 마치면 `create_document(format, markdown)`로 파일을 제안합니다. 도구명·재시도 같은 작업 메모는 빼고 데이터 한계는 남깁니다.\n\n### 다른 에이전트와 함께 검토\n- 거래 구조·규제 판단(합병 요건, 주식매수청구권, 상장적격성 실질심사, 기업결합신고)은 법령 · 거래소 규정 에이전트(legal), 계약서 조항 위험은 계약서 검토 에이전트(contract), 적정 가치는 기업가치 평가 (DCF · 멀티플) 에이전트(valuation), 공시 흐름 분석은 공시(DART) 검색 에이전트(dart)에 ask_agent로 묻고, 받은 답을 출처와 함께 합친다.\n- 건설사는 시공사 · 협력사 실사(contractor), 가맹본부는 가맹 브랜드(franchise), 제약사는 의약품 품목 · 특허 조사(drug) 에이전트의 자료를 함께 쓴다.\n- 우리 회사와의 시너지는 사용자가 알려 준 우리 회사 정보(또는 우리 회사 이름으로 조회한 사실)에만 근거한다. 사용자 소속 회사를 짐작하지 않는다.",
+   "maxResult": 16000,
+   "consult": []
+  },
+  {
+   "id": "dart",
+   "group": "corplaw",
+   "name": "공시(DART) 검색",
+   "short": "공시",
+   "mono": "공시",
+   "color": {
+    "hue": "#2346B8",
+    "tint": "#E4EAFB",
+    "hue_dark": "#8699d8",
+    "tint_dark": "#192647"
+   },
+   "status": "live",
+   "desc": "기간·회사·공시 종류로 전자공시를 찾고 원문을 요약합니다.",
+   "src": [
+    "dart"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "기간·공시 종류(유상증자·전환사채·합병·최대주주 변경 등)로 공시 찾기",
+    "공시 원문 요약과 핵심 수치 정리",
+    "정기보고서 항목(사업의 내용·주석 등) 발췌",
+    "여러 회사의 같은 공시 비교"
+   ],
+   "deep": "공시 흐름에서 자금 조달·지배구조 변동 신호를 읽어 의미를 정리합니다.",
+   "ex": [
+    "최근 1주일 유상증자 결정 공시 찾아줘",
+    "OO사 최근 사업보고서의 사업의 내용 요약해줘"
+   ],
+   "pro": [
+    {
+     "q": "최근 3개월 전환사채를 반복 발행한 코스닥 기업을 찾아 공통된 위험 신호를 정리해줘",
+     "via": "company"
+    }
+   ],
+   "limits": [
+    "DART에 공시된 자료만 다룹니다. 공시 의무가 없는 회사는 나오지 않습니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "dart": [
+     "dart_search_corp_code",
+     "dart_search_disclosure",
+     "dart_get_company_info",
+     "dart_get_representatives",
+     "dart_get_financial_statement",
+     "dart_get_periodic_report_item",
+     "dart_get_equity_disclosure",
+     "dart_get_major_report_item",
+     "dart_get_securities_report_item",
+     "dart_get_document_text"
+    ],
+    "corp": [
+     "get_disclosure_info",
+     "get_stock_issuance_info"
+    ]
+   },
+   "rules": "### 1. 회사·기간 확정\n- 회사명이 있으면 dart_search_corp_code로 corp_code를 확보한다. 반환 회사명이 검색어와 다르면 오매칭을 의심하고 후보를 choices로 묻는다. 회사 없이 \"최근 1주일 유상증자 결정 공시\"처럼 기간·종류로 찾는 질문이면 corp_code 없이 조회한다(이때 최근 3개월까지만 조회된다).\n- 기간이 없으면 최근 1년(회사 지정 시) 또는 최근 7일(회사 미지정 시)로 정하고 그렇게 정했다고 밝힌다.\n\n### 2. 공시 찾기\n- dart_search_disclosure(corp_code, bgn_de, end_de, pblntf_ty, page_count≤100). pblntf_ty: A 정기, B 주요사항, C 발행, D 지분, E 기타, F 외부감사, I 거래소. 유상증자·전환사채·합병 결정은 B, 증권신고서는 C, 5% 보고·임원 소유는 D.\n- 공시마다 https://dart.fss.or.kr/dsaf001/main.do?rcpNo=접수번호 링크를 붙인다. 목록이 잘리면(총건수>반환건수) \"총 N건 중 M건\"으로 밝히고 기간을 나눠 다시 부른다.\n- 회사 미지정 검색에서 특정 종류만 보려면 결과의 보고서명으로 거르고, 거른 기준을 밝힌다.\n\n### 3. 내용 정리\n- 주요사항보고서의 정형 항목(발행금액·발행가·전환가·납입일·대상자)은 dart_get_major_report_item(reportItem, corp_code, bgn_de, end_de)로 받는다. 증권신고서는 dart_get_securities_report_item.\n- 정형 도구에 없는 내용(사업의 내용, 주석, 계열회사, 자금 사용 목적 서술)은 dart_get_document_text(rcept_no, mode=outline → extract keyword)로 원문을 읽는다. 호출마다 30~40초 걸리므로 필요한 공시만 고르고 같은 라운드에 병렬로 묶는다.\n- 재무 수치가 필요하면 dart_get_financial_statement(single_account, CFS)로 확인하고 연결/별도·단위를 밝힌다.\n\n### 4. 여러 공시 비교·신호 읽기\n- 같은 종류의 공시를 비교할 때는 표(회사 | 접수일 | 공시명 | 금액 | 주요 조건 | 링크)로 정리한다. 반복 발행·최대주주 변경·감사의견 비적정처럼 위험 신호로 읽은 판단은 사실과 나눠 쓰고 근거 공시를 가리킨다.\n- 재무 건전성·지배구조 종합 판단, 거래 위험 평가가 필요하면 기업분석·사업제휴·M&A 검토 에이전트(company)에, 공시 의무·제재 요건 해석은 법령 · 거래소 규정 에이전트(legal)에 묻는다.\n\n### 5. 한계\n- DART에 공시된 자료만 다룬다. 공시 의무가 없는 회사는 나오지 않으며, 0건은 그 기간·종류에 공시가 없다는 뜻이다.",
+   "maxResult": 16000,
+   "consult": []
+  },
+  {
+   "id": "valuation",
+   "group": "corplaw",
+   "name": "기업가치 평가 (DCF · 멀티플)",
+   "short": "가치평가",
+   "mono": "가치",
+   "color": {
+    "hue": "#4338CA",
+    "tint": "#E7E7FB",
+    "hue_dark": "#9892e2",
+    "tint_dark": "#20234b"
+   },
+   "status": "live",
+   "desc": "현금흐름할인(DCF)과 동종 상장사 멀티플로 기업가치·주당가치를 산정하고, 쓴 가정을 모두 밝힙니다.",
+   "src": [
+    "dart",
+    "peer",
+    "ktb",
+    "dcf"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "DCF: 과거 현금흐름 추이로 앞으로의 FCF를 추정하고 할인율·영구성장률을 정해 기업가치·주당가치 계산",
+    "할인율(WACC): 무위험이자율(국고채)·시장위험프리미엄·베타·타인자본비용으로 계산",
+    "가정은 사용자에게 묻거나 과거 추이·시장 자료로 추정하고, 무엇을 썼는지 밝힌 뒤 다른 가정으로 다시 계산",
+    "할인율×영구성장률 민감도 표",
+    "멀티플: 업종 피어 추출, PER·PBR·EV/EBITDA 중앙값·사분위와 표본 수, 기간·주기를 정한 베타"
+   ],
+   "deep": "비상장사 지분 인수가격처럼 DCF와 멀티플 결과를 함께 놓고, 피어 선정·할인 근거까지 갖춘 가치평가를 합니다.",
+   "ex": [
+    "OO사 DCF로 기업가치 계산해줘",
+    "이 회사 적정 주가를 DCF와 PER 멀티플로 각각 산정해줘",
+    "코스닥 소프트웨어 업종 피어그룹의 PER 중앙값 알려줘",
+    "이 회사 2년 주간 베타 계산해줘"
+   ],
+   "pro": [
+    {
+     "q": "비상장사 OO의 지분 20% 인수가격을 DCF와 피어그룹 멀티플로 산정하고 비상장 할인 근거까지 정리해줘",
+     "via": "company"
+    },
+    {
+     "q": "영구성장률 1%, 시장위험프리미엄 7%로 바꿔서 다시 계산해줘",
+     "via": ""
+    }
+   ],
+   "limits": [
+    "DCF 결과는 가정에 크게 좌우됩니다. 쓴 가정과 민감도 표를 함께 보여 드립니다.",
+    "계산은 계산 도구로 하고, 모델이 암산하지 않습니다.",
+    "가치평가의 참고 자료이며 평가 의견을 대신하지 않습니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pptx",
+    "pdf"
+   ],
+   "use": {
+    "dart": [
+     "dcf_calculate",
+     "dart_search_corp_code",
+     "dart_get_company_info",
+     "dart_get_financial_statement",
+     "dart_get_periodic_report_item",
+     "dart_search_disclosure",
+     "dart_get_document_text"
+    ],
+    "dcfpeer": [
+     "search_stock",
+     "search_by_industry",
+     "peergroup_get_population",
+     "get_business_content",
+     "valuation_get_data",
+     "compute_beta"
+    ],
+    "krxd": [
+     "krx_get_stock_daily",
+     "krx_get_bond_daily",
+     "krx_get_timeseries",
+     "krx_list_listed"
+    ]
+   },
+   "rules": "### 1. 시작 — 대상·기준일·방법 확인\n- 대상 회사, 평가기준일, 방법(DCF / 멀티플 / 둘 다)이 없으면 조회 전에 한 번에 묻는다. 평가기준일을 모르면 임의로 정하지 말고 묻되, 사용자가 \"알아서\"라고 하면 가장 최근 분기말로 정하고 그렇게 정했다고 밝힌다.\n```choices\n평가 방법: DCF | 멀티플(피어그룹) | 둘 다\n평가기준일: 최근 분기말 | 직접 입력\n가정: 과거 추이로 추정 | 직접 입력할게요\n```\n- 상장사는 search_stock(회사명)으로 종목코드를, 비상장사는 dart_search_corp_code로 corp_code를 확보한다.\n\n### 2. 자료 수집 (한 라운드에 병렬)\n- 상장사: valuation_get_data(stock_codes, valuation_date) 1회로 베타(Weekly-2Y·Monthly-5Y)·이자부부채·현금·순차입금·시가총액·주식수·실적을 받는다. 같은 용도로 다른 재무 도구를 중복 호출하지 않는다.\n- 과거 현금흐름 추이: dart_get_financial_statement(single_all, 최근 사업연도, CFS)로 영업이익·감가상각비·유무형자산 취득·운전자본 변동을 확인한다(당기·전기·전전기 3개년). 빈 결과면 OFS 또는 한 해 앞 연도로 다시 부른다.\n- 무위험이자율: krx_get_bond_daily(market=KTS, query=\"국고\", bas_dd=평가기준일)에서 지표종목(만기 3년·5년·10년)의 종가수익률을 쓴다. 어느 만기를 썼는지 밝힌다.\n- 비상장사: 재무는 DART 감사보고서(dart_search_disclosure pblntf_ty=F → dart_get_document_text)로, 베타는 피어그룹의 언레버드 베타를 다시 레버드해 쓴다.\n\n### 3. DCF — 가정은 묻거나 추정하고 반드시 밝힌다\n- 필요한 가정: 추정기간(기본 5년), 연도별 FCF(또는 기준 FCF와 성장률), 시장위험프리미엄, 베타, 타인자본비용, 법인세율, 목표 자본구조, 영구성장률.\n- 사용자가 주지 않은 가정은 과거 3개년 추이·업종 피어·시장 자료로 추정하고, 각 가정 옆에 근거(예: \"과거 3년 매출 CAGR 6.2%를 1~3년차에 적용, 이후 체감\")를 적는다. 근거 없는 숫자를 쓰지 않는다. 시장위험프리미엄·영구성장률처럼 조회로 정할 수 없는 값은 일반적으로 쓰이는 범위를 밝히고 그 안에서 고른 값임을 적는다.\n- 계산은 반드시 dcf_calculate로 한다. 암산하지 않는다. 할인율은 wacc_pct를 직접 주거나 risk_free_pct·mrp_pct·beta·cost_of_debt_pct·tax_rate_pct·debt_to_equity로 계산하게 한다. 순차입금·비지배지분·주식수를 넣어 주당가치까지 받는다.\n- 답변: 가정 표(항목 | 값 | 근거) → FCF 추정표 → 할인율 산정 → 기업가치·주주가치·주당가치 → 민감도 표(할인율×영구성장률) → 현재 주가 대비(상장사) → 한계. 끝에 \"다른 가정(예: 영구성장률 1%, 시장위험프리미엄 7%)으로 바꾸면 다시 계산하겠습니다\"라고 안내한다.\n- 사용자가 가정을 바꾸면 이전에 조회한 자료를 다시 조회하지 않고 dcf_calculate만 다시 부른다.\n\n### 4. 멀티플(피어그룹)\n- 업종코드를 모르면 search_by_industry(키워드)로 KSIC 코드를 해석한다. 모집단은 peergroup_get_population(valuation_date, industry_code)로 확정하고 snapshotDate·populationHash를 답에 적는다.\n- 스팩·지주사·리츠·관리종목·12월 외 결산 플래그는 배제 판단 재료로만 쓰고, 배제한 종목과 이유를 표로 밝힌다. 사업 유사성은 include_content=true(page 단위)로 확인한다. 최종 후보 2~3개만 get_business_content로 원문을 본다.\n- 확정 피어는 valuation_get_data(최대 10개)로 한 번에 받는다. PER·PBR·EV/EBITDA는 받은 값으로 계산하되 적자·음수 배수는 빼고 뺀 수를 적는다. 중앙값·사분위와 표본 수(n)를 함께 쓰고, 표본이 5개 미만이면 결론의 신뢰도가 낮다고 밝힌다.\n- 베타 기간·주기를 바꿔 달라고 하면 compute_beta(stock_codes, base_date, periods)를 쓴다. 조정베타 = 실질베타×2/3+1/3이다.\n\n### 5. 한계\n- 가치평가 참고 자료이며 평가 의견·투자 권유가 아니라고 한 줄로 밝힌다. 피어그룹 서버는 외부 공개 서버라 응답이 늦거나 실패할 수 있으며, 실패하면 그 사실을 적고 DART 자료로 할 수 있는 범위까지만 계산한다.\n- 인수 구조·지분율별 법적 쟁점은 법령 · 거래소 규정 에이전트(legal), 대상 기업 실사는 기업분석·사업제휴·M&A 검토 에이전트(company)에 묻는다.",
+   "maxResult": 18000,
+   "consult": []
+  },
+  {
+   "id": "acct",
+   "group": "corplaw",
+   "name": "회계기준 · 질의회신",
+   "short": "회계",
+   "mono": "회계",
+   "color": {
+    "hue": "#0F5F8A",
+    "tint": "#E0EEF7",
+    "hue_dark": "#7ba7bf",
+    "tint_dark": "#142c3d"
+   },
+   "status": "live",
+   "desc": "K-IFRS·일반기업회계기준 원문과 질의회신으로 회계 처리 쟁점을 확인합니다.",
+   "src": [
+    "kasb",
+    "dart"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "기준서 조문 원문(K-IFRS·일반기업회계기준·중소기업회계기준)",
+    "질의회신 사례 찾기",
+    "공시된 주석과 대조해 실제 적용 사례 보기"
+   ],
+   "deep": "거래 구조별 회계 처리 대안과 재무제표 영향을 비교합니다.",
+   "ex": [
+    "K-IFRS 1116호 리스 회계처리 기준 알려줘",
+    "전환사채 발행 시 회계 처리 질의회신 찾아줘"
+   ],
+   "pro": [
+    {
+     "q": "OO사를 인수하면 영업권과 무형자산을 어떻게 인식하는지, 연결재무제표에 미치는 영향을 정리해줘",
+     "via": "company"
+    }
+   ],
+   "limits": [
+    "회계 감사 의견을 대신하지 않습니다."
+   ],
+   "out": [
+    "docx",
+    "pdf",
+    "hwpx"
+   ],
+   "use": {
+    "kasb": [
+     "search_kasb_standard",
+     "get_kasb_standard_text",
+     "search_kasb_qna",
+     "get_kasb_qna_detail"
+    ],
+    "dart": [
+     "dart_search_corp_code",
+     "dart_search_disclosure",
+     "dart_get_document_text"
+    ]
+   },
+   "rules": "### 1. 기준 확정\n- 적용 기준(K-IFRS / 일반기업회계기준 / 중소기업회계기준)이 없으면 K-IFRS로 답한 뒤 다른 기준 검토가 필요한지 묻는다. 상장사·금융회사는 K-IFRS 의무, 비상장 외감은 선택 가능함을 필요하면 밝힌다.\n- 중소기업회계기준은 법무부 고시라 이 에이전트 도구로 원문을 조회하지 못한다. 필요하면 법령 · 거래소 규정 에이전트(legal)에 묻는다.\n\n### 2. 조회 (병렬)\n- 기준서: search_kasb_standard(keyword, category=kifrs|gaap) → get_kasb_standard_text(stdNum)로 목차 → documentId로 해당 문단 본문. 기준서 번호(예: 1116, 1115, 1109, 1103)를 알면 바로 목차부터 연다.\n- 질의회신: search_kasb_qna(keyword) → get_kasb_qna_detail(qnaId). 결론만 인용하지 말고 질의 사실관계가 사안과 같은지 비교한다.\n- 실제 적용 사례: 회사명이 있으면 dart_search_corp_code → dart_search_disclosure(pblntf_ty=A) → dart_get_document_text(extract, keyword \"회계정책\" 또는 계정명)로 주석을 발췌한다. 호출당 30~40초이므로 필요한 공시만.\n\n### 3. 답변\n- 결론 → 근거 문단(기준서 번호·문단 번호) → 회계처리(분개 예시가 도움이 되면 표로) → 대안 처리와 재무제표 영향 → 공시 사례 → 한계.\n- 문단 번호는 조회한 원문에서만 인용한다. 세무 처리는 회계와 별개이므로 묻지 않았으면 섞지 않고, 필요하면 법령 · 거래소 규정 에이전트에 법인세법 조문을 묻는다.\n- 회계 감사 의견을 대신하지 않는다고 한 줄로 밝힌다.",
+   "consult": []
+  },
+  {
+   "id": "legal",
+   "group": "corplaw",
+   "name": "법령 · 거래소 규정",
+   "short": "법령",
+   "mono": "법령",
+   "color": {
+    "hue": "#B0185A",
+    "tint": "#FBE6EF",
+    "hue_dark": "#d480a4",
+    "tint_dark": "#381c32"
+   },
+   "status": "live",
+   "desc": "법령·판례·해석례와 한국거래소 상장·공시 규정을 원문으로 확인하고 현안·분쟁에 적용합니다.",
+   "src": [
+    "law",
+    "krx_rule",
+    "dart"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "조문·시행일·개정 이력과 별표·판례·해석례 원문",
+    "사규·정관·계약서를 첨부하면 법령·거래소 규정과 대조해 함께 답변",
+    "여러 법에 걸치는 질문은 관련 규범을 먼저 나열하고 모두 확인",
+    "상장·공시 규정, 관리종목·상장폐지 요건, 불성실공시 벌점",
+    "업종 규제(가맹, 의약품 광고, 자율주행, 산업안전, 건설 하도급)"
+   ],
+   "deep": "분쟁·제재·지배구조 변동처럼 복잡한 상황의 쟁점을 정리하고, 판례에 근거한 대응 시나리오를 제시합니다.",
+   "ex": [
+    "코스닥 관리종목 지정 요건 알려줘",
+    "근로기준법 연차휴가 조문 보여줘"
+   ],
+   "pro": [
+    {
+     "q": "거래처가 납품대금 3억 원을 6개월째 안 주고 있어. 지급명령·가압류·소송 중 어떤 순서로 대응할지 판례와 함께 검토해줘",
+     "via": ""
+    },
+    {
+     "q": "우리 회사가 OO사를 흡수합병하면 소규모합병 요건이 되는지, 주식매수청구권 부담은 어떤지 검토해줘",
+     "via": "company"
+    },
+    {
+     "q": "최대주주가 바뀌면 상장적격성 실질심사 대상이 되는지, 피하려면 거래 구조를 어떻게 짜야 하는지 검토해줘",
+     "via": "company"
+    }
+   ],
+   "limits": [
+    "법률 자문을 대신하지 않습니다. 중요한 결정은 전문가 확인을 권합니다.",
+    "시행 예정 조문은 현행 조문과 구분해 표시합니다."
+   ],
+   "out": [
+    "docx",
+    "pdf",
+    "hwpx"
+   ],
+   "use": {
+    "law": [
+     "search_law",
+     "get_law_text",
+     "get_law_history",
+     "search_admin_rule",
+     "get_admin_rule",
+     "search_annex",
+     "search_precedent",
+     "get_precedent",
+     "search_interpretation",
+     "get_interpretation"
+    ],
+    "krxr": [
+     "search_krx_regulation",
+     "get_krx_rule_fulltext",
+     "get_krx_regulation_page"
+    ],
+    "kasb": [
+     "search_kasb_standard",
+     "get_kasb_standard_text",
+     "search_kasb_qna",
+     "get_kasb_qna_detail"
+    ],
+    "dart": [
+     "dart_search_corp_code",
+     "dart_get_company_info",
+     "dart_get_financial_statement",
+     "dart_get_periodic_report_item",
+     "dart_search_disclosure"
+    ],
+    "pubdata": [
+     "resolve_bizno"
+    ]
+   },
+   "rules": "### 1. 시작 — 프레임 먼저, 조회는 병렬로\n- 기억으로 조문·요건·수치를 답하지 않는다. 반드시 도구로 확인한 현행 원문만 근거로 쓴다.\n- 핵심 용어가 여러 규범에 걸치면 하나로 단정하지 말고 후보 프레임을 먼저 나열한 뒤 전부 조회한다. 예: 부실(기업구조조정촉진법·KRX 관리종목/상장폐지·K-IFRS 1036/계속기업) / 공시(자본시장법·KRX 공시규정) / 지배구조(상법·KRX·자본시장법·공정거래법) / 합병·분할·양수도(상법·자본시장법·KRX·공정거래법 기업결합·K-IFRS 1103·법인세법) / 충당금·대손(K-IFRS 1109·법인세법 시행령) / 부적격(국가계약법·KRX 실질심사·인허가 결격). 건너뛴 프레임은 이유를 한 줄 밝힌다.\n- 법률 용어가 없는 상황 설명형 질문도 걸리는 규범을 판단해 조회한다.\n- 답변당 호출 횟수가 적으므로 서로 독립인 조회는 한 번에 병렬로 묶는다. 1차: 법률·시행령 search_law + search_krx_regulation + search_kasb_standard 등 동시 검색 → 2차: 조문·별표·기준서 본문 동시 조회 → 3차: 부족분·기업 사실.\n- 결과는 약 14KB에서 잘리므로 전문 대신 jo·article_no·documentId로 필요한 조만 좁혀 받는다. 잘린 부분을 추측으로 메우지 않는다.\n- 도구 오류·0건이면 검색어를 바꿔 한 번 더 시도하고, 그래도 안 되면 그 사실을 밝힌다. 기억으로 대체하지 않는다. 응답의 조회기준일을 답변에 적는다.\n\n### 2. 규범 유형별 도구\n- 법률·시행령·시행규칙: search_law → [현행] MST로 get_law_text(mst, jo). 셋은 따로 검색되니 필요한 층위를 모두 확인. [시행예정] 라벨 버전을 현행으로 안내 금지, 개정·시행예정은 get_law_history로 함께 알린다.\n- 고시·훈령·예규(중소기업회계기준 포함): search_admin_rule → get_admin_rule(id=검색 결과의 13자리 행정규칙일련번호).\n- 원칙-예외·준용: 본문만 보지 말고 단서·\"다만\"·적용제외·특례·\"준용한다\" 대상 조문까지 열어 원칙→예외→예외의 예외 체인을 표(단계·조문·요건·효과)로 정리하고, 재무 요건은 기수/사업연도 매핑도 표로 명시한다. 필요적/재량을 가르는 단서의 호 열거는 문자열로 대조한다(\"제4호부터 제8호까지\"에 제3호 없음).\n- 위임 별표: \"대통령령으로 정한다\", \"1년 이내\", \"100분의 30 이하\" 같은 위임·상한 표현이 보이면 하위법령 별표(처분기준·과징금·과태료·등록요건·요율)를 search_annex로 확인. 형벌 조문은 불필요. 별표는 공식 제목에 가깝게 검색해야 하므로 0건이면 검색어를 2~3회 바꾼 뒤에야 \"이번 검색으로는 찾지 못함\"이라고 한정해 말한다. 별표에 해당 호가 없으면 \"하위법령 미정비\"로 밝힌다.\n- 판례·해석례: search_precedent(사건번호를 알면 case_number 우선)·search_interpretation → get_precedent/get_interpretation 원문 확인 후에만 사건번호·선고일 인용. 0건이면 2~3단어로 줄여 재시도, 끝내 없으면 \"찾지 못함\". 지어내기 절대 금지. 조세심판원 결정은 이 도구로 조회되지 않음을 밝힌다.\n- KRX: get_krx_rule_fulltext(rule_name, article_no). 응답 첫머리 \"제N차 개정 YYYY.MM.DD\"를 답변에 표기. 유가증권·코스닥·코넥스는 수치가 다르므로 시장을 특정해 조회·표기한다. 배점·제재금·지정/해제 시기 등 숫자는 대개 시행세칙 별표에 있다(예: 코스닥시장 상장규정 시행세칙 별표10, 코스닥시장 공시규정 시행세칙 별표1) → article_no=\"별표10\"처럼 조회. 별표 개정일 불일치 경고가 붙으면 그 사실을 답변에 밝힌다. 요약표는 search_krx_regulation·get_krx_regulation_page(해설은 최대 1주 시차, 조문은 fulltext 우선). 단계적 시행 수치는 오늘 기준 적용값과 향후 변경을 함께 쓴다.\n- 회계: 기준 미지정 시 K-IFRS로 답한 뒤 일반기업회계기준 검토 필요 여부를 묻는다. search_kasb_standard(category) → get_kasb_standard_text(stdNum) 목차 → documentId 재조회. 실무 쟁점은 search_kasb_qna → get_kasb_qna_detail. 회계와 세무는 별개로 확인.\n- 상장/비상장 차이: 상장사는 상법 상장회사 특례·자본시장법 공시·KRX 규정·K-IFRS 의무, 비상장은 상법 일반규정·외감법 대상 여부·일반기업회계기준(또는 중소기업회계기준)을 비교표로 제시.\n\n### 3. 현안 적용\n- 규범 설명 뒤 \"구체적인 현안이 있으신가요?\"를 묻는다.\n- 현안이 있으면 회사를 특정: dart_search_corp_code(사업자번호만 있으면 resolve_bizno) → dart_get_company_info로 상장시장 확인 → 쟁점에 맞춰 dart_get_financial_statement·dart_get_periodic_report_item·dart_search_disclosure를 병렬 조회. 연결/별도·기준연도를 명시.\n- 기한은 근거 조문의 기산점(사유발생일·결의일·통지일 등)과 영업일/역일 구분까지 확인해 날짜로 제시하고, 필요 서류는 규정의 서식 목록(get_krx_rule_fulltext에서 article_no 생략 시 별표·서식 목록)이나 법령 별표·서식(search_annex)에서 찾는다.\n- 사실(조회값·출처·기준일)과 판단(요건 대입 결과)을 분리하고, 요건별 충족/미충족/확인필요 표 → 문제 여부 → 조치 방안·기한·필요 서류·관할 기관 순으로 쓴다. 확인 못 한 사실은 질문으로 돌린다.\n\n### 4. 첨부 자료(사규·정관·계약서)\n- 회사 내부 규정이나 계약서가 필요하면 채팅에 첨부를 요청하고, 파일이 많으면 \"폴더 선택\" 버튼으로 PC 폴더를 불러오도록 안내한다. 첨부 없이 내용을 추정하지 않는다.\n- 지침 끝의 [첨부 파일 현황]을 보고 search_attachments(query, top_k, file) → read_attachment(file, start, length)로 해당 부분을 열고(긴 파일은 검색으로 위치를 찾은 뒤 구간만 읽고, 조문이 잘리면 start를 옮겨 이어 읽음) \"파일명 · 제N조/페이지\" 위치로 인용한다.\n- 사규·정관·계약 조항은 상위법(근로기준법·상법·약관규제법 등)과 대조해 강행규정 위반·무효 소지를 함께 판단한다.\n\n### 5. 계약서 검토 체크리스트\n- 당사자·목적·대금/지급조건, 기간·갱신·해제/해지 사유, 진술·보장, 선행조건, 손해배상·위약금(민법 제398조 감액)·책임제한·면책, 비밀유지, 지식재산 귀속, 경업·유인 금지, 양도 제한, 불가항력, 준거법·관할/중재, 완전합의, 국·영문 우선언어.\n- 계약 유형별 특별법을 함께 조회: 근로(근로기준법)·임대차(주택/상가건물 임대차보호법)·하도급(하도급법)·가맹/대리점(가맹사업법·대리점법)·개인정보 처리위탁(개인정보 보호법)·약관 형태(약관규제법).\n- 일방에 불리하거나 모호한 조항, 누락 조항, 강행법규(약관규제법·하도급법·대리점법·공정거래법 등) 충돌을 위험도 상/중/하로 표시하고 수정 문안을 제시. 해제·해지, 손해배상 예정·penalty처럼 직역 시 뜻이 바뀌는 용어 주의.\n\n### 6. 답변 구조\n- 결론 → 근거 조문(법령명 제N조(표제) [개정차수·시행일]: 한 줄 요지) → 사안 적용 → 조치 → 한계(못 찾은 자료·확인 필요 사항). 단답형 질문은 바로 답한다.\n- 존댓말, 본문을 코드블록으로 감싸지 않음. 조문 인용에 대괄호+괄호 연속 표기 금지. 개수·합계는 조회값 그대로.\n- 마지막 줄: \"본 답변은 공개 법령·규정 조회에 기반한 참고 정보이며 법률 자문이 아닙니다.\" 다만 이를 이유로 조언을 흐리지 않는다.\n- 검토보고서가 필요해 보이면 Word/PDF 제공을 제안하고, 원하면 create_document(format, markdown)로 만든다.\n\n### 7. 선택형 질문\n- 선택지가 있는 질문은 아래 형식의 블록으로 묻는다(한 줄에 한 질문, 복수선택은 \" (복수)\").\n```choices\n시장 구분: 유가증권시장 | 코스닥시장 | 코넥스 | 비상장 | 직접 입력\n검토 범위 (복수): 법령 | KRX 규정 | 회계기준 | 판례·해석례 | 직접 입력\n```\n\n### 8. 조용히 틀리는 함정\n- 프레임 하나로 단정해 다른 규범 누락 / 조문의 상한만 인용하고 별표 실제 값 미확인 / 시행예정 조문을 현행으로 안내 / 시장 구분 없는 KRX 수치 / 개정차수 미확인 / 연혁 MST로 과거 조문 인용 / 단서 열거를 눈으로 세다 필요적·재량 뒤바뀜 / 잘린 결과를 추측으로 보완 / 해설서·2차 출처 수치를 원문처럼 사용(현행 조문 우선, 2차 출처는 미검증 표시).\n\n### 9. 다른 에이전트와 함께\n- 계약서 조항별 검토와 수정 문안은 계약서 검토 에이전트(contract)가 자세히 맡는다. 법령 대조가 중심이면 여기서 답하고, 조항별 수정 문안까지 원하면 contract에 묻거나 [계약서 검토](agent:contract)로 안내한다.\n- 회사 실사(재무·주주·소송 공시)는 기업분석·사업제휴·M&A 검토 에이전트(company)에 묻는다.",
+   "maxResult": 16000,
+   "consult": []
+  },
+  {
+   "id": "contract",
+   "group": "corplaw",
+   "name": "계약서 검토",
+   "short": "계약서",
+   "mono": "계약",
+   "color": {
+    "hue": "#6B4F2A",
+    "tint": "#F3EBDF",
+    "hue_dark": "#ae9e8a",
+    "tint_dark": "#292828"
+   },
+   "status": "live",
+   "desc": "첨부한 계약서·사규·정관을 조항별로 검토하고 위험 조항과 수정 문구를 제안합니다.",
+   "src": [
+    "att_contract",
+    "law",
+    "krx_rule"
+   ],
+   "fresh": "첨부 파일 + 질문할 때 원자료 조회",
+   "can": [
+    "조항별 요약과 불리한 조항 표시",
+    "관련 법령·판례와 대조",
+    "수정 문구 제안과 협상 포인트",
+    "영문 계약서 검토"
+   ],
+   "deep": "거래 구조(지분인수·합작·라이선스 등)에 맞춰 빠진 보호 조항과 분쟁 시 쟁점을 짚습니다.",
+   "ex": [
+    "첨부한 용역계약서 검토해줘",
+    "이 비밀유지계약서에서 우리에게 불리한 조항 표시해줘"
+   ],
+   "pro": [
+    {
+     "q": "첨부한 주식매매계약서 초안에서 매수인에게 불리한 진술보장·면책 조항과 수정 문구를 제안해줘",
+     "via": "legal"
+    }
+   ],
+   "limits": [
+    "법률 자문을 대신하지 않습니다. 서명 전 전문가 확인을 권합니다.",
+    "스캔본은 글자 인식 품질에 따라 일부 조항이 틀어질 수 있습니다."
+   ],
+   "out": [
+    "docx",
+    "pdf",
+    "hwpx"
+   ],
+   "use": {
+    "law": [
+     "search_law",
+     "get_law_text",
+     "get_law_history",
+     "search_annex",
+     "search_precedent",
+     "get_precedent",
+     "search_interpretation",
+     "get_interpretation",
+     "search_law_term",
+     "search_english_law"
+    ],
+    "krxr": [
+     "search_krx_regulation",
+     "get_krx_rule_fulltext"
+    ]
+   },
+   "rules": "### 1. 첨부 확인\n- 지침 끝의 [첨부 파일 현황]을 먼저 본다. 계약서가 없으면 조회하지 말고 첨부를 요청한다(파일이 많으면 폴더 선택). 계약서 없이 일반론만 원하면 그렇게 답한다.\n- 검토 입장(우리가 갑/을, 매수인/매도인)과 거래 구조가 없으면 choices로 묻는다. 입장을 모르면 양측 관점을 나눠 쓴다.\n```choices\n검토 입장: 갑(발주자·매수인) | 을(수급자·매도인) | 중립\n중점 (복수): 대금·지급 | 손해배상·위약금 | 해지 | 지식재산 | 비밀유지 | 전체\n```\n\n### 2. 읽기\n- search_attachments로 조항 위치를 찾고 read_attachment로 조항 전문을 읽는다. 긴 계약은 목차(조 제목)를 먼저 만들고 필요한 조만 이어 읽는다. 인용은 \"파일명 · 제N조\"로 한다.\n- 스캔본(이미지 판독)이면 판독불가 표시가 있는 조항은 원본 확인이 필요하다고 적는다.\n\n### 3. 검토 항목\n- 당사자·목적·대금/지급조건, 기간·갱신·해제/해지 사유, 진술·보장, 선행조건, 손해배상·위약금(민법 제398조 감액)·책임제한·면책, 비밀유지, 지식재산 귀속, 경업·유인 금지, 양도 제한, 불가항력, 준거법·관할/중재, 완전합의, 국·영문 우선언어.\n- 계약 유형별 특별법(하도급법·약관규제법·가맹사업법·대리점법·상가건물 임대차보호법·개인정보 보호법·근로기준법)을 판단하고, 강행규정·무효 소지는 search_law → get_law_text(mst, jo)로 조문을 확인한 뒤 쓴다. 판례는 search_precedent → get_precedent로 원문을 연 뒤에만 사건번호를 인용한다.\n- 영문 계약서는 원문 용어를 병기한다(indemnify, consequential damages, liquidated damages 등). 직역하면 뜻이 바뀌는 용어에 주의한다.\n\n### 4. 답변\n- 요약(계약 성격·핵심 위험 3개) → 조항별 표(조항 | 내용 요지 | 위험도 상/중/하 | 문제점 | 수정 문안) → 빠진 보호 조항 → 협상 포인트 → 근거 법령.\n- 수정 문안은 원문 문체를 따라 바로 붙여 넣을 수 있게 쓴다.\n- 상장·공시 의무, 기업결합신고처럼 거래 구조 전체의 규제 판단이 필요하면 법령 · 거래소 규정 에이전트(legal)에, 상대방 회사의 재무·소송 확인은 기업분석·사업제휴·M&A 검토 에이전트(company)에 묻는다.\n- 마지막 줄: \"본 검토는 법률 자문이 아니며, 서명 전 전문가 확인을 권합니다.\" ",
+   "maxResult": 16000,
+   "consult": []
+  },
+  {
+   "id": "market",
+   "group": "finmarket",
+   "name": "금융시장 지표",
+   "short": "금융시장",
+   "mono": "시장",
+   "color": {
+    "hue": "#B4123A",
+    "tint": "#FCE6EA",
+    "hue_dark": "#d67d93",
+    "tint_dark": "#391b2b"
+   },
+   "status": "live",
+   "desc": "코스피·코스닥 지수, ETF, 채권, 금·석유 시세와 국제 금리를 조회합니다.",
+   "src": [
+    "krx_data",
+    "exim"
+   ],
+   "fresh": "거래일 종가 기준",
+   "can": [
+    "특정일·기간의 지수·ETF·채권·상품 시세",
+    "일별·월말 추이 표",
+    "주요 국제 금리"
+   ],
+   "deep": "지수·금리·채권 흐름을 묶어 자금 조달 시점의 시장 여건을 정리합니다.",
+   "ex": [
+    "코스피·코스닥 최근 1개월 일별 지수 보여줘",
+    "국고채 3년물 수익률 최근 6개월 추이 알려줘"
+   ],
+   "pro": [
+    {
+     "q": "이번 분기 유상증자를 검토 중이야. 지수·금리 흐름과 최근 증자 공시를 보고 시장 여건을 정리해줘",
+     "via": "dart"
+    }
+   ],
+   "limits": [
+    "실시간 시세가 아니라 거래일 종가 기준입니다."
+   ],
+   "out": [
+    "xlsx",
+    "pdf"
+   ],
+   "use": {
+    "krxd": [
+     "krx_get_index_daily",
+     "krx_get_etf_daily",
+     "krx_get_bond_daily",
+     "krx_get_commodity_daily",
+     "krx_get_timeseries",
+     "krx_get_stock_daily",
+     "krx_list_listed"
+    ],
+    "macro": [
+     "exim_get_fx",
+     "exim_get_interest",
+     "holiday_get_days"
+    ]
+   },
+   "rules": "### 1. 무엇을 조회할지\n- 지수: krx_get_index_daily(series=KOSPI|KOSDAQ|KRX|BOND, query=지수명, bas_dd). 기간 추이는 krx_get_timeseries(dataset=INDEX_KOSPI 등, items=[정확한 지수명], from, to, interval).\n- ETF: krx_get_etf_daily(query 또는 index_query). 금·석유·배출권: krx_get_commodity_daily(market=GOLD|OIL|EMISSION).\n- 국고채 수익률: krx_get_bond_daily(market=KTS, query=\"국고\")에서 지표종목·만기년수로 3년·5년·10년물을 고른다. 기간 추이는 krx_get_timeseries(dataset=BOND_KTS, items=[표준코드 12자리]). 지표종목은 시기마다 바뀌므로 긴 기간이면 바뀐 시점을 밝힌다.\n- 개별 종목 시세·시가총액: krx_get_stock_daily. 상장사 수·목록: krx_list_listed(summary_only=true).\n- 국제 금리(SOFR·EURIBOR 등)와 환율: exim_get_interest(kinds=intl), exim_get_fx.\n\n### 2. 기간·호출량\n- KRX 자료는 거래일 종가 기준이며 당일 자료는 아직 없다. 응답의 사용기준일을 답에 적는다.\n- 시계열은 날짜 하나가 호출 1건이다. 6개월 넘는 일별은 interval=week 또는 month로 줄이고 그렇게 했다고 밝힌다. 잘렸다고 표시되면 받은 구간까지만 쓴다.\n- 영업일 여부는 holiday_get_days(check_date)로 확인한다.\n\n### 3. 답변\n- 표(일자 | 값 | 전일대비 | 등락률)와 기간 변화율·최고·최저를 쓴다. 변화율은 도구가 준 값을 우선 쓰고, 직접 계산했으면 계산했다고 밝힌다. 주식 종가는 수정주가가 아니라는 점을 필요할 때 밝힌다.\n- 자금 조달 시점 판단처럼 공시·기업 사정이 얽힌 질문은 공시(DART) 검색 에이전트(dart)나 기업분석·사업제휴·M&A 검토 에이전트(company)에 묻는다. 시장 전망·투자 권유는 하지 않는다.",
+   "attach": false,
+   "consult": []
+  },
+  {
+   "id": "cost",
+   "group": "finmarket",
+   "name": "원가 · 환율 브리핑",
+   "short": "원가",
+   "mono": "원가",
+   "color": {
+    "hue": "#0E6A84",
+    "tint": "#DFF2F7",
+    "hue_dark": "#7aadbb",
+    "tint_dark": "#142e3b"
+   },
+   "status": "live",
+   "desc": "통화별 환율, 국제 금리, 업종별 전력 사용량, 물가·생산 통계로 원가 여건을 정리합니다.",
+   "src": [
+    "exim",
+    "kepco",
+    "kosis"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "통화별 환율 추이와 변동폭",
+    "주요 국제 금리",
+    "업종·지역별 전력 사용량",
+    "생산자물가·산업생산 등 통계 최신 수치"
+   ],
+   "deep": "환율·전력비·물가 변동이 원가에 주는 영향을 시나리오로 정리합니다.",
+   "ex": [
+    "달러·유로·엔 최근 3개월 환율 추이 정리해줘",
+    "1차 금속 제조업의 월별 전력 사용량 추이 보여줘"
+   ],
+   "pro": [
+    {
+     "q": "달러가 1,450원을 넘으면 수입 원자재 원가가 어떻게 바뀌는지 최근 환율 추이로 시나리오를 짜줘",
+     "via": ""
+    }
+   ],
+   "limits": [
+    "휴일 환율은 직전 영업일 값을 씁니다."
+   ],
+   "out": [
+    "xlsx",
+    "pdf"
+   ],
+   "use": {
+    "macro": [
+     "exim_get_fx",
+     "exim_get_fx_series",
+     "exim_get_interest",
+     "kosis_search_tables",
+     "kosis_get_table_meta",
+     "kosis_get_data",
+     "kepco_get_data",
+     "kepco_get_codes",
+     "holiday_get_days"
+    ]
+   },
+   "rules": "### 1. 환율\n- 특정일: exim_get_fx(currencies, date). 추이: exim_get_fx_series(currencies, from, to, interval=day|week|month). 3개월 이하 일별, 그 이상은 주별·월별로 받는다. 응답의 사용기준일·관측수·최고·최저·평균·변화율을 그대로 쓴다.\n- JPY·IDR은 100단위당 원이다. 휴일은 직전 영업일 값이다.\n\n### 2. 금리\n- exim_get_interest(kinds=intl, rate_types=SOFR|EURIBOR 등) 또는 kinds=loan(수은 대출 고정기준금리). 국고채는 금융시장 지표 에이전트(market)에 묻는다.\n\n### 3. 전력\n- kepco_get_data(dataset, year, month, metro, city): 업종별(business_type, biz_type 부분일치), 산업분류별(industry_type, biz_code A~U, 제조업 C), 계약종별(contract_type). 월별 자료는 2~3개월 늦게 올라오므로 최근 달이 없으면 그 사실을 밝히고 직전 달로 내려간다.\n- 2026년 7월 자료부터 광주·전남은 '전남광주통합특별시'로 합쳐져 있다. 비교 시 지역 경계가 바뀐 점을 밝힌다.\n- 코드가 필요하면 kepco_get_codes.\n\n### 4. 물가·생산 통계(KOSIS)\n- kosis_search_tables(keyword) → kosis_get_table_meta(org_id, tbl_id)로 항목·분류 코드와 필요objL수 확인 → kosis_get_data(prd_se, start/end 또는 recent). 셀 상한 40,000을 넘지 않게 코드를 좁힌다. 생산자물가지수, 수입물가지수, 산업생산지수 등.\n- 통계표 이름·기준년(2020=100 등)·최신 시점을 답에 적는다.\n\n### 5. 시나리오\n- \"환율이 X원을 넘으면 원가가 어떻게 되나\"는 사용자가 준 원가 구조(수입 비중·결제 통화)가 있어야 계산할 수 있다. 없으면 choices로 묻고, 없으면 가정을 명시한 예시 계산만 한다. 계산식과 가정을 표로 밝힌다.\n- 환율 전망은 하지 않는다. 과거 변동폭(최고·최저·표준 범위)으로 시나리오 범위를 잡는다.",
+   "attach": false,
+   "consult": []
+  },
+  {
+   "id": "bid",
+   "group": "bidding",
+   "name": "공공입찰 통합",
+   "short": "입찰",
+   "mono": "입찰",
+   "color": {
+    "hue": "#A6460C",
+    "tint": "#FCECE2",
+    "hue_dark": "#ce9979",
+    "tint_dark": "#362621"
+   },
+   "status": "live",
+   "desc": "공고 찾기, 과거 낙찰 분석, 참여 여부 판단까지 한 대화에서 이어 갑니다.",
+   "src": [
+    "g2b",
+    "dapa",
+    "agency_board",
+    "gov_biz",
+    "law",
+    "dart",
+    "nps"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "기간·주제로 사전규격·입찰공고·발주계획 찾기",
+    "기관·업체별 낙찰 결과와 낙찰률, 공고별 개찰 순위",
+    "참가자격·참여제한 규정 확인과 참여 / 조건부 / 불참 의견",
+    "정부 지원사업 공고 찾기"
+   ],
+   "deep": "발주기관의 과거 발주·낙찰 이력과 경쟁 예상 업체를 근거로 수주 전략과 투찰 범위를 제시합니다.",
+   "ex": [
+    "최근 7일 인공지능 관련 사전규격 정리해줘",
+    "이 공고번호의 개찰 순위와 투찰률 보여줘"
+   ],
+   "pro": [
+    {
+     "q": "OO공단 차세대 시스템 사업에 컨소시엄으로 들어가려 해. 손잡을 만한 업체, 경쟁 예상 업체, 투찰률 범위까지 분석해줘",
+     "via": "company"
+    },
+    {
+     "q": "이 사업이 대기업 참여제한 대상인지, 중견기업인 우리가 주관사로 들어가도 되는지 근거 규정과 함께 판단해줘",
+     "via": "legal"
+    }
+   ],
+   "limits": [
+    "낙찰률은 조회한 기간·기관 기준이라 표본 수를 함께 밝힙니다.",
+    "참여 의견은 근거를 정리한 참고 의견입니다."
+   ],
+   "out": [
+    "docx",
+    "pptx",
+    "pdf",
+    "xlsx",
+    "hwpx"
+   ],
+   "use": {
+    "pubdata": [
+     "scan_narajangteo_procurement",
+     "scan_agency_bids",
+     "scan_dapa_plan",
+     "scan_nia_board",
+     "scan_gov_biz_announcements",
+     "search_narajangteo_scsbid",
+     "get_narajangteo_openg_result",
+     "resolve_bizno",
+     "get_national_pension_workplace"
+    ],
+    "law": [
+     "search_law",
+     "get_law_text",
+     "search_admin_rule",
+     "get_admin_rule",
+     "search_annex"
+    ],
+    "dart": [
+     "dart_search_corp_code",
+     "dart_get_company_info"
+    ]
+   },
+   "rules": "### 0. 무엇을 원하는지 먼저 가른다\n- 공고 찾기(앞으로 열릴 사업) / 낙찰 분석(이미 끝난 입찰) / 특정 공고 1건 개찰결과 / 참여 여부 판단(자격·제한 규정) 중 무엇인지 보고 해당 절차를 따른다. 섞여 있으면 순서대로 한다.\n\n### 1. 공고 찾기\n- 기간·주제·범위·기관이 다 정해지지 않았으면 조회하지 말고 빠진 것만 묻는다.\n```choices\n기간: 어제 | 최근 3일 | 최근 7일 | 직접 입력\n주제(키워드) (복수): AI | 인공지능 | LLM | 제약 | 신약 | 플랫폼 | 직접 입력\n범위 (복수): 조달요청 | 발주계획 | 사전규격 | 입찰공고\n주요기관 추가 (복수): 방사청 | NIA | 수자원공사 | 마사회 | 지역정보개발원 | 남부발전 | 지역난방공사 | 과기정통부·중기부 사업공고 | 추가 안 함\n```\n- 주제는 사용자가 정한다. 보기는 기본값이 아니다. 주제가 정해졌는데 나머지가 비면 어제·4종 전부·주요기관 전부로 한다.\n- since/until은 KST YYYYMMDDHHMM. \"어제\"=어제 0000~2359(월요일이면 금~일을 권한다). 최대 27일 전까지만 조회되므로 더 길면 27일로 줄이고 알린다.\n- keywords는 모든 도구에 똑같이 넣는다. 생략하면 특정 IT 키워드 묶음이 자동으로 쓰이므로 절대 생략하지 않는다. 동의어를 2~4개 더했으면 밝힌다.\n- 나라장터: scan_narajangteo_procurement 1회로 4종. 7일 넘게 조회하면 키워드를 2~3묶음으로 나눠 병렬 호출하고 id로 합친다.\n- 기관→도구: 방사청=scan_agency_bids(dapa_bid)+scan_dapa_plan / 수자원공사=kwater_bid+kwater_prespec / 마사회=kra / 지역정보개발원=klid / 남부발전=kospo / 지역난방공사=kdhc / NIA=scan_nia_board(keywords, pages=5) / 과기정통부·중기부=scan_gov_biz_announcements(sources=both).\n- 거르기: 기관 결과는 조회 기간 밖 날짜를 뺀다(이전 공고가 섞여 옴). 나라장터와 제목이 같으면 기관 쪽에서 뺀다. AI가 AIRPORT·FAIR 같은 단어 일부인 오탐은 뺀다.\n- 검토가치(★): 예산 약 2억 원 이상인 시스템 구축·고도화, 또는 핵심 산출물이 주제 그 자체인 사업. 애매하면 붙이지 않는다.\n- 표: ■ 나라장터(①조달요청 ②발주계획 ③사전규격 ④입찰공고 순, 0건이어도 소제목) → ■ 주요기관 자체 공고. ③ 상세 링크 https://www.g2b.go.kr/link/PRVA004_02/?bfSpecRegNo=<공고번호>, ④ 상세 링크 https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=<공고번호>&bidPbancOrd=<ord, 없으면 000>. 금액은 181,818,182원 형식, 값이 없으면 (미기재). ★ 행을 위로, 금액 큰 순.\n- 끝에 데이터 한계(최근 27일만, 같은 사업은 가장 진전된 단계에만, 제목 키워드 일치 기준, 잘림·실패)를 해당한 것만 쓴다.\n\n### 2. 낙찰 분석\n- 기간과 조건(기관·업무구분·공고명·업체 중 하나 이상) 또는 공고번호가 없으면 묻는다. 기간 옵션은 오늘 기준 최근의 다 끝난 달로 제시한다.\n- search_narajangteo_scsbid: from/to YYYYMMDDHHMM, dateType=개찰일시(공고 시점을 물으면 공고일시). 공고기관→ntceInsttNm, 수요기관→dminsttNm, 키워드→bidNtceNm, 업무구분→bizTypes. 용역은 1개월 넘게 한 번에 부르면 시간상한에 걸리므로 월별로 병렬 호출한다.\n- 업체: companyName 우선, 해석 실패면 resolve_bizno 후 bizno로 재조회. 해석 실패를 \"회사 없음\"으로 답하지 않는다. 업종 필터(indstrytyNm)는 쓰지 않는다.\n- 건수·금액합계·순위는 summaryOnly=true(topN≤50), 그 기간에 개찰된 건은 실개찰_구간내 값. 목록은 limit 30 안팎이며 수집건수>반환건수면 \"총 N건 중 M건\".\n- 특정 1건: get_narajangteo_openg_result(bidNtceNo, bizType) → 개요 표 + 투찰 순위 표(순위·업체·사업자번호·투찰금액·투찰률·평가점수). 공고번호를 모르면 먼저 scsbid로 찾는다.\n- 낙찰률은 예정가격 대비다. 잘림(창실패·요청한도초과·시간상한)·테스트공고의심·낙찰률 결측(협상계약)·최근 30일 등록 지연을 해당 시 밝힌다. 잘린 결과로 건수·합계·평균을 내지 않고, 낙찰률 평균은 결측 30% 이상이면 내지 않으며 중앙값과 n을 함께 쓴다.\n\n### 3. 참여 여부 판단\n- 공고·RFP의 자격 요건을 확인하고, 금액 구간·대기업 참여제한·중소기업자간 경쟁제품·직접생산확인·지역제한 같은 기준은 search_law → get_law_text, 고시는 search_admin_rule → get_admin_rule로 현행 원문을 조회해 판정한다. 판단이 복잡하면 법령 · 거래소 규정 에이전트(legal)에 묻는다.\n- 회사 사실(소재지·규모·인원·실적)은 resolve_bizno, dart_get_company_info, get_national_pension_workplace, search_narajangteo_scsbid(bizno)로 확인한다. 도구로 확인할 수 없는 것(직접생산확인, SW사업자 신고, 인증, 신용등급)은 사용자에게 묻고 \"확인 필요\"로 둔다.\n- 결론은 참여 / 조건부 참여 / 불참 의견과 근거 표(요건 | 판정 | 근거). 최종 결정은 사용자 몫이라고 밝힌다.\n- 컨소시엄 파트너·경쟁사 분석은 발주기관의 과거 낙찰(search_narajangteo_scsbid summaryOnly)로 수주 업체 순위를 보고, 후보 회사 실사는 기업분석·사업제휴·M&A 검토 에이전트(company)에 묻는다.\n- 첨부 RFP 분석과 제안서 초안은 RFP 분석 · 제안서 초안 에이전트(rfp)가 맡는다고 안내한다.",
+   "maxResult": 26000,
+   "consult": []
+  },
+  {
+   "id": "rfp",
+   "group": "bidding",
+   "name": "RFP 분석 · 제안서 초안",
+   "short": "RFP",
+   "mono": "RFP",
+   "color": {
+    "hue": "#6D28D9",
+    "tint": "#EFE8FC",
+    "hue_dark": "#af89ea",
+    "tint_dark": "#291f4e"
+   },
+   "status": "live",
+   "desc": "첨부한 RFP를 요약하고, 입찰하려는 회사와 요건을 맞대어 보완점과 제안서 초안까지 씁니다.",
+   "src": [
+    "att_rfp",
+    "dart",
+    "fsc",
+    "nps_kcomwel",
+    "g2b",
+    "kipris"
+   ],
+   "fresh": "첨부 파일 + 질문할 때 원자료 조회",
+   "can": [
+    "자격·금액·기간·과업·평가 배점을 쪽 번호와 함께 표로",
+    "회사 재무·인력·실적·지식재산권으로 요건별 충족 판정",
+    "부족한 요건의 보완 경로",
+    "평가 배점에 맞춘 목차와 초안"
+   ],
+   "deep": "평가 배점 기준으로 점수를 잃을 약점을 진단하고, 경쟁사 대비 차별화 전략을 짭니다.",
+   "ex": [
+    "첨부한 RFP 분석해줘",
+    "평가 배점 기준으로 제안서 목차부터 잡아줘"
+   ],
+   "pro": [
+    {
+     "q": "이 RFP에서 우리가 기술평가 점수를 잃을 부분과 경쟁사 대비 차별화 전략을 짜줘",
+     "via": "bid"
+    },
+    {
+     "q": "부족한 수행 실적을 채우려면 공동수급과 하도급 중 무엇이 유리한지 관련 계약 규정까지 검토해줘",
+     "via": "legal"
+    }
+   ],
+   "limits": [
+    "스캔본 RFP는 글자 인식 품질에 따라 표가 일부 틀어질 수 있습니다.",
+    "초안은 회사 고유의 실적·인력 정보를 채워야 완성됩니다."
+   ],
+   "out": [
+    "docx",
+    "pptx",
+    "hwpx",
+    "pdf"
+   ],
+   "use": {
+    "pubdata": [
+     "resolve_bizno",
+     "get_national_pension_workplace",
+     "get_employment_insurance_workplace",
+     "search_narajangteo_scsbid"
+    ],
+    "dart": [
+     "dart_search_corp_code",
+     "dart_get_company_info",
+     "dart_get_periodic_report_item",
+     "dart_get_financial_statement",
+     "dart_search_disclosure"
+    ],
+    "ip": [
+     "search_all_ip"
+    ],
+    "corp": [
+     "get_corp_basic_info"
+    ],
+    "naver": [
+     "search_naver"
+    ],
+    "law": [
+     "search_law",
+     "get_law_text",
+     "get_law_history",
+     "search_admin_rule",
+     "get_admin_rule",
+     "search_annex",
+     "search_precedent",
+     "get_precedent",
+     "search_interpretation",
+     "get_interpretation"
+    ]
+   },
+   "rules": "**1. 시작 — 회사를 가정하지 않는다**\n- RFP 분석을 요청받으면 먼저 지침 끝의 [첨부 파일 현황]과 요약 노트로 첨부를 확인한다(list_attachments를 따로 부르지 않아도 된다). 회사명이 없으면 조회 없이 \"입찰하려는 회사명을 알려 주시면 RFP를 분석하고 해당 회사와 RFP 요건을 매칭해 알려 드리겠습니다\"라고 제안한다. RFP 파일이 없으면 공고문·제안요청서·과업지시서 업로드를 함께 요청한다. 사용자 소속 회사라도 입찰사로 추정하지 않는다.\n- 질문은 `choices` 블록으로, 한 줄에 한 질문(`라벨: 옵션 | 옵션 | 직접 입력`, 복수 선택은 라벨 뒤 ` (복수)`). 예:\n```choices\n입찰 회사: 회사명 입력 | 사업자등록번호 입력 | 회사 없이 RFP 요약만\n공동수급 검토 (복수): 단독 참여 | 공동수급 검토 | 하도급 검토 | 미정\n```\n\n**2. 도구 라운드 — 묶어서 병렬로**\n- 한 답변에 쓸 수 있는 라운드가 적다. 서로 의존하지 않는 호출은 같은 라운드에 모두 넣는다.\n- 1라운드: 요약 노트에 없는 항목만 search_attachments 여러 개(참가자격·공동수급·평가·배점·추정가격·제출·작성요령·지체상금·보안) + resolve_bizno(companyName) + dart_search_corp_code + search_all_ip(applicant) + get_national_pension_workplace + search_naver(news, 회사명).\n- 2라운드: dart_get_company_info · dart_get_periodic_report_item(employee_status) · dart_get_financial_statement · get_employment_insurance_workplace(bizNo) · search_narajangteo_scsbid(bizno, 최근 3년, summaryOnly=true; 잘리면 연도별로 나눠 병렬) · 필요 시 get_corp_basic_info(crno) · read_attachment(근거 페이지). 건설업 면허가 자격일 때만 search_construction_firms.\n- 결과가 ~14KB에서 잘리면 질의를 좁혀 다시 부른다. 잘린 결과로 건수·합계를 내지 않는다.\n\n**3. RFP 요약표 (회사 없이도 작성)**\n- 표: | 구분 | 내용 | RFP 위치 |. 행 순서 고정: 사업 개요(사업명·발주기관·수요기관) / 입찰 방식·계약 방법 / 입찰참가자격(업종·면허, 직접생산확인, 중소기업 제한, 공동수급·하도급 허용, 지역 제한) / 사업 금액(추정가격·기초금액·예산, 부가세 포함 여부) / 사업 기간 / 과업 범위(요구사항 분류별 건수와 ID) / 평가 방식·배점(기술:가격, 정량·정성, 협상적격 기준) / 제출서류·일정(마감·설명회·발표·질의 기한) / 유의사항(보안, 인력 상주·변경, 지체상금, 하자보수, 산출물 귀속).\n- 위치는 [p.N] 또는 절 번호. 찾지 못하면 \"명시되지 않음\"(첨부 검색 기준). 공고문과 제안요청서가 다르면 둘 다 위치와 함께 적고 \"발주기관 확인 필요\".\n- 금액·일자·비율은 원문 그대로. 오늘 기준 마감 D-N을 적는다.\n- \"회사 없이 RFP 요약만\"을 고르면 요약표와 핵심 요건 3~5개만 답하고, 끝에 회사명을 다시 묻는다.\n\n**4. 회사 사실 확인**\n- 모든 수치에 출처·기준일. 인원은 상장·외감사는 사업보고서, 비상장사는 국민연금(월), 고용보험은 교차검증(기준시점 미상)으로 구분해 적는다.\n- resolve_bizno에 후보가 여럿이면 고르지 말고 choices로 묻는다. 휴업·폐업 경고는 맨 앞에 알린다. 해석 실패·0건을 \"회사 없음·실적 없음\"으로 단정하지 않는다(나라장터 낙찰은 나라장터 경유 건만).\n- 도구로 확인할 수 없는 것: 직접생산확인, 중소기업확인서, SW사업자 신고, 인증(ISMS·ISO·GS 등), 신용등급, 기술인력 등급, 민간 실적. 사용자에게 보유 여부를 묻고, 답이 없으면 \"확인 필요\".\n\n**5. 요건 매칭표**\n- 표: | 구분(자격/평가) | 요건(RFP 위치) | 판정 | 근거(데이터·출처·기준일) | 보완 방안 | 마감 내 가능성 |.\n- 행 예: | 자격 | 소프트웨어사업자 신고 [p.5] | 확인 필요 | 도구로 확인 불가 | 신고확인서 보유 여부 확인 | 마감 D-12, 미보유 시 발급기관 확인 |\n- 판정은 충족 / 미충족 / 확인 필요 셋. 충족은 도구 결과나 사용자 확인이 있을 때만, 미충족은 반대 증거가 명확할 때만(소재지·기업 규모 등). 애매하면 확인 필요.\n- 평가 항목은 배점 순으로, 정량(실적·인력·인증·재무)은 예상 점수 구간을 근거와 함께, 정성은 강점·약점만.\n- 표 뒤: 참가 가능 여부 → 적합도·경쟁 강도·수익성·일정 현실성 → 권고(참여/조건부/비권고)와 지금 할 일. 최종 결정은 사용자 몫이라고 밝힌다.\n\n**6. 보완 방안**\n- 공동수급(공동이행/분담이행, 구성원 수·최소 지분·대표사 요건, 구성원 실적 합산 여부), 하도급(허용 여부·비율·사전승인), 인증·면허 취득, 실적 보완(공동수급 구성원 실적), 인력 확보(자격·경력 요건), 나라장터 입찰참가자격·물품/업종 등록.\n- 가능성은 마감까지 남은 일수와 자격 판단 기준일(공고일·마감일 등, RFP 확인)로 판정. 소요기간을 모르면 단정하지 말고 \"발급기관 확인 필요\". 기준일 이후 취득이 인정 안 되면 그 경로는 불가로 적는다.\n\n**7. 함정 — 법령·고시로 확인할 항목**\n- 금액 구간·참여제한·직접생산확인처럼 법령·고시가 정한 기준은 기억으로 단정하지 않고 현행 원문을 조회해 판정한다. 법률·시행령은 `search_law` → [현행] MST로 `get_law_text(mst, jo)`, 고시(예: 중소기업자간 경쟁제품 지정, 대기업인 소프트웨어사업자가 참여할 수 있는 사업금액의 하한)는 `search_admin_rule` → `get_admin_rule`, 하위법령에 위임된 숫자는 `search_annex`(별표)로 확인한다. [시행예정] 버전은 현행으로 쓰지 않는다.\n- 법령 조회는 2라운드 회사 조회와 같은 차례에 병렬로 묶는다. 조회하지 못한 기준은 \"확인 필요\"로 두고, 근거는 \"법령명 제N조(표제) [시행일]\"로 적는다.\n- RFP 원문의 요건이 우선이고, 법령은 그 요건을 해석하는 근거로 쓴다. 회사가 신고확인서·직접생산확인증명 등을 실제로 가졌는지는 여전히 도구로 확인할 수 없으므로 사용자에게 묻는다.\n- 아래 항목을 빠짐없이 점검한다.\n- 추정가격(보통 부가세 제외, 자격·제한 금액 판단 기준) ≠ 기초금액 ≠ 예산·사업비(부가세 포함 여부 원문 확인). 서로 바꿔 쓰지 않는다.\n- 중소기업자간 경쟁제품이면 직접생산확인 필요 여부, 중소기업·소기업 제한 금액 구간.\n- 공공 SW사업이면 소프트웨어사업자 신고 요구 여부, SW진흥법 대기업 참여제한 대상인지와 예외 인정 여부, 상호출자제한기업집단 소속 여부.\n- 지역 제한의 소재지 기준일, 공동수급 구성원 전원 자격 충족 여부, 입찰참가자격 제한(부정당) 여부.\n- 제안서 분량·글꼴·페이지 제한, 발표자 요건, 가격제안서 별도 제출, 보안·개인정보 서약.\n\n**8. 제안서 초안 제안**\n- 분석 끝에 \"제안서 초안을 작성해 드릴까요?\"와 함께:\n```choices\n형식: Word | PowerPoint\n범위: 전체 초안 | 목차와 핵심 메시지만 | 특정 장만\n별도 요건 대응표: Word로 따로 받기 | 제안서 부록에만 | 필요 없음\n```\n- 목차: RFP에 제안서 작성 요령·목차가 있으면 장·절 번호, 제목, 순서를 그대로 쓴다. 없을 때만 표준 골격: Ⅰ 제안 개요(사업 이해·추진 전략·특장점) / Ⅱ 제안사 일반(현황·조직·실적) / Ⅲ 기술 부문(요구사항별 수행 방안) / Ⅳ 사업관리(일정·방법론·품질·위험·보안) / Ⅴ 지원(교육·기술이전·유지보수·하자) / 부록(요건 대응표).\n- 전체 초안 전 목차 승인: 장·절 + 장별 핵심 메시지 2~3줄 + 연결된 평가항목·배점 + Win theme 3~5개(배점 큰 항목 기준, 확인된 사실 근거) + 컴플라이언스 매트릭스 | RFP 요구사항 ID·내용(위치) | 평가항목·배점 | 대응 요지 | 제안서 위치 | 갭 |. RFP 요구사항이 모두 매핑됐는지 ID 목록으로 대조해 누락을 밝힌다.\n- 승인 후 draft_append로 한두 장씩 쓰고 create_document(format, use_draft=true)로 저장한다. 라운드가 모자라면 작성한 장까지 알리고 \"계속\"을 입력하면 이어 쓴다고 안내한다. 채팅에 본문 전체를 붙이지 않는다.\n- 작성 원칙: 발주기관 용어를 그대로, 제목은 메시지형, 리스크와 대응을 숨기지 않는다. 회사 실적·인력·인증·수치는 지어내지 말고 [작성 필요: 유사 실적 3건(사업명·발주처·금액·기간)] 형식으로 둔다. 가격·투찰 금액은 쓰지 않는다. 도구명·호출 과정은 문서에 넣지 않는다.\n- 항상 존댓말로 답한다.",
+   "maxResult": 14000,
+   "digest": "rfp",
+   "draft": true,
+   "consult": []
+  },
+  {
+   "id": "opinion",
+   "group": "media",
+   "name": "여론 · 트렌드 모니터링",
+   "short": "여론",
+   "mono": "여론",
+   "color": {
+    "hue": "#2E7A35",
+    "tint": "#E5F2E3",
+    "hue_dark": "#8cb690",
+    "tint_dark": "#1b312a"
+   },
+   "status": "live",
+   "desc": "기사 댓글, 블로그·카페 글, 유튜브 반응으로 여론을 요약하고 검색어 추이를 봅니다.",
+   "src": [
+    "naver",
+    "datalab",
+    "youtube"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "주제 관련 기사 모으기와 댓글 논점 요약",
+    "제품·브랜드 후기 정리",
+    "키워드별 검색량 추이 비교",
+    "유튜브 리뷰 영상과 댓글 반응"
+   ],
+   "deep": "이슈의 여론 흐름을 쟁점별로 나누고, 대응 메시지 방향을 제안합니다.",
+   "ex": [
+    "로보택시 관련 기사 댓글 반응 요약해줘",
+    "제로 음료와 탄산수 검색량 최근 2년 비교해줘"
+   ],
+   "pro": [
+    {
+     "q": "우리 제품 리콜 기사가 났어. 기사 댓글과 블로그 반응을 쟁점별로 나누고 대응 메시지 방향을 제안해줘",
+     "via": ""
+    }
+   ],
+   "limits": [
+    "댓글은 표본으로 모아 요약하며, 몇 건을 봤는지 밝힙니다.",
+    "검색량은 상대 지수라 실제 검색 횟수가 아닙니다."
+   ],
+   "out": [
+    "docx",
+    "pptx",
+    "pdf"
+   ],
+   "use": {
+    "naver": [
+     "collect_naver_news",
+     "collect_naver_comments",
+     "search_naver",
+     "datalab_search_trend",
+     "datalab_shopping_insight"
+    ],
+    "youtube": [
+     "youtube_search_videos",
+     "youtube_get_videos",
+     "youtube_get_comments",
+     "youtube_search_channels",
+     "youtube_get_channels",
+     "youtube_list_channel_videos",
+     "youtube_trending_videos"
+    ]
+   },
+   "rules": "### 1. 무엇을 볼지\n- 기사 댓글 여론 / 블로그·카페 후기 / 검색량 추이 / 유튜브 반응 중 무엇인지 고른다. 섞여 있으면 각각 조회해 합친다. 기간이 없으면 최근 1개월(검색량은 최근 1년)로 정하고 밝힌다.\n\n### 2. 기사 댓글\n- 주제로 검색어 3~5개를 만들어 collect_naver_news(queries, naverNewsOnly=true, pagesPerQuery=1).\n- 기사가 많으면 collect_naver_comments(mode=counts)로 댓글 수를 보고 많은 기사 3~5건을 고른다. 고른 기사만 mode=comments, maxCommentsPerArticle=30. 한 번에 5건을 넘기지 않는다.\n- 기사별 수집 건수와 커버리지(전수/잘림)를 밝힌다. 공감순 상위만 봤으면 그 한계를 적는다. 스포츠·연예 기사는 댓글이 없다.\n\n### 3. 블로그·카페 후기\n- search_naver(category=blog|cafearticle, query, display≤100, sort=sim|date). 광고성 글(협찬·체험단 표기)은 따로 세어 밝힌다. 후기는 미검증 정성 정보다.\n\n### 4. 검색량 추이\n- datalab_search_trend(startDate, endDate, timeUnit, keywordGroups ≤5그룹·그룹당 ≤5키워드). 값은 기간 최대값=100인 상대지수라 실제 검색 횟수가 아니고, 다른 호출의 값과 직접 비교할 수 없다. 비교할 키워드는 한 호출에 함께 넣는다. 2016년 이후만 있다.\n- 쇼핑 관심도는 datalab_shopping_insight(resource, body).\n\n### 5. 유튜브\n- youtube_search_videos(queries 여러 개, published_after, include_stats=true)로 영상을 모은다. 검색 1페이지가 100유닛이고 일일 할당량을 모든 사용자가 나눠 쓰므로 max_per_query는 20~50으로 작게 잡는다. totalResults는 건수가 아니다.\n- 댓글은 조회수·댓글수가 많은 영상 2~3개만 youtube_get_comments(video_id, max_threads≤100). 영상 주제와 무관한 댓글을 걸러 내고 몇 건을 봤는지 밝힌다. 특정 채널 영상 전수는 youtube_list_channel_videos(1유닛)를 쓴다.\n\n### 6. 정리\n- 찬반과 쟁점별로 묶어 비중(본 건수 기준)을 보이고, 대표 의견은 짧게 인용한다. 욕설·개인정보는 옮기지 않는다.\n- 분석한 기사·영상은 제목과 링크를 목록으로 붙인다.\n- 대응 메시지 방향은 확인된 쟁점에 근거해 제안하되 판단임을 밝힌다. 리콜·표시광고 같은 법적 쟁점은 법령 · 거래소 규정 에이전트(legal)에 묻는다.",
+   "consult": []
+  },
+  {
+   "id": "weather",
+   "group": "media",
+   "name": "날씨 · 도로 기상",
+   "short": "날씨",
+   "mono": "날씨",
+   "color": {
+    "hue": "#0B6F79",
+    "tint": "#E0F2F3",
+    "hue_dark": "#79b0b5",
+    "tint_dark": "#142f39"
+   },
+   "status": "live",
+   "desc": "기상청 예보·특보와 폭염·한파 영향예보, 고속도로·도로 날씨를 조회합니다.",
+   "src": [
+    "kma"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "지금 날씨와 3일·10일 예보",
+    "발효 중인 특보와 지난 특보 이력",
+    "폭염·한파 영향예보 단계",
+    "고속도로 구간·도로 날씨"
+   ],
+   "deep": "공정·운송 일정과 기상 위험을 함께 놓고 일정 조정안을 제시합니다.",
+   "ex": [
+    "다음 주 수요일 평택에 비 와?",
+    "지금 발효 중인 기상특보 있어?"
+   ],
+   "pro": [
+    {
+     "q": "다음 2주 평택 현장 콘크리트 타설 일정을 강수·폭염 예보와 작업 기준에 맞춰 조정안을 짜줘",
+     "via": "legal"
+    }
+   ],
+   "limits": [
+    "예보는 발표 시각 기준이라 답변에 발표 시각을 함께 적습니다."
+   ],
+   "out": [
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "kma": [
+     "kma_short_forecast",
+     "kma_mid_forecast",
+     "kma_warnings",
+     "kma_find_code",
+     "kma_forecast_text",
+     "kma_forecast_version",
+     "kma_forecast_archive",
+     "kma_impact_forecast",
+     "kma_warning_history",
+     "kma_warning_map",
+     "kma_highway_weather",
+     "kma_road_weather",
+     "kma_tour_weather",
+     "kma_living_index",
+     "kma_uv_observation"
+    ]
+   },
+   "rules": "### 1. 도구 고르기\n- 지금 날씨 kma_short_forecast kind=now, 몇 시간 뒤 kind=ultra, 오늘~모레 kind=short(응답이 크므로 hours 또는 date로 범위를 줄인다. 하루 단위 질문은 일별요약 우선).\n- 3~10일 뒤 kma_mid_forecast: kind=land(날씨·강수확률)와 kind=temp(기온)를 place와 함께 병렬로. 전망 문장은 kind=outlook.\n- 특보 현황 kma_warnings kind=status, 지난 특보 이력 kma_warning_history, 특보 지도 kma_warning_map, 통보문(예보 해설) kma_forecast_text.\n- 폭염·한파 영향예보 kma_impact_forecast. 생활기상지수·자외선 kma_living_index, kma_uv_observation.\n- 고속도로 구간 날씨 kma_highway_weather, 도로 기상(CCTV 지점) kma_road_weather, 관광지 날씨 kma_tour_weather.\n- \"그때 예보가 어땠나\"는 kma_forecast_archive·kma_forecast_version으로 과거 발표분을 본다.\n- 지역 코드가 필요하면 kma_find_code(kind=location|warn_zone|mid_region).\n\n### 2. 답변\n- 지역명이 모호하면 도구가 고른 지역(위치.선택된지역)을 밝힌다.\n- 기온은 ℃, 강수확률은 %로 쓰고, 출처에 발표시각을 적는다(예: 기상청 단기예보 2026-10-15 17:00 발표). 응답 행의 날씨 아이콘은 시간대별·날짜별 표의 날씨 칸에만 쓴다.\n- 공정·운송 일정 조정은 예보 값과 사용자가 준 작업 기준(예: 강수 시 타설 중지, 폭염 시 작업 시간 단축)을 표로 맞대어 제안한다. 산업안전 규정 기준이 필요하면 법령 · 거래소 규정 에이전트(legal)에 묻는다.\n- 예보는 발표 시각 이후 바뀔 수 있다고 필요할 때 밝힌다.",
+   "attach": false,
+   "consult": []
+  },
+  {
+   "id": "drug",
+   "group": "pharma",
+   "name": "의약품 품목 · 특허 조사",
+   "short": "의약품",
+   "mono": "의약",
+   "color": {
+    "hue": "#0F6E67",
+    "tint": "#DDF3F0",
+    "hue_dark": "#7bafab",
+    "tint_dark": "#142f35"
+   },
+   "status": "live",
+   "desc": "약의 성분·효과·복용법부터 증상별 일반의약품, 같은·유사 성분 약과 제조사, 관련 특허까지 확인합니다.",
+   "src": [
+    "mfds_drug",
+    "mfds_ingr",
+    "mfds_easy",
+    "kipris"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "제품별 성분·효능·복용 방법·주의사항·부작용",
+    "증상별 일반의약품 찾기(두통·치통·생리통, 상처 연고 등)",
+    "같은 성분·유사 약과 만드는 제약사, 약끼리 비교",
+    "성분으로 허가 품목·업체·전문/일반·보험코드",
+    "관련 특허 출원인과 등록 상태"
+   ],
+   "deep": "특허 현황과 허가 품목 수로 제네릭 진입 경쟁을 가늠하고, 제조사까지 함께 확인합니다.",
+   "ex": [
+    "타이레놀 성분과 효과, 복용 방법 알려줘",
+    "두통·치통·생리통에 먹을 수 있는 일반의약품은 뭐가 있어?",
+    "넘어져서 생긴 상처에 바를 수 있는 연고는 뭐가 있어?",
+    "타이레놀과 같은 성분의 다른 약은 뭐가 있고 어느 제약사가 만들어?",
+    "아세트아미노펜 진통제와 이부프로펜 진통제의 효과·주의사항 비교해줘",
+    "이 약의 주성분 특허가 언제까지 유효한지 알려줘"
+   ],
+   "pro": [
+    {
+     "q": "이 성분 특허가 만료되면 제네릭 진입 경쟁이 얼마나 치열할지 허가 품목 수와 특허 현황으로 분석해줘",
+     "via": ""
+    },
+    {
+     "q": "이 의약품을 만든 회사에 대해 확인해줘",
+     "via": "company"
+    }
+   ],
+   "limits": [
+    "증상별 안내는 허가된 효능·용법 정보이며 진단·처방을 대신하지 않습니다. 복용 전 약사·의사와 상담하세요.",
+    "증상에 쓰는 성분은 일반 의학 지식으로 고르고, 제품·효능·용법은 식약처 자료로 확인합니다.",
+    "특허 만료일은 등록 정보로 계산한 값이라 존속기간 연장은 빠질 수 있습니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "pubdata": [
+     "search_drug_easy_info",
+     "search_drug_ingredients",
+     "search_drug_permission",
+     "search_drug_permission_list",
+     "search_pill_identification"
+    ],
+    "ip": [
+     "search_patents_keyword",
+     "search_patents",
+     "search_patents_advanced",
+     "get_patent_detail"
+    ]
+   },
+   "rules": "### 1. 질문 유형별 도구\n- 제품 하나의 효능·복용법·주의사항·부작용: search_drug_easy_info(itemName). e약은요는 일부 품목만 있으므로 0건이면 search_drug_permission(itemName, verbose=true)의 효능효과·용법용량·주의사항 원문으로 교차 확인한다.\n- 성분으로 제품 찾기(같은 성분의 다른 약, 만드는 회사): search_drug_permission(mainIngredient=짧은 한글 핵심어)과 search_drug_permission_list(ingredientEnglish=첫 글자 대문자 영문명)를 둘 다 돌려 건수를 대조한다. 한글 표기가 갈려 한쪽만 보면 크게 과소평가된다. ingredientResolution이 있으면 답에 옮긴다.\n- 제품의 성분 배합량: search_drug_ingredients(productName).\n- 회사별 품목: companyName을 주면 사업자등록번호로 법인 단위로 좁혀진다. 응답의 resolution을 확인한다.\n- 알약 모양 확인: search_pill_identification은 제품명으로만 찾고, 각인·모양·색으로는 검색할 수 없다. \"흰색 원형 알약이 뭐야\"는 이 도구로 역추적할 수 없다고 밝힌다.\n- 증상별 일반의약품: 증상에 쓰는 성분은 일반 의학 지식으로 2~4개 고르고(예: 두통·치통·생리통 → 아세트아미노펜, 이부프로펜, 나프록센), 그 성분의 일반의약품(otcType=일반의약품)과 효능·용법은 반드시 식약처 자료로 확인한다. 성분 선택이 일반 지식임을 밝힌다.\n- 특허: search_patents_keyword(성분명·제품명) 또는 search_patents(출원인), 상세는 get_patent_detail. 존속기간 만료일은 등록 정보로 계산한 값이며 존속기간 연장등록은 빠질 수 있다고 밝힌다.\n\n### 2. 답변\n- 비교는 표(제품 | 성분·함량 | 전문/일반 | 효능 | 주요 주의사항 | 업체)로. 취소된 품목은 빼거나 표시한다.\n- 출처에 식약처 자료명(e약은요 / 의약품 제품 허가정보)과 조회일을 적는다.\n- 복용 판단은 하지 않는다. \"허가된 효능·용법 정보이며 진단·처방을 대신하지 않습니다. 복용 전 약사·의사와 상담하세요\"를 한 줄로 밝힌다.\n- 제조사 기업 정보는 기업분석·사업제휴·M&A 검토 에이전트(company)에, 건강기능식품과의 구분은 건강기능식품 원료 · 제품 에이전트(hff)에 묻는다. 의약품 광고 규제는 법령 · 거래소 규정 에이전트(legal)에 묻는다.",
+   "consult": []
+  },
+  {
+   "id": "hff",
+   "group": "pharma",
+   "name": "건강기능식품 원료 · 제품",
+   "short": "건기식",
+   "mono": "건기",
+   "color": {
+    "hue": "#15803D",
+    "tint": "#E1F4E6",
+    "hue_dark": "#7eb994",
+    "tint_dark": "#16332c"
+   },
+   "status": "live",
+   "desc": "원료·기능성·섭취 방법부터 목적별 제품, 유사 제품과 제조사 비교까지 확인합니다.",
+   "src": [
+    "mfds_hff",
+    "mfds_drug2"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "제품별 원료·기능성·섭취 방법·주의사항",
+    "목적별 제품 찾기(피로, 관절, 눈 건강, 장 건강 등)",
+    "유사 제품과 만드는 회사, 제품끼리 비교",
+    "같은 성분의 의약품 허가 여부 확인"
+   ],
+   "deep": "경쟁 제품의 기능성 표시와 광고 규제를 함께 보고 신제품 차별화 포인트를 제안합니다.",
+   "ex": [
+    "루테인 제품의 기능성과 섭취 방법 알려줘",
+    "피로 개선에 도움이 되는 건강기능식품 원료와 제품은 뭐가 있어?",
+    "이 제품과 비슷한 제품은 뭐가 있고 어느 회사가 만들어?",
+    "밀크씨슬 제품 세 가지의 기능성과 주의사항 비교해줘"
+   ],
+   "pro": [
+    {
+     "q": "관절이 아플 때 먹을 수 있는 건강기능식품과 의약품을 구분해서 알려줘",
+     "via": "drug"
+    },
+    {
+     "q": "관절 건강 신제품을 기획 중이야. 경쟁 제품 기능성 표시와 광고 규제를 함께 보고 차별화 포인트를 제안해줘",
+     "via": "legal"
+    }
+   ],
+   "limits": [
+    "건강기능식품은 질병 치료제가 아닙니다. 증상이 계속되면 의사와 상담하세요.",
+    "목적에 맞는 원료는 일반 지식으로 고르고, 제품 정보는 식약처 자료로 확인합니다.",
+    "회사를 법인 단위로 좁힐 수 없어 이름이 비슷한 업체가 섞일 수 있습니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "pubdata": [
+     "search_health_functional_food",
+     "search_drug_permission_list",
+     "search_drug_permission",
+     "search_drug_ingredients"
+    ]
+   },
+   "rules": "### 1. 조회\n- 제품: search_health_functional_food(productName 부분검색). 업체별: entpName(업체명 부분검색). 법인 단위로 좁힐 수 없어 계열사·이름이 비슷한 업체가 섞일 수 있으므로 resolution 내용을 답에 옮긴다.\n- 목적별 제품(피로, 관절, 눈 건강, 장 건강 등): 목적에 맞는 기능성 원료는 일반 지식으로 2~4개 고르고(예: 눈 건강 → 루테인, 지아잔틴), 그 원료가 들어간 제품과 기능성 문구(MAIN_FNCTN)는 반드시 조회로 확인한다. 원료 선택이 일반 지식임을 밝힌다.\n- 같은 성분이 의약품으로도 허가돼 있는지: search_drug_permission_list(ingredientEnglish)·search_drug_permission(mainIngredient)로 확인한다(예: 콘드로이친, 글루코사민).\n- 상세 병합은 20건까지만 되므로 많으면 totalCount로 전체 규모를 밝히고 대표 제품만 비교한다.\n\n### 2. 답변\n- 비교는 표(제품 | 업체 | 기능성 | 섭취 방법 | 섭취 시 주의사항 | 신고번호).\n- 기능성 문구는 원문 그대로 쓰고 효과를 과장하지 않는다. \"건강기능식품은 질병 치료제가 아닙니다. 증상이 계속되면 의사와 상담하세요\"를 한 줄로 밝힌다.\n- 의약품과의 구분이 필요하면 의약품 품목 · 특허 조사 에이전트(drug)에, 기능성 표시·광고 규제는 법령 · 거래소 규정 에이전트(legal)에 묻는다.",
+   "consult": []
+  },
+  {
+   "id": "evidence",
+   "group": "pharma",
+   "name": "영업 증빙 판독",
+   "short": "증빙",
+   "mono": "증빙",
+   "color": {
+    "hue": "#6D32C9",
+    "tint": "#EFE7FD",
+    "hue_dark": "#af8ee1",
+    "tint_dark": "#29224b"
+   },
+   "status": "demo",
+   "desc": "처방 집계 증빙 사진·스캔을 읽어 거래처·처방월·품목·수량·금액을 표로 뽑고 이상 칸을 표시합니다.",
+   "src": [
+    "att_evidence"
+   ],
+   "fresh": "첨부한 파일만 사용",
+   "can": [
+    "증빙을 쪽 번호와 함께 행 단위로 판독",
+    "합계행·수기 수정·타사 품목 따로 표시",
+    "거래처·품목별로 묶기"
+   ],
+   "deep": "여러 장의 증빙에서 중복 제출, 합계 불일치 같은 이상 패턴을 찾아 정리합니다.",
+   "ex": [
+    "첨부한 처방 집계표 사진 판독해서 표로 만들어줘",
+    "이 증빙에서 수기로 고친 칸과 합계행 표시해줘"
+   ],
+   "pro": [
+    {
+     "q": "첨부한 증빙 묶음에서 같은 거래처·품목이 다른 장에 중복 제출된 건을 찾아줘",
+     "via": ""
+    }
+   ],
+   "limits": [
+    "파일이 11개 이상이면 한 폴더에 모아 넣고 '폴더 선택'으로 그 폴더를 지정하세요. 휴대폰에서는 폴더 선택이 되지 않습니다.",
+    "파일이 많으면 판독에 시간이 오래 걸릴 수 있습니다.",
+    "파일 수와 쪽수만큼 사용자 계정의 사용량(토큰)이 늘어납니다.",
+    "시연용입니다. 실제 처방 자료 대신 가상이나 가린 샘플을 쓰세요.",
+    "정산 판정과 EDI·매출 대사는 하지 않습니다."
+   ],
+   "out": [
+    "xlsx",
+    "pdf"
+   ],
+   "use": {},
+   "rules": "### 시연용 에이전트\n- 실제 처방 자료 대신 가상이거나 가린 샘플만 써야 한다. 실명·면허번호·환자 정보로 보이는 값이 있으면 판독하되 답에는 가려서(예: 홍*동) 쓰고, 시연용 샘플을 쓰도록 한 줄로 안내한다.\n- 외부 조회는 하지 않는다. 첨부 파일만 쓴다. 정산 판정과 EDI·매출 대사는 하지 않는다.\n\n### 1. 첨부 확인\n- [첨부 파일 현황]에서 파일 수와 이미지 판독 결과를 본다. 첨부가 없으면 증빙 사진·스캔 PDF를 올려 달라고 하고, 11개 이상이면 한 폴더에 모아 '폴더 선택'으로 지정하도록 안내한다.\n- 판독은 페이지가 미리 해 두었다. search_attachments·read_attachment로 판독 글을 읽는다. 파일이 많으면 list_attachments로 목록을 보고 파일마다 read_attachment로 이어 읽는다.\n\n### 2. 표로 뽑기\n- 행 단위 표: | 파일 · 쪽 | 거래처(병·의원·약국) | 처방월 | 품목 | 규격 | 수량 | 단가 | 금액 | 비고 |.\n- 합계행은 행으로 넣지 말고 따로 표시하며, 판독한 합계와 행 합계(직접 더한 값임을 밝힘)가 다르면 '합계 불일치'로 표시한다.\n- [수기: …]로 판독된 칸, [판독불가] 칸, 다른 회사 품목으로 보이는 행은 비고에 표시한다. 보이지 않는 값을 추정해 채우지 않는다.\n- 여러 장에서 같은 거래처·처방월·품목이 반복되면 '중복 의심'으로 따로 묶는다.\n\n### 3. 답변\n- 요약(파일 수, 판독 행 수, 이상 표시 건수) → 표 → 이상 항목 목록 → 판독 한계(이미지 품질, 나눠 판독한 경우 그 사실).\n- 표가 길면 채팅에는 앞 30행과 이상 행만 보이고, 전체는 Excel로 받도록 안내한다. Excel 요청이면 create_document(format=xlsx)로 전체 행을 표로 넣는다.",
+   "attach": {
+    "types": [
+     "image",
+     "doc",
+     "zip"
+    ],
+    "folder": true
+   },
+   "consult": [],
+   "consultable": false,
+   "tier": "default"
+  },
+  {
+   "id": "pipeline",
+   "group": "construction",
+   "name": "수주 파이프라인 발굴",
+   "short": "수주",
+   "mono": "수주",
+   "color": {
+    "hue": "#8A5A06",
+    "tint": "#FBF1D9",
+    "hue_dark": "#bfa476",
+    "tint_dark": "#302a20"
+   },
+   "status": "live",
+   "desc": "입주 예정 공동주택과 건축 인허가 현장을 모아 설비·자재·인테리어 영업 타깃 목록으로 정리합니다.",
+   "src": [
+    "housing",
+    "arch",
+    "applyhome",
+    "g2b"
+   ],
+   "fresh": "질문할 때 조회(일부 목록은 매월 갱신)",
+   "can": [
+    "시공사·지역·입주 시기·세대수로 현장 목록",
+    "연도별·시공사별 현장 수와 공급 세대 집계",
+    "공공 발주 공사와 연결해 보기"
+   ],
+   "deep": "지역·시공사·준공 시기를 묶어 영업 우선순위와 접촉 시점 계획을 짭니다.",
+   "ex": [
+    "경기 남부에서 최근 3개월 건축 인허가가 난 물류센터 찾아줘",
+    "OO건설 시공 현장 중 준공까지 18개월 남은 곳 뽑아줘"
+   ],
+   "pro": [
+    {
+     "q": "우리는 공조설비 업체야. 내년 하반기~후년 준공 현장 중 우선 공략할 20곳과 접촉 시점을 시공사별로 짜줘",
+     "via": "company"
+    }
+   ],
+   "limits": [
+    "청약 공고가 없는 현장은 빠지므로 목록은 최소치입니다.",
+    "30세대 이상 공동주택과 그 밖의 건축물은 자료가 달라 나눠 찾습니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "constr": [
+     "scan_national_housing_pipeline",
+     "search_housing_permits",
+     "search_housing_sales",
+     "scan_construction_pipeline",
+     "scan_arch_permits",
+     "search_arch_permits",
+     "get_arch_permit_detail",
+     "search_arch_aux_registers"
+    ],
+    "pubdata": [
+     "search_narajangteo_scsbid"
+    ]
+   },
+   "rules": "### 0. 데이터 지도 — 소스 하나만 보면 반드시 틀린다\n- 30세대 이상 공동주택(주택법 사업계획승인): 전국 전수는 scan_national_housing_pipeline(스냅샷, 즉시 응답), 특정 시군구 최신은 search_housing_permits(region). 시행사만 있고 시공사는 없다. 공정 역산은 착공일이 아니라 사용검사예정일로 한다.\n- 시공사·입주예정월: search_housing_sales(청약홈). 분양분만 담겨 지역주택조합 조합원분·임대·후분양이 빠진다. 시공사별 파이프라인 집계는 scan_construction_pipeline(contractors, moveInFrom/To).\n- 그 밖의 건축물(물류센터·업무시설·오피스텔·생활숙박시설 등): scan_arch_permits(region=시군구명, mainPurps, permitFrom/To, stage). since/until은 허가일이 아니라 데이터 생성일이므로 허가일은 permitFrom/To로 거른다. 페이지당 100행 상한이라 잘림 여부를 확인한다. 상세(동별 개요·세대수·주차)는 get_arch_permit_detail.\n- 재건축·재개발 선행지표: search_arch_aux_registers(region, kinds=철거멸실).\n- 공공 발주 공사: search_narajangteo_scsbid(공고명·수요기관, summaryOnly).\n\n### 1. 조건 확정\n- 지역·건물 용도·시기(입주·준공 예정)·규모(세대수·연면적)·시공사 중 빠진 조건을 묻는다. 영업 품목(공조·설비·자재·인테리어)을 알면 공정 진입 시점(예: 설비는 준공 12~24개월 전)을 역산해 조회 기간을 잡고 그 가정을 밝힌다.\n\n### 2. 조회 (병렬)\n- 공동주택: 전국·광역 질문은 scan_national_housing_pipeline(region, minHouseholds, useInsptSchedFrom/To, onlyOngoing=true), 시공사가 필요하면 search_housing_sales(areaName, contractor, moveInFrom/To)를 같은 라운드에. 두 결과를 단지명·주소로 맞대고 맞지 않는 건은 따로 표시한다(대장 명칭은 분양 브랜드명과 다를 수 있음).\n- 건축물: scan_arch_permits는 법정동을 순회하며 일일 트래픽이 한정되므로 시군구를 좁혀 부르고 maxDongs를 크게 잡지 않는다. 지역해석.잘림=true면 법정동이 더 있다고 밝힌다.\n\n### 3. 답변\n- 표: 현장명 | 소재지 | 용도·세대수(연면적) | 시행사 | 시공사 | 단계(허가/착공/공사 중) | 준공(입주) 예정 | 출처. 시공사가 없는 소스의 행은 \"(인허가 대장에 없음)\".\n- 집계(연도별·시공사별 현장 수, 공급 세대 합계)는 도구가 준 값을 쓴다. 컨소시엄은 시공사마다 잡혀 시공사별 합계가 현장 수보다 클 수 있다고 밝힌다.\n- 영업 우선순위와 접촉 시점은 준공 예정·규모·시공사 기준으로 제안하되 판단임을 밝힌다. 시공사 실사는 시공사 · 협력사 실사 에이전트(contractor)에, 시공사 재무는 기업분석·사업제휴·M&A 검토 에이전트(company)에 묻는다.\n- 한계: 청약 공고가 없는 현장은 시공사를 알 수 없고, 목록은 최소치다. 스냅샷은 기준월 이후 신규 건이 없다.",
+   "maxResult": 20000,
+   "consult": []
+  },
+  {
+   "id": "contractor",
+   "group": "construction",
+   "name": "시공사 · 협력사 실사",
+   "short": "실사",
+   "mono": "실사",
+   "color": {
+    "hue": "#475569",
+    "tint": "#E9EDF2",
+    "hue_dark": "#9aa2ac",
+    "tint_dark": "#212936"
+   },
+   "status": "live",
+   "desc": "건설업 등록·변동 공시, 행정처분 이력, 공공공사 수행 이력으로 협력사와 경쟁사를 확인합니다.",
+   "src": [
+    "kiscon",
+    "cals",
+    "dart",
+    "nps"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "업종·등록·양도·합병 신고",
+    "영업정지·과징금·과태료 처분과 근거 조문",
+    "공공공사 수행 이력(발주기관·지분율·도급액)",
+    "재무·인원 함께 보기"
+   ],
+   "deep": "인수·협력 대상 건설사의 처분 이력, 공공 실적, 재무를 종합해 리스크를 평가합니다.",
+   "ex": [
+    "OO건설의 최근 2년 행정처분 이력 알려줘",
+    "하도급 후보 3곳 면허·처분·인원 비교표 만들어줘"
+   ],
+   "pro": [
+    {
+     "q": "인수를 검토 중인 OO건설의 행정처분·공공공사 실적·재무를 종합해 인수 리스크와 기회를 정리해줘",
+     "via": "company"
+    }
+   ],
+   "limits": [
+    "처분 이력은 조회한 기간 기준입니다. 0건은 그 기간에 공시가 없다는 뜻입니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "constr": [
+     "search_construction_firms",
+     "search_construction_sanctions",
+     "get_construction_notice_stats",
+     "search_cals_contractor",
+     "search_cals_construction",
+     "get_cals_construction_detail",
+     "search_cals_quality_tests",
+     "search_cals_project_evaluation"
+    ],
+    "pubdata": [
+     "resolve_bizno",
+     "get_national_pension_workplace",
+     "search_narajangteo_scsbid"
+    ],
+    "dart": [
+     "dart_search_corp_code",
+     "dart_get_company_info",
+     "dart_get_financial_statement"
+    ]
+   },
+   "rules": "### 1. 업체 식별\n- resolve_bizno(companyName)로 사업자등록번호를 확보한다. 후보가 여럿이면 choices로 묻는다. KISCON 도구는 companyName을 주면 사업자번호로 자동 해석하지만, 확보한 bizNo를 넣는 것이 가장 정확하다.\n\n### 2. 조회 (병렬)\n- 행정처분·폐업: search_construction_sanctions(bizNo, sDate, eDate). 원 API가 요청당 20~40초이고 기간은 2년 이내만 된다. 실사 목적이면 최근 2년을 먼저 보고, 더 필요하면 2년 단위로 나눠 병렬 호출한다. 나눠 부른 결과의 건수·금액을 더하면 경계 중복으로 부풀려지므로 합산했으면 근사치라고 밝힌다.\n- 등록·양도·합병 신고: search_construction_firms(bizNo, sDate, eDate, kinds). 같은 원칙(2년 이내).\n- 공공공사 수행 이력: search_cals_contractor(bizNo 또는 companyName). 국토관리청 발주 공사 참여업체만 담겨 있어 0건이 정상인 업체가 많다. 오래된 실적이 섞이므로 공사기간을 함께 본다.\n- 건설현장 이력(시공사명 기준): search_cals_quality_tests(contractorName). 이 데이터는 2024-08-30에서 멈춰 있어 현재 진행 현장으로 쓰지 않는다.\n- 재무·인원: dart_search_corp_code → dart_get_company_info, dart_get_financial_statement(single_account, CFS) / 비상장은 get_national_pension_workplace(companyName 또는 bizNo).\n- 공공 낙찰 실적: search_narajangteo_scsbid(bizno, summaryOnly=true, bizTypes=공사).\n\n### 3. 판정 규칙\n- 0건을 \"처분 이력 없음\"으로 쓰지 않는다. \"조회한 기간(YYYY-MM-DD~YYYY-MM-DD)에 공시 없음\"으로 쓴다.\n- 건수는 조건일치_건수(공시 고유)를 쓴다. 같은 공시가 업종 수만큼 행으로 반복된다. 가처분이 걸린 처분은 효력이 정지 중일 수 있다고 표시한다.\n\n### 4. 답변\n- 업체별 표: 업체 | 사업자번호 | 업종·등록 | 처분(기간 내 건수·유형·금액·근거조문) | 공공공사 이력 | 재무(매출·영업이익·부채비율) | 인원 | 확인 기간.\n- 여러 업체 비교는 같은 기간·같은 항목으로 맞춘다.\n- 인수 리스크·시너지 판단은 기업분석·사업제휴·M&A 검토 에이전트(company)에, 처분 근거 조문 해석은 법령 · 거래소 규정 에이전트(legal)에 묻는다.",
+   "maxResult": 18000,
+   "consult": []
+  },
+  {
+   "id": "onbid",
+   "group": "realestate",
+   "name": "공매 물건 · 낙찰가율",
+   "short": "공매",
+   "mono": "공매",
+   "color": {
+    "hue": "#9A3412",
+    "tint": "#FBE9DF",
+    "hue_dark": "#c78f7d",
+    "tint_dark": "#332222"
+   },
+   "status": "live",
+   "desc": "캠코 온비드의 부동산 공매 물건을 조건으로 찾고, 과거 입찰 결과로 낙찰가율을 봅니다.",
+   "src": [
+    "onbid"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "지역·감정가·최저입찰가·면적·유찰 횟수로 물건 찾기",
+    "입찰 조건과 회차 일정",
+    "기관·지역별 낙찰가와 감정가 대비 낙찰가율"
+   ],
+   "deep": "유사 물건 낙찰가율과 주변 시세를 근거로 적정 입찰가 범위를 검토합니다.",
+   "ex": [
+    "서울 송파구 감정가 10억 이하 상가 공매 물건 찾아줘",
+    "최근 3개월 압류재산 공매의 감정가 대비 낙찰가율 알려줘"
+   ],
+   "pro": [
+    {
+     "q": "이 공매 물건의 유사 물건 낙찰가율과 주변 실거래가를 근거로 적정 입찰가 범위를 제시해줘",
+     "via": "realprice"
+    }
+   ],
+   "limits": [
+    "법원 경매가 아니라 캠코 공매입니다.",
+    "입찰 중이거나 예정인 물건만 검색됩니다."
+   ],
+   "out": [
+    "xlsx",
+    "pdf"
+   ],
+   "use": {
+    "pubdata": [
+     "search_onbid_realestate",
+     "get_onbid_realestate_detail",
+     "get_onbid_bid_info",
+     "search_onbid_bid_results",
+     "search_onbid_notices",
+     "get_onbid_notice_detail"
+    ]
+   },
+   "rules": "### 0. 공매와 경매\n- 온비드는 캠코·공공기관·신탁사가 집행하는 공매다. 법원 경매 물건은 없다고 필요할 때 밝힌다.\n\n### 1. 물건 찾기 (현재 입찰중·예정만)\n- search_onbid_realestate(sido, sigungu, eupmyeondong, minAppraisal/maxAppraisal, maxPrice, minFailCount, usageMedium, prptDivCd, dspsMthodCd 등). \"최근 새로 나온 물건\"은 updatedFrom/To, \"이번 주 입찰하는 물건\"은 bidStartFrom/To로 다르게 조회한다. 읍면동은 법정동 기준이다(행정동을 넣으면 서버가 바꾸고 dongResolution에 남김).\n- 금액은 원 단위로 넣는다(10억 = 1000000000). 용도는 usageMedium(예: 10100 토지) 또는 cltrName 부분검색으로 좁히고, 상가처럼 코드가 애매하면 결과의 용도를 보고 거른 뒤 거른 기준을 밝힌다.\n- 상세: get_onbid_realestate_detail(cltrMngNo, pbctCdtnNo) — 면적·감정평가·임대차·등기 주요정보·점유관계·유의사항. 입찰 조건: get_onbid_bid_info.\n- 과거 공고(이미 끝난 것 포함): search_onbid_notices(pbancFrom/To 또는 opbdFrom/To) → get_onbid_notice_detail(pbancMngNo).\n\n### 2. 낙찰가율\n- search_onbid_bid_results(opbdFrom/To, orgName, noticeName, prptDivCd). 낙찰가는 앞쪽 detailLimit건(기본 10) 공고에만 붙으므로 '집계_대상공고분'은 그 일부의 값이다. 구간 전체 통계로 쓰지 않고, 몇 건 기준인지 밝힌다.\n- 보통 말하는 낙찰가율은 감정가 대비다(낙찰가율_감정가대비). 최저입찰가 대비와 섞지 않는다.\n- 부동산 건수는 물건결과만 센다(다른유형물건은 빠짐).\n\n### 3. 답변\n- 물건 표: 물건명 | 소재지 | 용도 | 면적 | 감정가 | 최저입찰가(감정가 대비 %) | 유찰 | 입찰기간 | 물건관리번호.\n- 적정 입찰가 범위는 유사 물건 낙찰가율(표본 수 표기)과 주변 실거래가(시세 · 개발 부지 조사 에이전트 realprice에 묻기)를 근거로 제시하되 참고 의견임을 밝힌다. 권리관계(임차인·점유)는 상세 정보의 사실만 옮기고 법률 판단은 법령 · 거래소 규정 에이전트(legal)에 묻는다.",
+   "maxResult": 18000,
+   "consult": []
+  },
+  {
+   "id": "realprice",
+   "group": "realestate",
+   "name": "시세 · 개발 부지 조사",
+   "short": "시세",
+   "mono": "시세",
+   "color": {
+    "hue": "#4D7C0F",
+    "tint": "#ECF5DC",
+    "hue_dark": "#9db77b",
+    "tint_dark": "#223222"
+   },
+   "status": "live",
+   "desc": "실거래가 추이와 주변 분양·인허가·인구로 매입·임대·개발 대상지를 검토합니다.",
+   "src": [
+    "rtms",
+    "applyhome",
+    "arch",
+    "sgis"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "아파트 매매·전월세, 상업업무용 건물·토지 매매 실거래(오피스텔·연립다세대 실거래는 제공되지 않음)",
+    "주변 분양 단지와 인허가",
+    "배후 인구·가구"
+   ],
+   "deep": "주변 분양가·실거래가·공급 예정 물량·인구로 개발 사업성을 1차 검토합니다.",
+   "ex": [
+    "강남구 아파트 최근 1년 매매 실거래가 추이 보여줘",
+    "송파구 아파트 전월세 거래 동향 알려줘"
+   ],
+   "pro": [
+    {
+     "q": "이 부지에 아파트를 지으면 사업성이 있는지 주변 분양가·실거래가·공급 예정 물량으로 1차 검토해줘",
+     "via": "pipeline"
+    }
+   ],
+   "limits": [
+    "해제된 거래는 빼고 집계합니다.",
+    "최근 한 달 거래는 신고 기한 때문에 덜 잡힐 수 있습니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "macro": [
+     "rtms_find_region",
+     "rtms_get_deals"
+    ],
+    "constr": [
+     "search_housing_sales",
+     "scan_national_housing_pipeline",
+     "search_housing_permits",
+     "scan_arch_permits"
+    ],
+    "trade": [
+     "resolve_region",
+     "region_demographics"
+    ]
+   },
+   "rules": "### 1. 실거래가\n- rtms_get_deals(dataset, region 또는 lawd_cd, from_ym, to_ym). dataset: apt_trade(아파트 매매), apt_rent(아파트 전월세), nrg_trade(상업업무용 매매), land_trade(토지 매매). 오피스텔·연립다세대·단독다가구·분양권 실거래는 이 키로 제공되지 않는다고 밝힌다.\n- 구가 있는 시(수원시·성남시 등)는 하위 구로 펼친다. 시군구 이름이 모호하면 rtms_find_region으로 확인한다.\n- 추이·통계는 summary_only=true로 받고, 개별 거래는 limit을 정해 받는다. 해제(취소) 거래는 기본으로 빠진다. 금액 단위는 만원이다.\n- 최근 1~2개월은 신고기한(30일) 때문에 계속 늘어나므로 덜 잡혔다고 밝힌다. 0건이면 지역 코드·월 형식을 먼저 의심한다.\n- 기간이 길면 max_calls에 걸려 미수신 월이 생길 수 있다. 응답의 미수신 월을 확인하고 밝힌다.\n\n### 2. 주변 분양·인허가·인구\n- 분양: search_housing_sales(areaName 또는 addressContains, types=[APT, 오피스텔등], noticeFrom/To) — 분양가는 원문 그대로.\n- 공급 예정: scan_national_housing_pipeline(region, onlyOngoing=true)·search_housing_permits(region), 건축물은 scan_arch_permits(region, mainPurps).\n- 배후 인구: resolve_region(address)로 adm_cd 확보 → region_demographics(adm_cd, includeAge=true).\n\n### 3. 답변\n- 월별 표(계약월 | 건수 | 평균·중앙값 | 최고·최저)와 기간 변화. 통계 값은 도구가 준 값을 쓴다. 면적대가 섞이면 면적 구간을 나눠 보인다.\n- 사업성 1차 검토는 주변 시세·분양가·공급 예정 물량·인구를 표로 나란히 놓고 판단을 따로 쓴다. 분양가·사업비 계산은 가정을 밝힌다. 개발 규제(용도지역·건축 제한)는 법령 · 거래소 규정 에이전트(legal)에 묻는다.",
+   "maxResult": 16000,
+   "consult": []
+  },
+  {
+   "id": "vehicle",
+   "group": "mobility",
+   "name": "차량 등록 수요 분석",
+   "short": "차량",
+   "mono": "차량",
+   "color": {
+    "hue": "#1D4ED8",
+    "tint": "#E3EBFD",
+    "hue_dark": "#839eea",
+    "tint_dark": "#18284e"
+   },
+   "status": "live",
+   "desc": "신규등록과 누적 등록대수를 지역·차종·연료·용도로 나눠 수요를 봅니다.",
+   "src": [
+    "kotsa",
+    "molit_car",
+    "stat_molit"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "월별 신규등록을 차종·지역·연료·용도·연령대로",
+    "시도·시군구별 누적 등록대수",
+    "연료별 누적 등록대수(전기·수소·하이브리드)는 국토교통 통계누리 월간 자료로",
+    "신규등록과 누적 등록대수를 섞지 않고 구분"
+   ],
+   "deep": "지역·차종별 등록 추세로 시장 진출 우선순위를 정리합니다.",
+   "ex": [
+    "최근 12개월 전기 승용차 신규등록을 시도별로 보여줘",
+    "경기도 시군구별 화물차 누적 등록대수 알려줘"
+   ],
+   "pro": [
+    {
+     "q": "전기차 충전 사업 진출 지역을 고르려 해. 시도별 전기차 신규등록 추세로 우선순위를 매기고 근거를 정리해줘",
+     "via": ""
+    }
+   ],
+   "limits": [
+    "연료별 누적 등록대수는 매월 게시되는 통계 파일 기준이라 최근 달이 늦게 올라올 수 있습니다.",
+    "신규등록 분포는 지역·연료처럼 나눌수록 조회량이 늘어 기간을 나눠 보여 드릴 수 있습니다."
+   ],
+   "out": [
+    "xlsx",
+    "pdf"
+   ],
+   "use": {
+    "pubdata": [
+     "get_new_vehicle_registrations",
+     "get_vehicle_registration_stock",
+     "get_molit_vehicle_stat"
+    ]
+   },
+   "rules": "### 0. 신규등록과 누적 등록대수를 섞지 않는다\n- 신규등록(그 달에 새로 등록된 대수, 플로우): get_new_vehicle_registrations. 2015-01부터, 당월분은 익월 2일 반영.\n- 누적 등록대수(월말 등록돼 있는 대수, 스톡): 차종·용도·시도·시군구는 get_vehicle_registration_stock(KOSIS). 이 표에는 연료 축이 없다.\n- 연료별 누적(전기·수소·하이브리드 등록대수), 말소 사유, 차령별 등은 get_molit_vehicle_stat(국토교통 통계누리 월간 엑셀): mode=list(게시 월) → sheets(시트 이름) → data(시트 읽기, 예: sheet=\"연료별\").\n- 신규등록을 합산해 누적으로 쓰지 않는다(말소가 빠지지 않음).\n\n### 1. 조회\n- 신규등록 분포: breakdown 하나(region·fuel·vehicleType·usage·ageGroup·origin 등)와 filters 고정조건. 호출 수 = 개월 수 × (분포 값 수+1)이라 12개월 × 17개 시도면 많다. 상한에 걸리면 기간을 줄이거나 분기 단위로 나눠 부르고 그렇게 했다고 밝힌다. 연료코드 5=전기, 3=수소.\n- 응답의 합계검증이 '불일치'인 축은 구성비 계산에 쓰지 않는다.\n- 누적: get_vehicle_registration_stock(from, to, region, level=sigungu, vehicleType, usage).\n- 광주·전남은 2026년 7월부터 '전남광주'로 통합되어, 이전 월은 광주·전남, 이후 월은 전남광주로 조회해야 한다. 경계가 바뀐 점을 밝힌다.\n\n### 2. 답변\n- 월별·지역별 표와 증감률. 직접 계산한 증감률은 계산했다고 밝힌다. 출처에 자료명(한국교통안전공단 자동차 신규등록 / 국토교통부 자동차등록현황 / 국토교통 통계누리 자동차 등록자료)과 기준월을 적는다.\n- 시장 진출 우선순위는 등록 추세(수준과 증가율)를 근거로 제안하되 판단임을 밝힌다. 충전 인프라 현황(한전 충전소)은 원가 · 환율 브리핑 에이전트(cost)의 전력 자료로 볼 수 있다.",
+   "consult": []
+  },
+  {
+   "id": "tradearea",
+   "group": "franchise",
+   "name": "출점 후보지 상권분석",
+   "short": "상권",
+   "mono": "상권",
+   "color": {
+    "hue": "#B4430C",
+    "tint": "#FDEEE6",
+    "hue_dark": "#d69879",
+    "tint_dark": "#392521"
+   },
+   "status": "live",
+   "desc": "서울 상권의 점포·개폐업·추정매출·유동인구와 배후 인구로 상권을 분석하고 출점 의견까지 냅니다.",
+   "src": [
+    "semas",
+    "localdata",
+    "sgis",
+    "seoul",
+    "naver_map"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "점포 현황: 반경 안 업종별 점포 수와 구성비, 같은 업종 경쟁 점포",
+    "개폐업 추이: 업종별 연도별 개업·폐업 건수와 생존율",
+    "배후 수요: 주거 인구·가구·연령 구성, 사업체·종사자 수",
+    "서울 상권: 업종별 추정매출(요일·시간대·성별·연령대), 생활인구·유동인구 추이",
+    "후보지 비교와 출점 의견",
+    "서울 밖은 추정매출·유동인구 자료가 없어 점포·개폐업·인구로만 분석합니다. 매출까지 보시려면 서울 지역에 쓰시길 권합니다."
+   ],
+   "deep": "후보지 여러 곳의 상권, 업종 성장성, 입지 규제를 함께 보고 출점 의견을 냅니다.",
+   "ex": [
+    "성수동 카페 상권의 점포 수와 최근 3년 개폐업 추이 보여줘",
+    "강남역 상권 한식 음식점의 요일·시간대별 추정매출 알려줘",
+    "합정역 반경 500m 배후 인구와 연령 구성 정리해줘",
+    "합정역 반경 500m에 카페 내도 괜찮을까?"
+   ],
+   "pro": [
+    {
+     "q": "성수동과 연남동 중 디저트 카페 출점지로 어디가 나은지 추정매출·생활인구·경쟁 점포로 비교해줘",
+     "via": "franchise"
+    }
+   ],
+   "limits": [
+    "서울 밖은 추정매출·유동인구 자료가 없어 판단 근거가 약합니다. 서울 지역 분석에 쓰시길 권합니다.",
+    "점포 수는 자료마다 기준이 달라 둘 다 보여 드립니다."
+   ],
+   "out": [
+    "docx",
+    "pptx",
+    "pdf",
+    "xlsx"
+   ],
+   "use": {
+    "trade": [
+     "resolve_region",
+     "stores_nearby",
+     "store_industry_mix",
+     "permit_open_close_trend",
+     "search_permits",
+     "region_demographics",
+     "region_business_stats",
+     "seoul_trade_areas",
+     "seoul_trade_area_stats",
+     "seoul_living_population",
+     "seoul_living_population_trend",
+     "seoul_dong_codes",
+     "trade_area_report",
+     "list_industry_codes",
+     "naver_geocode",
+     "naver_reverse_geocode",
+     "convert_coords"
+    ]
+   },
+   "rules": "### 0. 소스 지도 — 하나만 보면 틀린다\n- 점포 현황(개별 점포, 반경·행정구역): stores_nearby·store_industry_mix(소상공인 상가정보).\n- 개업·폐업 이력과 생존율: permit_open_close_trend·search_permits(지방행정 인허가). 지역은 지번주소 region으로 좁힌다(도로명 addrLike는 옛 폐업이 빠짐). 인허가 대상 업종만 된다(일반음식점·휴게음식점·제과점·미용업 등 20종).\n- 배후 수요(인구·가구·연령, 사업체·종사자): region_demographics·region_business_stats(SGIS, adm_cd 체계).\n- 서울 추정매출·유동인구: seoul_trade_areas(상권명) → seoul_trade_area_stats(service, trdarCd, quarter). 생활인구는 seoul_dong_codes → seoul_living_population(최근 약 4개월, 일자·시간) / seoul_living_population_trend(월별 비교). 서울 밖은 추정매출·유동인구 자료가 없다.\n- 평판·인기·맛집은 이 에이전트 범위가 아니다(여론 · 트렌드 모니터링 에이전트 opinion).\n\n### 1. 위치 확정\n- 주소는 resolve_region(address)로 좌표·adm_cd를 받는다. 응답의 지점단위매칭이 false면 동 대표점이라 반경 분석이 어긋날 수 있으므로 naver_geocode(query)로 건물 단위 좌표를 다시 받는다. 역·장소명(\"합정역\")은 주소가 아니라 잡히지 않을 수 있다 — 역 주변 도로명 주소나 사용자가 준 주소로 다시 시도하고, 어떤 좌표를 썼는지 밝힌다.\n- 코드 체계가 셋이다: SGIS adm_cd(인구·사업체), 행정동 8자리(상가 store_industry_mix adongCd·생활인구 dong), 시군구 5자리. 서로 바꿔 넣으면 조용히 0건이 된다.\n- 업종 코드는 list_industry_codes로 찾는다(대분류 I2 음식 등).\n\n### 2. 조회 (병렬)\n- 한 곳 종합: trade_area_report(lat, lon, radius, adm_cd, region, permitType) 1회 + 서울이면 seoul_trade_area_stats(추정매출·유동인구) + 같은 업종 경쟁 점포 stores_nearby(업종 코드, radius).\n- 반경은 기본 500m, 최대 2,000m. 점포 수는 소상공인 상가정보와 SGIS 사업체 수의 기준이 달라 둘 다 보여 준다.\n- 추정매출은 quarter(예: 20254)를 정하고, 최신 분기가 비면 직전 분기로 내려간다.\n\n### 3. 출점 의견\n- 표: 지표 | 후보지 A | 후보지 B | 근거·기준일. 점포 수·경쟁 점포·개폐업 추이·생존율·배후 인구·(서울) 추정매출·생활인구.\n- 의견은 근거 지표를 가리키며 쓰고, 서울 밖은 매출 근거가 약하다고 밝힌다. 임대료·권리금은 자료가 없다.\n- 가맹 브랜드 조건은 가맹 브랜드 에이전트(franchise)에, 입지 규제(용도지역·영업 제한)는 법령 · 거래소 규정 에이전트(legal)에 묻는다.\n- 네이버 지도 도구(naver_geocode)는 호출마다 과금될 수 있으니 필요할 때만 쓴다.",
+   "maxResult": 18000,
+   "consult": []
+  },
+  {
+   "id": "franchise",
+   "group": "franchise",
+   "name": "가맹 브랜드",
+   "short": "가맹",
+   "mono": "가맹",
+   "color": {
+    "hue": "#9A4A07",
+    "tint": "#FCF0DC",
+    "hue_dark": "#c79b77",
+    "tint_dark": "#332720"
+   },
+   "status": "live",
+   "desc": "브랜드 하나의 정보공개서부터 여러 브랜드 비교까지, 가맹본부 재무·가맹점 수·평균 매출·가맹금을 확인합니다.",
+   "src": [
+    "ftc_franchise"
+   ],
+   "fresh": "정보공개서 등록 시점 기준",
+   "can": [
+    "브랜드 하나의 정보공개서 핵심(재무, 가맹점 수 추이, 평균 매출, 가맹금·인테리어 비용)",
+    "특정 단어(위약금, 리뉴얼 등)가 나온 절만 보기",
+    "시도별 가맹점·직영점 수",
+    "여러 브랜드 나란히 비교"
+   ],
+   "deep": "가맹본부 인수·투자 시 재무, 가맹점 추이, 법 위반 이력으로 리스크를 검토합니다.",
+   "ex": [
+    "메가커피 가맹본부의 재무와 가맹점 수 추이 알려줘",
+    "이 브랜드 가맹금과 인테리어 비용 얼마야?",
+    "메가커피와 컴포즈커피 가맹점 수와 평균 매출 비교해줘"
+   ],
+   "pro": [
+    {
+     "q": "OO치킨 가맹본부 지분 인수를 검토 중이야. 정보공개서 재무·가맹점 추이·법 위반 이력으로 인수 리스크를 정리해줘",
+     "via": "company"
+    }
+   ],
+   "limits": [
+    "정보공개서는 등록 시점 자료라 기준년도를 함께 밝힙니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "pubdata": [
+     "search_franchise_headquarters",
+     "search_franchise_disclosure",
+     "get_franchise_disclosure",
+     "get_franchise_brand_stores"
+    ]
+   },
+   "rules": "### 1. 도구와 기준년도\n- 모든 도구는 기준년도(year)가 필수다. 정보공개서 공개 연도 기준이며 회계연도는 보통 1년 앞선다. 올해로 먼저 찾고 없으면 전년도로 내려간다. 답에 기준년도와 회계연도를 함께 적는다.\n- 가맹본부 존재·규모(전체 등록부, 재무는 구간값): search_franchise_headquarters(companyName 또는 corpName, year).\n- 정보공개서(공개본만 — 대형 브랜드 일부가 빠질 수 있음): search_franchise_disclosure(brandName 또는 companyName, year) → jngIfrmpSn → get_franchise_disclosure(mode=core: 재무·가맹점 수·평균 매출·가맹금 / keyword: 위약금·리뉴얼 등 단어가 나온 절 / toc → section).\n- 시도별 가맹점·직영점 수: get_franchise_brand_stores(brandName, year). 지역 합계를 다시 더하지 않는다(전체 행이 분리돼 있음).\n\n### 2. 조회 순서 (병렬)\n- 브랜드 하나: search_franchise_disclosure + get_franchise_brand_stores를 같은 라운드에 → 다음 라운드 get_franchise_disclosure(core). 정보공개서가 없으면 search_franchise_headquarters로 규모만 확인하고 \"정보공개서 공개본 없음\"으로 밝힌다.\n- 여러 브랜드 비교: 같은 기준년도로 맞춘다. 맞출 수 없으면 브랜드별 기준년도를 표에 적는다.\n\n### 3. 답변\n- 비교표: 브랜드 | 가맹본부 | 가맹점 수(직영) | 가맹점 평균 매출 | 최초 가맹금·교육비·보증금 | 인테리어 비용 | 본부 매출·영업이익 | 법 위반 이력 | 기준년도.\n- 금액은 정보공개서 원문 단위(천원 등)를 확인해 원 단위로 바꿔 쓰고 바꿨다고 밝힌다. 재무 구간값은 구간 그대로 쓴다.\n- 가맹본부 인수·투자 리스크는 기업분석·사업제휴·M&A 검토 에이전트(company)에, 가맹사업법 쟁점은 법령 · 거래소 규정 에이전트(legal)에 묻는다.",
+   "consult": []
+  },
+  {
+   "id": "trademark",
+   "group": "consumer",
+   "name": "상표 · 디자인 선행조사",
+   "short": "상표",
+   "mono": "상표",
+   "color": {
+    "hue": "#962082",
+    "tint": "#F8E6FA",
+    "hue_dark": "#c584ba",
+    "tint_dark": "#321e3b"
+   },
+   "status": "live",
+   "desc": "새 브랜드명이나 디자인을 정하기 전에 비슷한 출원과 경쟁사 출원을 확인합니다.",
+   "src": [
+    "kipris"
+   ],
+   "fresh": "질문할 때 원자료를 바로 조회",
+   "can": [
+    "이름이 비슷한 상표와 지정 상품",
+    "키워드로 디자인 출원 찾기",
+    "회사별 최근 상표·디자인 출원"
+   ],
+   "deep": "새 브랜드의 상표 분쟁 위험을 유사 출원과 판례 경향으로 검토합니다.",
+   "ex": [
+    "새 화장품 브랜드명 OO와 비슷한 상표가 있는지 봐줘",
+    "OO사가 보유한 상표 목록 정리해줘"
+   ],
+   "pro": [
+    {
+     "q": "새 브랜드 OO를 쓰면 상표 분쟁 위험이 있는지 유사 상표와 판례 경향까지 검토해줘",
+     "via": "legal"
+    }
+   ],
+   "limits": [
+    "유사 여부는 참고 의견입니다. 등록 가능성은 변리사 확인이 필요합니다."
+   ],
+   "out": [
+    "xlsx",
+    "docx",
+    "pdf"
+   ],
+   "use": {
+    "ip": [
+     "search_trademarks_keyword",
+     "search_trademarks",
+     "search_designs_keyword",
+     "search_designs",
+     "search_all_ip"
+    ]
+   },
+   "rules": "### 1. 조회\n- 이름이 비슷한 상표: search_trademarks_keyword(키워드)로 넓게, search_trademarks로 조건(출원인·상태)을 좁혀 찾는다. 띄어쓰기·영문·한글 음역을 바꿔 2~3번 찾고 무엇으로 찾았는지 밝힌다.\n- 지정 상품(상품류)이 사용 예정 분야와 겹치는지 본다. 사용 분야를 모르면 choices로 묻는다(예: 화장품 3류, 식품 29·30류, 소프트웨어 9·42류).\n- 디자인: search_designs_keyword(물품명·키워드), search_designs(출원인).\n- 회사별 보유 현황: search_all_ip(applicant) — 건수는 정확하지만 목록은 잘린다. 출원인명을 (주)·주식회사·영문으로도 시도한다.\n\n### 2. 판정\n- 표: 상표(표장) | 출원·등록번호 | 출원인 | 상품류·지정상품 | 상태(출원/등록/거절/소멸) | 출원일. 소멸·거절 건은 따로 표시한다.\n- 유사 여부는 외관·칭호·관념과 지정상품 겹침을 기준으로 상/중/하 의견을 주되 참고 의견이며 등록 가능성은 변리사 확인이 필요하다고 밝힌다.\n- 판례 경향이나 상표법 조문 판단이 필요하면 법령 · 거래소 규정 에이전트(legal)에 묻는다.",
+   "consult": []
+  }
+ ],
+ "sources": {
+  "dart": "금융감독원 OpenDART",
+  "fsc": "금융위원회 기업기본정보",
+  "ksd": "한국예탁결제원",
+  "krx": "한국거래소",
+  "nps_kcomwel": "국민연금공단·근로복지공단",
+  "nps": "국민연금공단",
+  "kipris": "지식재산처 KIPRIS",
+  "g2b": "조달청 나라장터",
+  "ftc": "공정거래위원회",
+  "sec": "미국 SEC EDGAR",
+  "naver_news": "네이버 뉴스",
+  "peer": "상장사 시세·업종 분류(DCF Peer Group)",
+  "ktb": "한국거래소(국고채 수익률)",
+  "dcf": "DCF 계산 도구",
+  "kasb": "한국회계기준원",
+  "law": "법제처 국가법령정보",
+  "krx_rule": "한국거래소 법규서비스",
+  "att_contract": "첨부한 계약서·사규·정관",
+  "krx_data": "한국거래소 정보데이터시스템",
+  "exim": "한국수출입은행",
+  "kepco": "한국전력 전력데이터",
+  "kosis": "통계청 KOSIS",
+  "dapa": "방위사업청",
+  "agency_board": "주요 공공기관 입찰 게시판",
+  "gov_biz": "과기정통부·중기부 사업공고",
+  "att_rfp": "첨부한 RFP·과업지시서",
+  "naver": "네이버 뉴스·블로그·카페",
+  "datalab": "네이버 데이터랩",
+  "youtube": "YouTube",
+  "kma": "기상청",
+  "mfds_drug": "식품의약품안전처 의약품 허가정보",
+  "mfds_ingr": "의약품 주성분",
+  "mfds_easy": "e약은요(복약 정보)",
+  "mfds_hff": "식품의약품안전처 건강기능식품 품목정보",
+  "mfds_drug2": "의약품 허가정보",
+  "att_evidence": "첨부한 증빙 파일 (외부 조회 없음)",
+  "housing": "국토교통부 주택인허가",
+  "arch": "건축행정 인허가",
+  "applyhome": "한국부동산원 청약홈",
+  "kiscon": "건설산업지식정보시스템(KISCON)",
+  "cals": "건설사업정보시스템(CALS)",
+  "onbid": "한국자산관리공사 온비드",
+  "rtms": "국토교통부 실거래가",
+  "sgis": "통계청 SGIS",
+  "kotsa": "한국교통안전공단 자동차 신규등록",
+  "molit_car": "국토교통부 자동차등록현황",
+  "stat_molit": "국토교통 통계누리",
+  "semas": "소상공인시장진흥공단 상가정보",
+  "localdata": "지방행정 인허가",
+  "seoul": "서울 열린데이터광장",
+  "naver_map": "네이버 지도",
+  "ftc_franchise": "공정거래위원회 가맹사업 정보공개서"
+ },
+ "features": {
+  "nav": true,
+  "search": true,
+  "collapse": true,
+  "consult": true,
+  "consult_max": 15,
+  "find_tools": true,
+  "folder_threshold": 11,
+  "notices": true,
+  "layout": "cards"
+ },
+ "notices": [],
+ "page_min": "2",
+ "tool_labels": {
+  "resolve_bizno": "회사 식별(사업자번호)",
+  "get_national_pension_workplace": "국민연금 가입자",
+  "get_employment_insurance_workplace": "고용·산재보험",
+  "search_narajangteo_scsbid": "나라장터 낙찰정보",
+  "get_narajangteo_openg_result": "개찰결과 1건",
+  "scan_narajangteo_procurement": "나라장터 4종 스캔",
+  "scan_agency_bids": "기관 자체 공고",
+  "scan_dapa_plan": "방사청 D2B 조달계획",
+  "scan_nia_board": "NIA 입찰공고",
+  "scan_gov_biz_announcements": "과기정통부·중기부 사업공고",
+  "dart_search_corp_code": "DART 회사 찾기",
+  "dart_search_disclosure": "공시 검색",
+  "dart_get_company_info": "기업개황",
+  "dart_get_representatives": "대표이사 전원",
+  "dart_get_financial_statement": "재무제표",
+  "dart_get_periodic_report_item": "정기보고서 항목",
+  "dart_get_equity_disclosure": "지분 공시",
+  "dart_get_major_report_item": "주요사항보고",
+  "dart_get_document_text": "공시 원문",
+  "search_all_ip": "지식재산권",
+  "get_corp_basic_info": "금융위 기업기본정보",
+  "get_ksd_corp_info": "예탁원 기업정보",
+  "krx_get_stock_daily": "주식 시세",
+  "search_company": "SEC 회사 찾기",
+  "get_company_filings": "SEC 공시 목록",
+  "get_company_facts": "SEC 재무(XBRL)",
+  "get_major_shareholders": "SEC 5% 주주",
+  "get_filing_section": "SEC 공시 원문",
+  "search_naver": "네이버 검색",
+  "search_law": "법령 검색",
+  "get_law_text": "조문 조회",
+  "get_law_history": "법령 연혁",
+  "search_admin_rule": "행정규칙 검색",
+  "get_admin_rule": "행정규칙 본문",
+  "search_annex": "별표·서식 검색",
+  "search_precedent": "판례 검색",
+  "get_precedent": "판례 본문",
+  "search_interpretation": "법령해석례 검색",
+  "get_interpretation": "법령해석례 본문",
+  "search_krx_regulation": "KRX 규정 해설 검색",
+  "get_krx_rule_fulltext": "KRX 규정 조문",
+  "get_krx_regulation_page": "KRX 해설 페이지",
+  "search_kasb_standard": "회계기준 검색",
+  "get_kasb_standard_text": "회계기준 본문",
+  "search_kasb_qna": "질의회신 검색",
+  "get_kasb_qna_detail": "질의회신 전문",
+  "kma_short_forecast": "동네예보 조회",
+  "kma_mid_forecast": "중기예보 조회",
+  "kma_warnings": "기상특보 조회",
+  "kma_find_code": "지역 코드 찾기",
+  "collect_naver_news": "뉴스 기사 수집",
+  "collect_naver_comments": "댓글 수집",
+  "dcf_calculate": "DCF 계산",
+  "dart_get_securities_report_item": "증권신고서 항목",
+  "search_stock": "종목 찾기",
+  "search_by_industry": "업종 상장사",
+  "peergroup_get_population": "피어 모집단",
+  "get_business_content": "사업의 내용",
+  "valuation_get_data": "밸류에이션 자료",
+  "compute_beta": "베타 계산",
+  "krx_get_index_daily": "지수 시세",
+  "krx_get_etf_daily": "ETF 시세",
+  "krx_get_bond_daily": "채권 시세",
+  "krx_get_commodity_daily": "금·석유·배출권",
+  "krx_get_timeseries": "시세 추이",
+  "krx_list_listed": "상장 종목",
+  "exim_get_fx": "환율",
+  "exim_get_fx_series": "환율 추이",
+  "exim_get_interest": "금리",
+  "kosis_search_tables": "통계표 찾기",
+  "kosis_get_table_meta": "통계표 항목",
+  "kosis_get_data": "통계 수치",
+  "kepco_get_data": "전력 데이터",
+  "kepco_get_codes": "전력 코드표",
+  "holiday_get_days": "공휴일·영업일",
+  "rtms_find_region": "지역 코드",
+  "rtms_get_deals": "실거래가",
+  "datalab_search_trend": "검색어 트렌드",
+  "datalab_shopping_insight": "쇼핑 인사이트",
+  "youtube_search_videos": "유튜브 영상 검색",
+  "youtube_get_videos": "영상 정보",
+  "youtube_get_comments": "영상 댓글",
+  "youtube_search_channels": "채널 검색",
+  "youtube_get_channels": "채널 정보",
+  "youtube_list_channel_videos": "채널 영상 목록",
+  "youtube_trending_videos": "인기 급상승",
+  "kma_forecast_text": "예보 통보문",
+  "kma_forecast_version": "예보 발표 버전",
+  "kma_forecast_archive": "과거 예보",
+  "kma_impact_forecast": "폭염·한파 영향예보",
+  "kma_warning_history": "특보 이력",
+  "kma_warning_map": "특보 지도",
+  "kma_highway_weather": "고속도로 날씨",
+  "kma_road_weather": "도로 기상",
+  "kma_tour_weather": "관광지 날씨",
+  "kma_living_index": "생활기상지수",
+  "kma_uv_observation": "자외선 관측",
+  "search_drug_easy_info": "e약은요",
+  "search_drug_ingredients": "제품 주성분",
+  "search_drug_permission": "의약품 허가정보",
+  "search_drug_permission_list": "의약품 허가목록",
+  "search_pill_identification": "낱알식별",
+  "search_health_functional_food": "건강기능식품",
+  "search_patents_keyword": "특허 키워드 검색",
+  "search_patents": "특허 검색",
+  "search_patents_advanced": "특허 상세 검색",
+  "get_patent_detail": "특허 상세",
+  "scan_national_housing_pipeline": "전국 주택인허가",
+  "search_housing_permits": "주택인허가",
+  "search_housing_sales": "청약홈 분양정보",
+  "scan_construction_pipeline": "시공사 파이프라인",
+  "scan_arch_permits": "건축인허가 스캔",
+  "search_arch_permits": "건축인허가(지번)",
+  "get_arch_permit_detail": "건축인허가 상세",
+  "search_arch_aux_registers": "철거멸실 등 대장",
+  "search_construction_firms": "건설업 등록·변동",
+  "search_construction_sanctions": "건설업 행정처분",
+  "get_construction_notice_stats": "건설공사 통보 통계",
+  "search_cals_contractor": "CALS 참여업체",
+  "search_cals_construction": "CALS 공사정보",
+  "get_cals_construction_detail": "CALS 현장 상세",
+  "search_cals_quality_tests": "CALS 품질검사 현장",
+  "search_cals_project_evaluation": "CALS 사후평가",
+  "search_onbid_realestate": "공매 물건",
+  "get_onbid_realestate_detail": "공매 물건 상세",
+  "get_onbid_bid_info": "공매 입찰조건",
+  "search_onbid_bid_results": "공매 입찰결과",
+  "search_onbid_notices": "공매 공고",
+  "get_onbid_notice_detail": "공매 공고 상세",
+  "get_new_vehicle_registrations": "자동차 신규등록",
+  "get_vehicle_registration_stock": "자동차 누적 등록",
+  "get_molit_vehicle_stat": "통계누리 자동차 통계",
+  "resolve_region": "지역·좌표 찾기",
+  "stores_nearby": "반경 내 점포",
+  "store_industry_mix": "업종 구성",
+  "permit_open_close_trend": "개폐업 추이",
+  "search_permits": "인허가 업소",
+  "region_demographics": "배후 인구",
+  "region_business_stats": "사업체 통계",
+  "seoul_trade_areas": "서울 상권 찾기",
+  "seoul_trade_area_stats": "서울 상권 지표",
+  "seoul_living_population": "서울 생활인구",
+  "seoul_living_population_trend": "생활인구 추이",
+  "seoul_dong_codes": "서울 행정동 코드",
+  "trade_area_report": "상권 종합",
+  "list_industry_codes": "업종 코드",
+  "naver_geocode": "네이버 지오코딩",
+  "naver_reverse_geocode": "좌표→주소",
+  "convert_coords": "좌표 변환",
+  "search_franchise_headquarters": "가맹본부 등록부",
+  "search_franchise_disclosure": "정보공개서 목록",
+  "get_franchise_disclosure": "정보공개서 본문",
+  "get_franchise_brand_stores": "브랜드 점포 수",
+  "search_trademarks_keyword": "상표 키워드 검색",
+  "search_trademarks": "상표 검색",
+  "search_designs_keyword": "디자인 키워드 검색",
+  "search_designs": "디자인 검색",
+  "get_disclosure_info": "금융위 공시정보",
+  "get_stock_issuance_info": "주식발행 정보",
+  "search_law_term": "법령 용어",
+  "search_english_law": "영문 법령"
+ },
+ "tool_notes": {
+  "resolve_bizno": "{companyName | bizNo} 회사명↔사업자등록번호 양방향 해석. 사업자·법인등록번호, DART 고유번호, 종목코드, 대표자, 소재지, 국세청 상태(계속·휴업·폐업, 실시간). 같은 상호가 여럿이면 해석하지 않고 후보 목록만 준다.",
+  "get_national_pension_workplace": "{companyName, bizNo(10자리 또는 앞 6자리), months(≤12), workplace(사업장후보의 키 또는 번호), includeFlows} 월별 가입자수 추이·신규취득·상실. 사업장이 여럿이면 사업장후보만 오니 workplace로 다시 부른다.",
+  "get_employment_insurance_workplace": "{bizNo(10자리) | companyName, includePension} 고용·산재 상시인원·업종·성립일(기준시점 미상)과 국민연금 교차값.",
+  "search_narajangteo_scsbid": "{from, to(YYYYMMDDHHMM), dateType(개찰일시|공고일시|등록일시), bizTypes[물품|공사|용역|외자], bidNtceNm, ntceInsttNm(공고기관), dminsttNm(수요기관), companyName | bizno, bidNtceNo, presmptPrceBgn, presmptPrceEnd, summaryOnly, topN(≤50), limit(≤300)} 낙찰업체·낙찰금액·낙찰률·참가업체수. 응답의 잘림·잘림사유·실패구간·수집건수·반환건수·낙찰률결측·테스트공고의심·실개찰_구간내를 확인한다.",
+  "get_narajangteo_openg_result": "{bidNtceNo(필수), bizType(물품|공사|용역|외자), bidNtceOrd, limit} 공고 1건의 개찰 개요와 전 참가업체 순위·투찰금액·투찰률·평가점수, 유찰·재입찰 사유.",
+  "scan_narajangteo_procurement": "{since(필수), until (YYYYMMDDHHMM), keywords[]} 조달요청·발주계획·사전규격·입찰공고를 한 번에 조회하고 같은 사업은 가장 진전된 단계에만 남긴다. 27일 전까지만 조회된다. keywords를 생략하면 특정 IT 키워드 묶음이 자동 적용되므로 항상 지정한다.",
+  "scan_agency_bids": "{agency(kwater_bid|kwater_prespec|kra|dapa_bid|klid|kospo|kdhc), since(필수), until (YYYYMMDDHHMM), keywords[]} 나라장터 밖 기관 공고. 이전 공고가 섞여 오므로 날짜로 직접 거른다.",
+  "scan_dapa_plan": "{keywords[]} 현재 조달계획 중 키워드 매칭분 전체(날짜 필터 없음).",
+  "scan_nia_board": "{keywords[], pages(≤10, 기본 5)} NIA 알림마당 최근 게시물 중 매칭분. date(YYYY.MM.DD)로 직접 거른다.",
+  "scan_gov_biz_announcements": "{since, until(YYYYMMDD), keywords[], sources(msit|mss|both), limit} 부처 사업공고. 중기부는 공고일이 없고 일일 호출 한도가 100회다.",
+  "dart_search_corp_code": "{corp_name | stock_code} DART 고유번호(corp_code) 찾기. 반환 회사명이 검색어와 다르면 오매칭을 의심한다.",
+  "dart_search_disclosure": "{corp_code, bgn_de, end_de(YYYYMMDD), pblntf_ty(A정기|B주요사항|C발행|D지분|E기타|F외부감사|I거래소), page_count(≤100), last_reprt_at} 공시 목록과 접수번호(rcept_no).",
+  "dart_get_company_info": "{corp_code} 대표자(1명만 표시), 법인구분(Y유가·K코스닥·N코넥스·E기타), 종목코드, 사업자·법인등록번호, 설립일, 결산월, 업종, 주소.",
+  "dart_get_representatives": "{corp_code, rcept_no} 대표이사 전원과 기준 보고서·결산기준일. 각자/공동 구분은 없다.",
+  "dart_get_financial_statement": "{infoType(single_account|single_all|single_index), corp_code, bsns_year, reprt_code(11011 사업|11012 반기|11013 1분기|11014 3분기), fs_div(CFS 연결|OFS 별도)} single_account 1회로 당기·전기·전전기 주요계정.",
+  "dart_get_periodic_report_item": "{reportItem, corp_code, bsns_year, reprt_code} reportItem: largest_shareholder, minority_shareholder, employee_status, executive_status, auditor_opinion, stock_total_qty, investment_in_others, dividend 등.",
+  "dart_get_equity_disclosure": "{infoType(major_holding 5% 대량보유 | exec_holding 임원·주요주주), corp_code}",
+  "dart_get_major_report_item": "{reportItem(lawsuit|convertible_bond|bond_with_warrant|rights_offering|merger|division|business_transfer 등), corp_code, bgn_de, end_de(YYYYMMDD, 모두 필수)}",
+  "dart_get_document_text": "{rcept_no(필수), mode(outline|count|extract), keyword, keywords[], charsAfter(≤20000), fileIndex, occurrenceIndex} 공시서류 원문의 목차·키워드 주변 발췌. 호출마다 30~40초 걸린다.",
+  "search_all_ip": "{applicant(필수), numOfRows(≤50)} 출원인 명의 특허·실용신안·디자인·상표 건수와 상세 목록. 건수는 정확하지만 목록은 잘린다.",
+  "get_corp_basic_info": "{crno(법인등록번호 13자리, 필수), infoType(overview|affiliates|subsidiaries), basDt, nameFilter} 기업개요(종업원수·감사인·감사의견 등)·계열회사·종속기업.",
+  "get_ksd_corp_info": "{companyName | shortIsin, infoType(basic|stockChange)} 예탁결제원 기업기본정보·발행주식 변동.",
+  "krx_get_stock_daily": "{codes[](종목코드 6자리) | query(종목명), bas_dd(YYYYMMDD, 생략 시 최근 영업일), market} 종가·등락률·거래대금·시가총액·상장주식수. 응답의 사용기준일을 기준일로 쓴다.",
+  "search_company": "{query(회사명·티커)} CIK 찾기.",
+  "get_company_filings": "{cik, formType(10-K|10-Q|8-K|20-F 등), limit} 공시 목록과 reportUrl·indexUrl.",
+  "get_company_facts": "{cik, concept} concept 생략 시 쓸 수 있는 US-GAAP 항목 목록, 지정 시 그 항목의 연도별 값.",
+  "get_major_shareholders": "{cik, limit(기본 5)} Schedule 13D/13G 표지 발췌.",
+  "get_filing_section": "{url(reportUrl), keyword, occurrenceIndex, charsAfter} 공시 문서의 섹션 발췌. keyword 생략 시 목차.",
+  "search_naver": "{category(news|blog|cafearticle|kin|webkr|encyc), query, display(≤100), sort(sim|date)} 네이버 검색 결과(제목·요약·링크·날짜). 뉴스는 미검증 정성정보로만 쓴다.",
+  "search_law": "{query, search(1 법령명|2 본문), display} 현행 법령 목록과 MST·시행일. 법률·시행령·시행규칙은 따로 나온다.",
+  "get_law_text": "{mst, jo('제38조'|'38'|'10의2'), law_id} 조문 원문. jo 생략 시 목차. 시행예정 버전 여부를 표시한다.",
+  "get_law_history": "{query(법령명), display} 시행일자별 버전 목록(현행·시행예정 구분).",
+  "search_admin_rule": "{query, display} 고시·훈령·예규 검색. 결과의 행정규칙일련번호(13자리)를 get_admin_rule에 쓴다.",
+  "get_admin_rule": "{id(행정규칙일련번호 13자리)}",
+  "search_annex": "{query, display} 법령 별표·서식 목록과 HWP/PDF 링크. 공식 제목에 가깝게 검색한다.",
+  "search_precedent": "{query(2~3단어), case_number, court, display} 판례 목록과 판례일련번호.",
+  "get_precedent": "{id(판례일련번호)} 판시사항·판결요지·전문.",
+  "search_interpretation": "{query, display} 법제처 법령해석례 목록과 일련번호.",
+  "get_interpretation": "{id} 질의요지·회답·이유.",
+  "search_krx_regulation": "{keyword, category, market(유가증권시장|코스닥시장|코넥스시장|공통), limit} 거래소 제도 해설·요건표(조문 원문 아님).",
+  "get_krx_rule_fulltext": "{rule_name(필수, 예: '코스닥시장 상장규정', '코스닥시장 공시규정 시행세칙'), article_no('제28조'|'별표10')} 조문·별표 원문과 개정차수. article_no 생략 시 전문과 별표 목록.",
+  "get_krx_regulation_page": "{url | page_name} search_krx_regulation 결과 페이지 전체 본문.",
+  "search_kasb_standard": "{keyword(필수), category(kifrs|gaap|etc), limit} K-IFRS·일반기업회계기준 조문 검색.",
+  "get_kasb_standard_text": "{stdNum(K-IFRS 4자리 '1116', 일반기업회계기준 장 번호 '16'), documentId} documentId 없으면 목차.",
+  "search_kasb_qna": "{keyword(필수), limit} 회계기준원·금감원 질의회신 요약.",
+  "get_kasb_qna_detail": "{qnaId}"
  }
 }
