@@ -151,7 +151,7 @@ function noticesFor(caller, page) {
   });
 }
 // 도구 찾기(8-2)용 전체 도구 목록. 설명과 인자 설명은 길이를 줄여 보낸다
-const TOOLCAT_DESC = 260, TOOLCAT_ARG = 90;
+const TOOLCAT_DESC = 400, TOOLCAT_ARG = 70;
 function slimSchema(sc) {
   if (!sc || typeof sc !== "object") return { type: "object" };
   const out = { type: "object" };
@@ -195,9 +195,15 @@ async function configResult(args, caller) {
   if (since && since === CATALOG.version) {
     return { content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 변경 없음` }], structuredContent: { version: CATALOG.version, unchanged: true } };
   }
-  const out = Object.assign({}, CATALOG, { notices: noticesFor(caller, page) });
+  // 옛 페이지에는 옛 항목만, 새 페이지에는 새 항목과 공통 항목만 보낸다(응답 크기를 줄이고 서로 영향이 없게)
+  const V2_KEYS = ["ui_v2", "sections_v2", "groups_v2", "agents_v2", "sources", "features", "notices", "page_min", "tool_labels", "tool_notes", "prompts_v2"];
+  const V1_ONLY = ["ui", "groups", "agents", "servers", "prompts"];
+  const out = Object.assign({}, CATALOG);
+  if (page) V1_ONLY.forEach(k => { delete out[k]; });
+  else V2_KEYS.forEach(k => { delete out[k]; });
+  if (page) out.notices = noticesFor(caller, page);
   return {
-    content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 에이전트 ${CATALOG.agents.length}개(${CATALOG.agents.map(a => a.name).join(", ")}). 전체 내용은 structuredContent에 있다.` }],
+    content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 에이전트 ${(page && CATALOG.agents_v2 ? CATALOG.agents_v2 : CATALOG.agents).length}개. 전체 내용은 structuredContent에 있다.` }],
     structuredContent: out
   };
 }
