@@ -37,6 +37,14 @@
 - 키를 보내면 안 되는 서버(외부 서버)는 `lib/backends.js` 항목에 `noKey: true`를 둔다.
 - `dcfpeer`는 외부 공개 서버(DCF Peer Group)다. 우리 소유가 아니므로 `noKey: true`로 접근 키를 보내지 않는다. 운영자가 서버를 바꾸거나 내리면 이 도구들도 같이 멈춘다.
 
+## 새 페이지 지원 (2026-10-21)
+
+- `relay_config`·`relay_call`은 선택 인자 `page`(페이지 버전)를 받는다. 새 페이지만 보내고 옛 페이지는 보내지 않는다.
+- `relay_config {part: "tools"}`는 도구 찾기용 전체 도구 목록(이름·서버·짧은 설명·간추린 입력 형식)을 돌려준다.
+- `agents.json`의 `notices`는 `audience`("all" | "v1" | "v2" | 키 식별자 배열)에 맞는 것만 내려보낸다.
+- `agents.json`의 `legacy_until`(한국시간 YYYY-MM-DD)이 지나면 `page` 없는 `relay_call`을 `legacy_message` 문구로 거절한다.
+- 사용 기록에 `@page:<버전>` 카운터를 더한다(v1 = 옛 페이지). `relay_usage {group_by: "user_page"}`로 본다.
+
 ## 환경변수
 
 | 이름 | 용도 |
