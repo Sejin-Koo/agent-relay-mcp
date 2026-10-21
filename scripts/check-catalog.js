@@ -1,7 +1,6 @@
 // lib/agents.json(에이전트 설정)이 쓰는 도구가 모두 lib/backends.js 허용 목록에 있는지 확인한다.
 // push 전에 node scripts/check-catalog.js 로 돌린다. 어긋나면 종료코드 1.
 const { ROUTE } = require("../lib/backends");
-const LOCAL = new Set([require("../lib/dcf").TOOL.name]); // 중계 서버 자체 도구
 const cat = require("../lib/agents.json");
 const errs = [];
 const ids = new Set();
@@ -26,7 +25,7 @@ for (const a of cat.agents) {
   } else if (Array.isArray(a.tools)) {
     a.tools.forEach(t => names.push(t.name));
   } else errs.push(`${a.id}: tools·use 둘 다 없음`);
-  names.forEach(n => { if (!ROUTE[n] && !LOCAL.has(n)) errs.push(`${a.id}: 중계 서버 허용 목록에 없는 도구 ${n}`); });
+  names.forEach(n => { if (!ROUTE[n]) errs.push(`${a.id}: 중계 서버 허용 목록에 없는 도구 ${n}`); });
 }
 for (const k of ["single", "composite", "doc_on", "doc_off"]) if (cat.prompts && cat.prompts[k] && !Array.isArray(cat.prompts[k])) errs.push(`prompts.${k}는 줄 배열이어야 함`);
 for (const [k, v] of Object.entries(cat.icons || {})) if (!/^\s*<svg[\s>]/i.test(v) || v.length > 8000) errs.push(`icons.${k}: <svg>로 시작하는 8000자 이내 SVG여야 함`);
