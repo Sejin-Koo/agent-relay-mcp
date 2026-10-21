@@ -1,5 +1,5 @@
 {
- "version": "2026-10-21.6",
+ "version": "2026-10-21.7",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -1336,8 +1336,10 @@
     "pdf"
    ],
    "use": {
+    "valuation": [
+     "dcf_calculate"
+    ],
     "dart": [
-     "dcf_calculate",
      "dart_search_corp_code",
      "dart_get_company_info",
      "dart_get_financial_statement",
