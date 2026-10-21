@@ -36,6 +36,8 @@
 - `dcf_calculate`(DCF 계산기)는 **dart-mcp에 있고** 이 서버는 그대로 넘겨 준다. 계산 코드는 dart-mcp 한 벌만 둔다(2026-10-21 이전).
 - 키를 보내면 안 되는 서버(외부 서버)는 `lib/backends.js` 항목에 `noKey: true`를 둔다.
 - `dcfpeer`는 외부 공개 서버(DCF Peer Group)다. 우리 소유가 아니므로 `noKey: true`로 접근 키를 보내지 않는다. 운영자가 서버를 바꾸거나 내리면 이 도구들도 같이 멈춘다.
+- `accwiki`는 외부 공개 서버(회계위키, accountingwiki.co.kr)다. `noKey: true`이고, 도구 이름이 `search`·`fetch`처럼 일반적이라 `prefix: "accwiki_"`로 이름을 바꿔 공개한다(호출 때 원래 이름으로 넘김). `tools`에는 원래 이름을 적고, 에이전트 배정(`lib/agents.json`)에는 접두어가 붙은 이름을 쓴다.
+- `prefix`를 둔 서버는 `descNote`로 도구 설명 끝에 이름 안내를 붙일 수 있다(설명 속 원래 도구 이름을 새 이름으로 읽게 하기 위함).
 
 ## 새 페이지 지원 (2026-10-21)
 

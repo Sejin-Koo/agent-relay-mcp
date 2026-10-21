@@ -3,7 +3,7 @@
 // SDK 없이 JSON-RPC를 직접 구현했으므로 규격상 필요한 세 가지를 직접 처리한다:
 //   ① initialize 버전 협상(지원 목록과 대조) ② 미지원 MCP-Protocol-Version 헤더에 400 ③ 알림에 202
 
-const { BACKENDS, ROUTE } = require("../lib/backends");
+const { BACKENDS, ROUTE, UPSTREAM } = require("../lib/backends");
 const usage = require("../lib/usage");
 const CATALOG = require("../lib/agents.json");
 
@@ -97,9 +97,13 @@ async function backendTools(id) {
     if (msg.error) throw new Error(msg.error.message || "tools/list 오류");
     const all = (msg.result && msg.result.tools) || [];
     const allow = new Set(b.tools);
-    const tools = all.filter(t => allow.has(t.name));
-    const missing = b.tools.filter(n => !tools.some(t => t.name === n));
+    const picked = all.filter(t => allow.has(t.name));
+    const missing = b.tools.filter(n => !picked.some(t => t.name === n));
     if (missing.length) console.log(`[list] ${id} 허용 목록에 있으나 서버에 없는 도구: ${missing.join(",")}`);
+    // prefix 가 있는 서버는 공개 이름으로 바꿔 내보낸다(호출 때 UPSTREAM 으로 되돌린다)
+    const tools = b.prefix
+      ? picked.map(t => Object.assign({}, t, { name: b.prefix + t.name, description: String(t.description || "") + (b.descNote || "") }))
+      : picked;
     listCache[id] = { at: Date.now(), tools };
     return tools;
   } catch (e) {
@@ -328,7 +332,7 @@ async function callTool(params, caller, page) {
   const b = BACKENDS[id];
   const t0 = Date.now();
   try {
-    const msg = await rpcToBackend(b, "tools/call", { name, arguments: (params && params.arguments) || {} }, CALL_TIMEOUT_MS);
+    const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: (params && params.arguments) || {} }, CALL_TIMEOUT_MS);
     const ok = !msg.error && !(msg.result && msg.result.isError);
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${ok}`);
     await usage.recordCall(caller, name, Date.now() - t0, ok, page);
@@ -355,7 +359,7 @@ async function handleMessage(m, caller) {
         protocolVersion: SUPPORTED.includes(req) ? req : LATEST,
         capabilities: { tools: { listChanged: false } },
         serverInfo: SERVER_INFO,
-        instructions: "업무 에이전트 중계 서버입니다. 공시·기업정보·법령·거래소 규정·회계기준·나라장터·공공데이터·건설·상권·시장지표·네이버·YouTube·기상청 도구를 한 주소에서 제공합니다."
+        instructions: "업무 에이전트 중계 서버입니다. 공시·기업정보·법령·거래소 규정·회계기준·회계위키(감리지적사례·회계감사기준 포함, accwiki_ 도구)·나라장터·공공데이터·건설·상권·시장지표·네이버·YouTube·기상청 도구를 한 주소에서 제공합니다."
       } });
     }
     case "ping":
