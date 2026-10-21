@@ -6,6 +6,7 @@
 const { BACKENDS, ROUTE } = require("../lib/backends");
 const usage = require("../lib/usage");
 const CATALOG = require("../lib/agents.json");
+const dcf = require("../lib/dcf");
 
 const SERVER_INFO = { name: "agent-relay-mcp", version: "1.0.0" };
 // @modelcontextprotocol/sdk 1.32.1 의 SUPPORTED_PROTOCOL_VERSIONS 와 같은 값으로 맞춘다
@@ -111,7 +112,7 @@ async function listTools(caller) {
   const ids = Object.keys(BACKENDS);
   const parts = await Promise.all(ids.map(backendTools));
   const tools = [].concat(...parts);
-  tools.push(CONFIG_TOOL, CALL_TOOL);
+  tools.push(CONFIG_TOOL, CALL_TOOL, dcf.TOOL);
   if (isAdmin(caller)) tools.push(USAGE_TOOL);
   return tools;
 }
@@ -216,7 +217,7 @@ async function callTool(params, caller) {
   if (name === "relay_call") {
     const a = (params && params.arguments) || {};
     const inner = String(a.tool || "");
-    if (!inner || inner.startsWith("relay_") || !ROUTE[inner]) {
+    if (!inner || inner.startsWith("relay_") || !(ROUTE[inner] || inner === dcf.TOOL.name)) {
       return { result: { isError: true, content: [{ type: "text", text: `relay_call로 부를 수 없는 도구입니다: ${inner || "(없음)"}` }] } };
     }
     let innerArgs = a.arguments;
@@ -225,6 +226,18 @@ async function callTool(params, caller) {
       return { result: { isError: true, content: [{ type: "text", text: "arguments는 JSON 객체여야 합니다" }] } };
     }
     return callTool({ name: inner, arguments: innerArgs || {} }, caller);
+  }
+  // 중계 서버 자체 계산 도구(외부 호출 없음)
+  if (name === dcf.TOOL.name) {
+    const t0 = Date.now();
+    try {
+      const result = dcf.calculate((params && params.arguments) || {});
+      await usage.recordCall(caller, name, Date.now() - t0, true);
+      return { result };
+    } catch (e) {
+      await usage.recordCall(caller, name, Date.now() - t0, false);
+      return { result: { isError: true, content: [{ type: "text", text: `DCF 계산 오류: ${e.message}` }] } };
+    }
   }
   const id = ROUTE[name];
   if (!id) {
