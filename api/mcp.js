@@ -306,6 +306,26 @@ async function usageReport(args) {
   return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { from, to, group_by: by, total_calls: total, rows: out } };
 }
 
+// 업무 에이전트 페이지는 구조화 결과(structuredContent)가 있으면 그것만 읽는다.
+// 본문은 글(content text)에만 두고 구조화 결과에는 요약 필드만 넣는 서버가 있어(예: 사업의 내용)
+// 본문이 페이지에 전달되지 않았다. 글이 JSON 이 아니고 구조화 결과보다 내용이 많으면 글을 text 로 함께 넣는다.
+function attachText(result) {
+  try {
+    if (!result || result.isError) return result;
+    const sc = result.structuredContent;
+    if (!sc || typeof sc !== "object" || Array.isArray(sc)) return result;
+    const text = (result.content || []).filter(c => c && c.type === "text" && c.text).map(c => c.text).join("\n");
+    if (!text) return result;
+    const head = text.trim()[0];
+    if (head === "{" || head === "[") { try { JSON.parse(text); return result; } catch (e) { /* 글이다 */ } }
+    if (JSON.stringify(sc).length >= text.length * 0.6) return result; // 구조화 결과가 이미 내용을 담고 있다
+    const key = sc.text === undefined ? "text" : "content_text";
+    return Object.assign({}, result, { structuredContent: Object.assign({}, sc, { [key]: text }) });
+  } catch (e) {
+    return result;
+  }
+}
+
 // ---------- tools/call: 담당 서버로 그대로 넘긴다 ----------
 async function callTool(params, caller, page) {
   const name = params && params.name;
@@ -377,7 +397,7 @@ async function callTool(params, caller, page) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${ok}`);
     await usage.recordCall(caller, name, Date.now() - t0, ok, page);
     if (msg.error) return { error: msg.error };
-    return { result: msg.result };
+    return { result: attachText(msg.result) };
   } catch (e) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
     await usage.recordCall(caller, name, Date.now() - t0, false, page);
