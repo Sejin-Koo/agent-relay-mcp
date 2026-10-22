@@ -69,6 +69,14 @@ if (cat.agents_v2) {
   const P2 = cat.prompts_v2 || {};
   if (P2.figure && !(Array.isArray(P2.figure) && P2.figure.every(x => typeof x === "string"))) e2.push("prompts_v2.figure는 문장 배열");
   if (P2.doc) for (const k of ["rules", "pptx", "other", "tail"]) if (P2.doc[k] && !(Array.isArray(P2.doc[k]) && P2.doc[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.doc.${k}는 문장 배열`);
+  if (cat.models !== undefined) {
+    if (!Array.isArray(cat.models) || !cat.models.length) e2.push("models는 비어 있지 않은 배열");
+    else cat.models.forEach((m, i) => {
+      if (!m || !/^[a-z0-9.\-]{3,60}$/.test(String(m.id || ""))) e2.push(`models[${i}].id 형식(Claude API 모델 id)`);
+      if (["quick", "default", "complex"].indexOf(m && m.tier) < 0) e2.push(`models[${i}].tier는 quick|default|complex`);
+      if (!m || !String(m.label || "").trim()) e2.push(`models[${i}].label 없음`);
+    });
+  }
   if (cat.doc_style) {
     const ds = cat.doc_style, HEXC = /^([0-9A-Fa-f]{6}|auto)$/;
     Object.entries(ds.colors || {}).forEach(([k, v]) => { if (!HEXC.test(String(v))) e2.push(`doc_style.colors.${k} 형식(6자리 색)`); });
