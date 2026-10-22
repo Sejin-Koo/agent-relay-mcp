@@ -211,7 +211,7 @@ async function configResult(args, caller) {
     return { content: [{ type: "text", text: `에이전트 설정 ${CATALOG.version} — 변경 없음` }], structuredContent: { version: CATALOG.version, unchanged: true } };
   }
   // 옛 페이지에는 옛 항목만, 새 페이지에는 새 항목과 공통 항목만 보낸다(응답 크기를 줄이고 서로 영향이 없게)
-  const V2_KEYS = ["ui_v2", "sections_v2", "groups_v2", "agents_v2", "sources", "features", "notices", "page_min", "tool_labels", "tool_notes", "prompts_v2", "doc_style"];
+  const V2_KEYS = ["ui_v2", "sections_v2", "groups_v2", "agents_v2", "sources", "features", "notices", "page_min", "tool_labels", "tool_notes", "prompts_v2", "doc_style", "models"];
   const V1_ONLY = ["ui", "groups", "agents", "servers", "prompts"];
   const out = Object.assign({}, CATALOG);
   if (page) V1_ONLY.forEach(k => { delete out[k]; });
