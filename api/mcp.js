@@ -6,6 +6,7 @@
 const { BACKENDS, ROUTE, UPSTREAM } = require("../lib/backends");
 const usage = require("../lib/usage");
 const web = require("../lib/web");
+const { coerceArgs } = require("../lib/coerce");
 const CATALOG = require("../lib/agents.json");
 
 const SERVER_INFO = { name: "agent-relay-mcp", version: "1.0.0" };
@@ -159,6 +160,17 @@ function noticesFor(caller, page) {
 }
 // 도구 찾기(8-2)용 전체 도구 목록. 설명과 인자 설명은 길이를 줄여 보낸다
 const TOOLCAT_DESC = 400, TOOLCAT_ARG = 70;
+// 형식·범위를 설명 끝에 붙인다(페이지의 도구 설명은 description 만 보여 주므로)
+function argHint(v) {
+  const h = [];
+  const ty = Array.isArray(v.type) ? v.type.join("|") : v.type;
+  if (ty === "string" && v.pattern) h.push(`문자열, 형식 ${v.pattern}`);
+  else if (ty === "string" && !Array.isArray(v.enum)) h.push("문자열");
+  if ((ty === "integer" || ty === "number") && (v.minimum !== undefined || v.maximum !== undefined)) {
+    h.push(`${ty === "integer" ? "정수" : "숫자"} ${v.minimum !== undefined ? v.minimum : ""}~${v.maximum !== undefined ? v.maximum : ""}`);
+  }
+  return h.length ? `[${h.join(", ")}]` : "";
+}
 function slimSchema(sc) {
   if (!sc || typeof sc !== "object") return { type: "object" };
   const out = { type: "object" };
@@ -171,6 +183,8 @@ function slimSchema(sc) {
         if (Array.isArray(v.enum)) p.enum = v.enum.slice(0, 30);
         if (v.items && v.items.type) p.items = { type: v.items.type };
         if (v.description) p.description = String(v.description).slice(0, TOOLCAT_ARG);
+        const hint = argHint(v);
+        if (hint) p.description = (p.description ? p.description + " " : "") + hint;
       }
       out.properties[k] = p;
     }
@@ -333,9 +347,21 @@ async function callTool(params, caller, page) {
   }
   const b = BACKENDS[id];
   const t0 = Date.now();
+  // 인자를 담당 서버 스키마에 맞춘다(형 변환·범위 맞춤). 스키마를 못 받으면 그대로 넘긴다
+  let args = (params && params.arguments) || {};
+  try {
+    const def = (await backendTools(id)).find(t => t.name === name);
+    if (def) {
+      const fixed = coerceArgs(def.inputSchema, args);
+      if (fixed.changes.length) console.log(`[coerce] tool=${name} ${fixed.changes.join("; ")}`);
+      args = fixed.args;
+    }
+  } catch (e) {
+    console.log(`[coerce] tool=${name} 건너뜀: ${e.message}`);
+  }
   if (b.local) {
     try {
-      const result = await web.call(name, (params && params.arguments) || {}, caller);
+      const result = await web.call(name, args, caller);
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${!result.isError}`);
       await usage.recordCall(caller, name, Date.now() - t0, !result.isError, page);
       return { result };
@@ -346,7 +372,7 @@ async function callTool(params, caller, page) {
     }
   }
   try {
-    const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: (params && params.arguments) || {} }, CALL_TIMEOUT_MS);
+    const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS);
     const ok = !msg.error && !(msg.result && msg.result.isError);
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${ok}`);
     await usage.recordCall(caller, name, Date.now() - t0, ok, page);
