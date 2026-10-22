@@ -47,6 +47,16 @@
 - `agents.json`의 `legacy_until`(한국시간 YYYY-MM-DD)이 지나면 `page` 없는 `relay_call`을 `legacy_message` 문구로 거절한다.
 - 사용 기록에 `@page:<버전>` 카운터를 더한다(v1 = 옛 페이지). `relay_usage {group_by: "user_page"}`로 본다.
 
+## 웹 도구 (2026-10-22)
+
+`lib/web.js`의 `web_search`·`fetch_page`는 다른 서버로 넘기지 않고 이 서버가 직접 수행한다(`lib/backends.js`의 `web` 항목, `local: true`).
+
+- `fetch_page`: 직접 접속(무료) → 본문이 거의 없거나 접속이 막히면 Tavily extract(basic, 월 무료 크레딧) → 그래도 안 되면 Nimble extract(브라우저 렌더, 국내 IP, 유료). PDF는 Tavily까지만.
+- `web_search`: Tavily search(basic, 1크레딧) → 실패·한도 소진이면 Nimble search(lite).
+- robots.txt가 막은 주소는 어느 경로로도 읽지 않는다. 사설망·루프백·메타데이터 주소는 DNS 해석 결과까지 확인해 막고, 리다이렉트마다 다시 확인한다.
+- 한도(Redis 카운터, 키 `w:<날짜>:<사용자>:<종류>`·`w:nimble:<월>`): 사람별 하루 `WEB_SEARCH_DAILY`(기본 60)·`WEB_FETCH_DAILY`(기본 400)·`WEB_PAID_FETCH_DAILY`(대체 경로, 기본 40), 서버 전체 월 `NIMBLE_MONTHLY_MAX`(기본 2000). 실패한 호출은 한도에서 되돌린다.
+- 이 도구들도 커넥터를 등록한 사람의 일반 채팅에서 쓰인다(같은 한도가 적용된다).
+
 ## 환경변수
 
 | 이름 | 용도 |
@@ -56,6 +66,8 @@
 | `BACKEND_KEY` | 중계 서버가 각 백엔드 서버를 부를 때 쓰는 접근 키 |
 | `KV_REST_API_URL`·`KV_REST_API_TOKEN` | 사용 기록 저장소(Upstash Redis, Vercel 마켓플레이스 연결 시 자동 등록) |
 | `USAGE_RETENTION_DAYS` | 사용 기록 보관 일수(기본 90) |
+| `TAVILY_API_KEY`·`NIMBLE_API_KEY` | 웹 도구의 검색·대체 읽기 경로(에이전트 전용으로 발급한 키). 없으면 그 경로만 건너뛴다 |
+| `WEB_SEARCH_DAILY`·`WEB_FETCH_DAILY`·`WEB_PAID_FETCH_DAILY`·`NIMBLE_MONTHLY_MAX` | 웹 도구 한도(위 절 참조) |
 | `RELAY_ADMIN_LABELS` | 사용현황 도구를 볼 수 있는 키 식별자(쉼표 구분, 기본 `koo`) |
 
 백엔드마다 다른 키가 필요하면 `lib/backends.js`의 항목에 `keyEnv: "환경변수명"`을 지정한다.
