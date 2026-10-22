@@ -5,6 +5,7 @@
 
 const { BACKENDS, ROUTE, UPSTREAM } = require("../lib/backends");
 const usage = require("../lib/usage");
+const web = require("../lib/web");
 const CATALOG = require("../lib/agents.json");
 
 const SERVER_INFO = { name: "agent-relay-mcp", version: "1.0.0" };
@@ -90,6 +91,7 @@ async function rpcToBackend(b, method, params, timeoutMs) {
 const listCache = {}; // id -> { at, tools }
 async function backendTools(id) {
   const b = BACKENDS[id];
+  if (b.local) return web.TOOLS.filter(t => b.tools.includes(t.name));
   const c = listCache[id];
   if (c && Date.now() - c.at < LIST_TTL_MS) return c.tools;
   try {
@@ -331,6 +333,18 @@ async function callTool(params, caller, page) {
   }
   const b = BACKENDS[id];
   const t0 = Date.now();
+  if (b.local) {
+    try {
+      const result = await web.call(name, (params && params.arguments) || {}, caller);
+      console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${!result.isError}`);
+      await usage.recordCall(caller, name, Date.now() - t0, !result.isError, page);
+      return { result };
+    } catch (e) {
+      console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
+      await usage.recordCall(caller, name, Date.now() - t0, false, page);
+      return { result: { isError: true, content: [{ type: "text", text: `웹 도구 오류: ${e.message}` }] } };
+    }
+  }
   try {
     const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: (params && params.arguments) || {} }, CALL_TIMEOUT_MS);
     const ok = !msg.error && !(msg.result && msg.result.isError);
