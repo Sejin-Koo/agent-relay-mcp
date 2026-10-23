@@ -57,6 +57,13 @@
 - 한도(Redis 카운터, 키 `w:<날짜>:<사용자>:<종류>`·`w:nimble:<월>`): 사람별 하루 `WEB_SEARCH_DAILY`(기본 60)·`WEB_FETCH_DAILY`(기본 400)·`WEB_PAID_FETCH_DAILY`(대체 경로, 기본 40), 서버 전체 월 `NIMBLE_MONTHLY_MAX`(기본 1000). 실패한 호출은 한도에서 되돌린다.
 - 이 도구들도 커넥터를 등록한 사람의 일반 채팅에서 쓰인다(같은 한도가 적용된다).
 
+## 파일 변환기 — 원본은 계정 스킬
+
+`build_file`(Excel 가치평가 모델·표 → 시트, 한글 HWPX)이 쓰는 변환기의 **원본은 계정 스킬 `sys-file-builder`**이고,
+`lib/filebuilder/`는 그 사본이다. 이 서버는 사용자에게 계정의 기능을 공유하는 통로이므로 기능을 이 저장소에서 먼저
+만들거나 사본을 직접 고치지 않는다. 원본 스킬을 고친 뒤 `node scripts/sync-filebuilder.js <스킬 폴더>`로 다시 복사하고,
+`SOURCE.json`(버전·해시)이 함께 바뀐다. `scripts/check-catalog.js`는 사본이 기록과 다르면 실패한다.
+
 ## 환경변수
 
 | 이름 | 용도 |

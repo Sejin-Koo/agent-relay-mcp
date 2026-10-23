@@ -104,3 +104,10 @@ if (cat.agents_v2) {
   if (e2.length) { console.error(e2.join("\n")); process.exit(1); }
   console.log(`새 페이지 설정: 에이전트 ${cat.agents_v2.length}개, 출처 ${Object.keys(src).length}개, 공지 ${(cat.notices || []).length}건 검사 통과`);
 }
+
+// 파일 변환기 사본(lib/filebuilder/)이 계정 스킬 원본에서 복사한 그대로인지 — 사본을 직접 고치면 실패
+{
+  const r = require("child_process").spawnSync(process.execPath, [require("path").join(__dirname, "sync-filebuilder.js"), "--check"], { encoding: "utf8" });
+  process.stdout.write(r.stdout || ""); process.stderr.write(r.stderr || "");
+  if (r.status !== 0) process.exit(1);
+}
