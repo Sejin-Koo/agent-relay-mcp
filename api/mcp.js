@@ -6,6 +6,9 @@
 const { BACKENDS, ROUTE, UPSTREAM } = require("../lib/backends");
 const usage = require("../lib/usage");
 const web = require("../lib/web");
+const files = require("../lib/files");
+const LOCAL = { web, files }; // 이 서버가 직접 수행하는 도구 묶음(backends.js의 local 항목 module 이름)
+const localOf = (b) => LOCAL[b.module || "web"];
 const { coerceArgs } = require("../lib/coerce");
 const CATALOG = require("../lib/agents.json");
 
@@ -92,7 +95,7 @@ async function rpcToBackend(b, method, params, timeoutMs) {
 const listCache = {}; // id -> { at, tools }
 async function backendTools(id) {
   const b = BACKENDS[id];
-  if (b.local) return web.TOOLS.filter(t => b.tools.includes(t.name));
+  if (b.local) return localOf(b).TOOLS.filter(t => b.tools.includes(t.name));
   const c = listCache[id];
   if (c && Date.now() - c.at < LIST_TTL_MS) return c.tools;
   try {
@@ -116,7 +119,7 @@ async function backendTools(id) {
 }
 
 async function listTools(caller) {
-  const ids = Object.keys(BACKENDS);
+  const ids = Object.keys(BACKENDS).filter(id => !BACKENDS[id].hidden);
   const parts = await Promise.all(ids.map(backendTools));
   const tools = [].concat(...parts);
   tools.push(CONFIG_TOOL, CALL_TOOL);
@@ -203,7 +206,7 @@ function slimSchema(sc) {
   return out;
 }
 async function toolCatalog() {
-  const ids = Object.keys(BACKENDS);
+  const ids = Object.keys(BACKENDS).filter(id => !BACKENDS[id].hidden);
   const parts = await Promise.all(ids.map(backendTools));
   const tools = [];
   ids.forEach((id, i) => (parts[i] || []).forEach(t => tools.push({
@@ -391,14 +394,14 @@ async function callTool(params, caller, page) {
   }
   if (b.local) {
     try {
-      const result = await web.call(name, args, caller);
+      const result = await localOf(b).call(name, args, caller);
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${!result.isError}`);
       await usage.recordCall(caller, name, Date.now() - t0, !result.isError, page);
       return { result };
     } catch (e) {
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
       await usage.recordCall(caller, name, Date.now() - t0, false, page);
-      return { result: { isError: true, content: [{ type: "text", text: `웹 도구 오류: ${e.message}` }] } };
+      return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구 오류: ${e.message}` }] } };
     }
   }
   try {

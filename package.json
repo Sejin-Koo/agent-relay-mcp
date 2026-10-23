@@ -4,5 +4,12 @@
   "description": "업무 에이전트용 중계 MCP 서버 — 여러 자체 MCP 서버의 허용된 도구만 주소 하나로 제공",
   "private": true,
   "license": "UNLICENSED",
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "exceljs": "4.4.0",
+    "jszip": "3.10.1",
+    "marked": "12.0.2"
+  }
 }
