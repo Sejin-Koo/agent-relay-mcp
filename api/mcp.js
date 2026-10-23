@@ -148,8 +148,18 @@ const CALL_TOOL = {
   }, required: ["tool"], additionalProperties: false }
 };
 // 공지는 받는 사람과 페이지에 맞는 것만 내려보낸다. audience: "all"(기본) | "v1"(옛 페이지) | "v2"(새 페이지) | 키 식별자 배열
+function verGte(a, b) {
+  const x = String(a).split("."), y = String(b).split(".");
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    const d = (parseInt(x[i], 10) || 0) - (parseInt(y[i], 10) || 0);
+    if (d) return d > 0;
+  }
+  return true;
+}
 function noticesFor(caller, page) {
   return (CATALOG.notices || []).filter(n => {
+    // page_min: 그 버전 이상 페이지에만(새 기능 안내를 옛 사본에 띄우지 않으려고)
+    if (n && n.page_min && !(page && verGte(page, n.page_min))) return false;
     const au = n && n.audience;
     if (!au || au === "all") return true;
     if (au === "v1") return !page;

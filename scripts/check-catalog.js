@@ -97,6 +97,7 @@ if (cat.agents_v2) {
     if (n.to && !day.test(n.to)) e2.push(`notices[${i}]: to는 YYYY-MM-DD`);
     if (n.from && n.to && n.from > n.to) e2.push(`notices[${i}]: 기간이 거꾸로(${n.from} > ${n.to})`);
     if (n.level && !["안내", "주의", "장애"].includes(n.level)) e2.push(`notices[${i}]: level은 안내|주의|장애`);
+    if (n.page_min !== undefined && !/^\d+(\.\d+)*$/.test(String(n.page_min))) e2.push(`notices[${i}]: page_min은 숫자 버전(예: "4")`);
     (n.agents || []).forEach(id => { if (!v2ids.has(id)) e2.push(`notices[${i}]: 없는 에이전트 ${id}`); });
   });
   if (cat.legacy_until && !day.test(cat.legacy_until)) e2.push("legacy_until은 YYYY-MM-DD");

@@ -43,7 +43,7 @@
 
 - `relay_config`·`relay_call`은 선택 인자 `page`(페이지 버전)를 받는다. 새 페이지만 보내고 옛 페이지는 보내지 않는다.
 - `relay_config {part: "tools"}`는 도구 찾기용 전체 도구 목록(이름·서버·짧은 설명·간추린 입력 형식)을 돌려준다.
-- `agents.json`의 `notices`는 `audience`("all" | "v1" | "v2" | 키 식별자 배열)에 맞는 것만 내려보낸다.
+- `agents.json`의 `notices`는 `audience`("all" | "v1" | "v2" | 키 식별자 배열)에 맞는 것만 내려보낸다. `page_min`(예: "4")이 있으면 그 버전 이상 페이지에만 내려보낸다(새 기능 안내를 옛 사본에 띄우지 않기 위함).
 - `agents.json`의 `legacy_until`(한국시간 YYYY-MM-DD)이 지나면 `page` 없는 `relay_call`을 `legacy_message` 문구로 거절한다.
 - 사용 기록에 `@page:<버전>` 카운터를 더한다(v1 = 옛 페이지). `relay_usage {group_by: "user_page"}`로 본다.
 
