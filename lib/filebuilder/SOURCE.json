@@ -1,0 +1,14 @@
+{
+ "skill": "sys-file-builder",
+ "version": "2026-10-23.1",
+ "copied": "2026-10-23",
+ "files": {
+  "build.js": "ed1af81c2bb36a733ff72499984bac3da6233a5920da16a73c6cc5cfcbcf0347",
+  "docexport.js": "a1b4fd93fede92a39dd45283569b956992196a179af3661b780d1be99998fc39",
+  "hwpx-tpl.json": "18615b732c0a40c3092263ea0762ad3465cbf73a555f29e0c144fd6a774e60e6",
+  "pptx-chart.js": "6f901f5f799bf0e4053d89999f7e1f6709fe05ba0e422fbd42b837ef86d43f0d",
+  "xlsx-chart.js": "bafa82c782d0143755038c3fdbdec55af654f9961f0faa9757d1d65a626e7ea3",
+  "xlsx-generic.js": "f1295d528eae31e74ecc380be02d28edef6edfe82e83c6aebe33f276af90d7de",
+  "xlsx-valuation.js": "d51a84e30c4cc0256344de51cd8bcc09610e3f695c2bd1d0efa0364e440e9528"
+ }
+}
