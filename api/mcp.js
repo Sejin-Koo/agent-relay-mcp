@@ -126,6 +126,14 @@ async function listTools(caller) {
   if (isAdmin(caller)) tools.push(USAGE_TOOL);
   return tools;
 }
+// 페이지 확인 값: 원본 페이지 코드에 넣어 둔 값과 같아야 relay_config·relay_call을 받는다(2026-10-24 사용자 결정).
+// 환경변수 RELAY_PAGE_KEYS(쉼표 구분 — 바꿀 때 옛 값과 새 값을 함께 두면 옛 사본이 바로 끊기지 않는다)가 비어 있으면 검사하지 않는다.
+const PAGE_KEYS = (process.env.RELAY_PAGE_KEYS || "").split(",").map(x => x.trim()).filter(Boolean);
+function pageOk(a) {
+  if (!a || !a.page) return false;
+  if (!PAGE_KEYS.length) return true;
+  return typeof a.pk === "string" && PAGE_KEYS.includes(a.pk);
+}
 const PAGE_ONLY_MSG = "이 서버의 조회 도구는 업무 에이전트 페이지 안에서만 쓸 수 있습니다. 일반 채팅에서는 쓸 수 없으니, 업무 에이전트 페이지에서 해당 에이전트에게 질문해 주세요.";
 
 // ---------- 에이전트 페이지 전용: 설정 내려주기 · 대신 호출 ----------
@@ -137,6 +145,7 @@ const CONFIG_TOOL = {
   inputSchema: { type: "object", properties: {
     since_version: { type: "string", description: "페이지가 이미 가진 설정 버전" },
     page: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
+    pk: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
     part: { type: "string", enum: ["catalog", "tools", "rules"], description: "tools면 도구 찾기용 전체 도구 목록만, rules면 agents에 적은 에이전트의 상세 지침만 돌려준다" },
     agents: { type: "array", items: { type: "string" }, description: "part=rules일 때 지침을 받을 에이전트 id 목록" }
   }, additionalProperties: false },
@@ -148,7 +157,8 @@ const CALL_TOOL = {
   inputSchema: { type: "object", properties: {
     tool: { type: "string", description: "호출할 도구 이름(이 서버 tools/list에 있는 이름)" },
     arguments: { type: "object", description: "그 도구의 인자" },
-    page: { type: "string", description: "페이지 내부 값(페이지가 채운다)" }
+    page: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
+    pk: { type: "string", description: "페이지 내부 값(페이지가 채운다)" }
   }, required: ["tool"], additionalProperties: false }
 };
 // 공지는 받는 사람과 페이지에 맞는 것만 내려보낸다. audience: "all"(기본) | "v1"(옛 페이지) | "v2"(새 페이지) | 키 식별자 배열
@@ -348,8 +358,7 @@ async function callTool(params, caller, page, viaPage) {
     }
   }
   if (name === "relay_config") {
-    const pg = params && params.arguments && params.arguments.page;
-    if (!pg) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
+    if (!pageOk(params && params.arguments)) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
     try {
       return { result: await configResult((params && params.arguments) || {}, caller) };
     } catch (e) {
@@ -360,7 +369,7 @@ async function callTool(params, caller, page, viaPage) {
     const a = (params && params.arguments) || {};
     const inner = String(a.tool || "");
     const page = a.page ? String(a.page).slice(0, 20) : "";
-    if (!page) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
+    if (!pageOk(a)) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
     if (!inner || inner.startsWith("relay_") || !ROUTE[inner]) {
       return { result: { isError: true, content: [{ type: "text", text: `relay_call로 부를 수 없는 도구입니다: ${inner || "(없음)"}` }] } };
     }
