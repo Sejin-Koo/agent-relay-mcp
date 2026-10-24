@@ -5,10 +5,9 @@
 
 const { BACKENDS, ROUTE, UPSTREAM } = require("../lib/backends");
 const usage = require("../lib/usage");
-const web = require("../lib/web");
 const files = require("../lib/files");
-const LOCAL = { web, files }; // 이 서버가 직접 수행하는 도구 묶음(backends.js의 local 항목 module 이름)
-const localOf = (b) => LOCAL[b.module || "web"];
+const LOCAL = { files }; // 이 서버가 직접 수행하는 도구 묶음(backends.js의 local 항목 module 이름) — 페이지 전용 파일 만들기만 남긴다
+const localOf = (b) => LOCAL[b.module];
 const { coerceArgs } = require("../lib/coerce");
 const CATALOG = require("../lib/agents.json");
 
@@ -63,14 +62,16 @@ function parseRpc(text, contentType, id) {
   return j;
 }
 
-async function rpcToBackend(b, method, params, timeoutMs) {
+async function rpcToBackend(b, method, params, timeoutMs, caller) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), timeoutMs);
   const id = Date.now() % 1e9;
   try {
     const r = await fetch(backendUrl(b), {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json, text/event-stream" },
+      // sendCaller 서버(web-reader-mcp)는 사람별 한도를 이 헤더의 사용자 식별자로 센다
+      headers: Object.assign({ "Content-Type": "application/json", "Accept": "application/json, text/event-stream" },
+        b.sendCaller && caller ? { "X-Relay-Caller": String(caller) } : {}),
       body: JSON.stringify({ jsonrpc: "2.0", id, method, params: params || {} }),
       signal: ctl.signal
     });
@@ -405,7 +406,7 @@ async function callTool(params, caller, page) {
     }
   }
   try {
-    const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS);
+    const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS, caller);
     const ok = !msg.error && !(msg.result && msg.result.isError);
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${ok}`);
     await usage.recordCall(caller, name, Date.now() - t0, ok, page);

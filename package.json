@@ -8,7 +8,6 @@
     "node": ">=20"
   },
   "dependencies": {
-    "cfb": "1.2.2",
     "exceljs": "4.4.0",
     "jszip": "3.10.1",
     "marked": "12.0.2"
