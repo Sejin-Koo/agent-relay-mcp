@@ -119,24 +119,24 @@ async function backendTools(id) {
   }
 }
 
+// 이 서버는 에이전트 페이지 전용이다. 일반 채팅(관리자 포함)에는 조회 도구를 보이지 않고 페이지가 쓰는 두 도구만 내보낸다.
+// 관리자 계정은 각 서버를 커넥터로 직접 연결해 쓰므로, 이 서버를 지워도 계정 업무에는 영향이 없어야 한다(사용자 결정 2026-10-24).
 async function listTools(caller) {
-  const ids = Object.keys(BACKENDS).filter(id => !BACKENDS[id].hidden);
-  const parts = await Promise.all(ids.map(backendTools));
-  const tools = [].concat(...parts);
-  tools.push(CONFIG_TOOL, CALL_TOOL);
+  const tools = [CONFIG_TOOL, CALL_TOOL];
   if (isAdmin(caller)) tools.push(USAGE_TOOL);
   return tools;
 }
+const PAGE_ONLY_MSG = "이 서버의 조회 도구는 업무 에이전트 페이지 안에서만 쓸 수 있습니다. 일반 채팅에서는 쓸 수 없으니, 업무 에이전트 페이지에서 해당 에이전트에게 질문해 주세요.";
 
 // ---------- 에이전트 페이지 전용: 설정 내려주기 · 대신 호출 ----------
 // 페이지 사본에는 이 두 도구 이름만 적어 두고, 에이전트 목록·도구 배정·규칙(lib/agents.json)과
 // 실제로 부를 수 있는 도구(lib/backends.js)는 이 서버가 정한다. 그래서 이 서버만 고치면 사본에도 반영된다.
 const CONFIG_TOOL = {
   name: "relay_config",
-  description: "업무 에이전트 페이지 전용: 에이전트 목록, 에이전트별 도구 배정과 조회 규칙을 돌려준다. since_version이 현재 버전과 같으면 unchanged만 돌려준다. 일반 질문에는 쓰지 않는다.",
+  description: "업무 에이전트 페이지가 내부적으로 쓰는 설정 도구다. 일반 채팅의 질문에는 절대 호출하지 않는다 — 페이지 밖에서 부르면 거절된다.",
   inputSchema: { type: "object", properties: {
     since_version: { type: "string", description: "페이지가 이미 가진 설정 버전" },
-    page: { type: "string", description: "페이지 버전(새 페이지만 보낸다)" },
+    page: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
     part: { type: "string", enum: ["catalog", "tools", "rules"], description: "tools면 도구 찾기용 전체 도구 목록만, rules면 agents에 적은 에이전트의 상세 지침만 돌려준다" },
     agents: { type: "array", items: { type: "string" }, description: "part=rules일 때 지침을 받을 에이전트 id 목록" }
   }, additionalProperties: false },
@@ -144,11 +144,11 @@ const CONFIG_TOOL = {
 };
 const CALL_TOOL = {
   name: "relay_call",
-  description: "업무 에이전트 페이지 전용: 이 서버가 연 다른 도구를 이름으로 대신 호출한다. tool에 도구 이름, arguments에 그 도구의 인자 객체를 넣는다. 결과는 그 도구를 직접 부른 것과 같다. 일반 채팅에서는 해당 도구를 직접 부르면 된다.",
+  description: "업무 에이전트 페이지가 내부적으로 쓰는 호출 도구다. 일반 채팅의 질문에는 절대 호출하지 않는다 — 페이지 밖에서 부르면 거절된다.",
   inputSchema: { type: "object", properties: {
     tool: { type: "string", description: "호출할 도구 이름(이 서버 tools/list에 있는 이름)" },
     arguments: { type: "object", description: "그 도구의 인자" },
-    page: { type: "string", description: "페이지 버전(새 페이지만 보낸다)" }
+    page: { type: "string", description: "페이지 내부 값(페이지가 채운다)" }
   }, required: ["tool"], additionalProperties: false }
 };
 // 공지는 받는 사람과 페이지에 맞는 것만 내려보낸다. audience: "all"(기본) | "v1"(옛 페이지) | "v2"(새 페이지) | 키 식별자 배열
@@ -256,10 +256,6 @@ async function configResult(args, caller) {
     structuredContent: out
   };
 }
-// 옛 페이지 종료(설계서 10절): legacy_until(한국시간 날짜)이 지나면 page 표시가 없는 relay_call을 거절한다
-function legacyClosed(page) {
-  return !page && CATALOG.legacy_until && usage.kstDate() > String(CATALOG.legacy_until);
-}
 
 // ---------- 관리자 전용: 사용자별 사용현황 ----------
 const USAGE_TOOL = {
@@ -341,7 +337,7 @@ function attachText(result) {
 }
 
 // ---------- tools/call: 담당 서버로 그대로 넘긴다 ----------
-async function callTool(params, caller, page) {
+async function callTool(params, caller, page, viaPage) {
   const name = params && params.name;
   if (name === "relay_usage") {
     if (!isAdmin(caller)) return { error: { code: -32602, message: `이 서버에서 쓸 수 없는 도구입니다: ${name}` } };
@@ -352,6 +348,8 @@ async function callTool(params, caller, page) {
     }
   }
   if (name === "relay_config") {
+    const pg = params && params.arguments && params.arguments.page;
+    if (!pg) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
     try {
       return { result: await configResult((params && params.arguments) || {}, caller) };
     } catch (e) {
@@ -362,9 +360,7 @@ async function callTool(params, caller, page) {
     const a = (params && params.arguments) || {};
     const inner = String(a.tool || "");
     const page = a.page ? String(a.page).slice(0, 20) : "";
-    if (legacyClosed(page)) {
-      return { result: { isError: true, content: [{ type: "text", text: CATALOG.legacy_message || "이 페이지는 종료되었습니다. 새 페이지 주소로 옮겨 주세요." }] } };
-    }
+    if (!page) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
     if (!inner || inner.startsWith("relay_") || !ROUTE[inner]) {
       return { result: { isError: true, content: [{ type: "text", text: `relay_call로 부를 수 없는 도구입니다: ${inner || "(없음)"}` }] } };
     }
@@ -373,7 +369,11 @@ async function callTool(params, caller, page) {
     if (innerArgs !== undefined && (innerArgs === null || typeof innerArgs !== "object" || Array.isArray(innerArgs))) {
       return { result: { isError: true, content: [{ type: "text", text: "arguments는 JSON 객체여야 합니다" }] } };
     }
-    return callTool({ name: inner, arguments: innerArgs || {} }, caller, page || "v1");
+    return callTool({ name: inner, arguments: innerArgs || {} }, caller, page, true);
+  }
+  // 조회 도구를 relay_call 없이 직접 부르는 것은 일반 채팅이므로 거절한다
+  if (!viaPage) {
+    return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
   }
   const id = ROUTE[name];
   if (!id) {
@@ -433,7 +433,7 @@ async function handleMessage(m, caller) {
         protocolVersion: SUPPORTED.includes(req) ? req : LATEST,
         capabilities: { tools: { listChanged: false } },
         serverInfo: SERVER_INFO,
-        instructions: "업무 에이전트 중계 서버입니다. 공시·기업정보·법령·거래소 규정·회계기준·회계위키(감리지적사례·회계감사기준 포함, accwiki_ 도구)·나라장터·공공데이터·건설·상권·시장지표·네이버·YouTube·기상청 도구를 한 주소에서 제공합니다."
+        instructions: "업무 에이전트 페이지 전용 서버입니다. 일반 채팅에서 쓸 수 있는 조회 도구는 제공하지 않으며, 이 서버의 도구는 일반 채팅의 질문에 호출하지 않습니다."
       } });
     }
     case "ping":

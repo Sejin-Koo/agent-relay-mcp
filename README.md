@@ -4,7 +4,8 @@
 
 - 엔드포인트: `/api/mcp?k=<게이트키>`
 - 서버·도구 목록: `lib/backends.js` — 서버를 추가하거나 도구를 열고 닫으려면 이 파일만 고친 뒤 push한다.
-- 목록 밖 도구는 `tools/list`에 나오지 않고 `tools/call`도 거부된다.
+- 목록 밖 도구는 `relay_call`로도 부를 수 없다.
+- **에이전트 페이지 전용(2026-10-24)**: `tools/list`에는 `relay_config`·`relay_call`(관리자는 `relay_usage` 포함)만 나온다. 조회 도구를 `tools/call`로 직접 부르거나, `page` 없이 `relay_config`·`relay_call`을 부르면 "페이지 안에서만 쓸 수 있다"는 안내로 거절한다. 일반 채팅(관리자 계정 포함)에서 이 서버의 조회 도구가 쓰이지 않게 하기 위함이다. 관리자 계정은 각 서버를 커넥터로 직접 연결해 쓰므로 이 서버가 없어도 계정 업무에 영향이 없다.
 
 ## 에이전트 설정 (업무 에이전트 페이지용)
 
@@ -44,7 +45,7 @@
 - `relay_config`·`relay_call`은 선택 인자 `page`(페이지 버전)를 받는다. 새 페이지만 보내고 옛 페이지는 보내지 않는다.
 - `relay_config {part: "tools"}`는 도구 찾기용 전체 도구 목록(이름·서버·짧은 설명·간추린 입력 형식)을 돌려준다.
 - `agents.json`의 `notices`는 `audience`("all" | "v1" | "v2" | 키 식별자 배열)에 맞는 것만 내려보낸다. `page_min`(예: "4")이 있으면 그 버전 이상 페이지에만 내려보낸다(새 기능 안내를 옛 사본에 띄우지 않기 위함).
-- `agents.json`의 `legacy_until`(한국시간 YYYY-MM-DD)이 지나면 `page` 없는 `relay_call`을 `legacy_message` 문구로 거절한다.
+- `page` 없는 `relay_config`·`relay_call`(옛 페이지·일반 채팅)은 거절한다(2026-10-24부터 — 종전 `legacy_until` 날짜 방식은 폐지).
 - 사용 기록에 `@page:<버전>` 카운터를 더한다(v1 = 옛 페이지). `relay_usage {group_by: "user_page"}`로 본다.
 
 ## 웹 도구 (2026-10-22)
