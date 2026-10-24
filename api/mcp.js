@@ -134,6 +134,24 @@ function pageOk(a) {
   if (!PAGE_KEYS.length) return true;
   return typeof a.pk === "string" && PAGE_KEYS.includes(a.pk);
 }
+// 옛 페이지(page 인자 없이 부르는 첫 페이지와 그 사본)에는 종료 안내만 담은 설정을 내려보낸다(2026-10-24 사용자 결정).
+// 옛 페이지 코드가 받아들이는 형식(agents·groups·servers·ui)에 맞추되, 조회 도구는 하나도 없다.
+const RETIRED_MSG = "이 에이전트 페이지는 더 이상 작동하지 않습니다. 에이전트 고도화 작업이 진행 중이니 완료되는 대로 다시 공유해 드리겠습니다. 아티팩트에 있는 이 페이지는 삭제해 주세요.";
+const RETIRED_VERSION = "2026-10-24-retired";
+function retiredCatalog() {
+  return {
+    version: RETIRED_VERSION,
+    ui: { title: "업무 에이전트(종료)", brand: "업무 에이전트", tag: "종료", heading: "이 에이전트 페이지는 더 이상 작동하지 않습니다", intro: "에이전트 고도화 작업이 진행 중이니 완료되는 대로 다시 공유해 드리겠습니다. 아티팩트에 있는 이 페이지는 삭제해 주세요.", dept: "업무 에이전트" },
+    groups: [{ id: "notice", title: "안내", sub: "" }],
+    servers: {},
+    agents: [{
+      id: "retired", name: "이 페이지는 종료되었습니다", short: "종료", group: "notice", desc: "",
+      tools: [], examples: [], attach: false, folder: false,
+      guide: "**" + RETIRED_MSG + "**",
+      rules: "이 페이지는 종료되었다. 어떤 질문에도 내용을 답하지 말고, 다음 문장만 그대로 답한다: " + RETIRED_MSG
+    }]
+  };
+}
 const PAGE_ONLY_MSG = "이 서버의 조회 도구는 업무 에이전트 페이지 안에서만 쓸 수 있습니다. 일반 채팅에서는 쓸 수 없으니, 업무 에이전트 페이지에서 해당 에이전트에게 질문해 주세요.";
 
 // ---------- 에이전트 페이지 전용: 설정 내려주기 · 대신 호출 ----------
@@ -358,7 +376,12 @@ async function callTool(params, caller, page, viaPage) {
     }
   }
   if (name === "relay_config") {
-    if (!pageOk(params && params.arguments)) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
+    const ca = (params && params.arguments) || {};
+    if (!ca.page) {
+      if (ca.since_version === RETIRED_VERSION) return { result: { content: [{ type: "text", text: RETIRED_MSG }], structuredContent: { version: RETIRED_VERSION, unchanged: true } } };
+      return { result: { content: [{ type: "text", text: RETIRED_MSG }], structuredContent: retiredCatalog() } };
+    }
+    if (!pageOk(ca)) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
     try {
       return { result: await configResult((params && params.arguments) || {}, caller) };
     } catch (e) {
