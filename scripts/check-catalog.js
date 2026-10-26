@@ -68,6 +68,13 @@ if (cat.agents_v2) {
   if (cat.prompts_v2 && cat.prompts_v2.report && !Array.isArray(cat.prompts_v2.report)) e2.push("prompts_v2.report는 문장 배열");
   const P2 = cat.prompts_v2 || {};
   if (P2.figure && !(Array.isArray(P2.figure) && P2.figure.every(x => typeof x === "string"))) e2.push("prompts_v2.figure는 문장 배열");
+  if (P2.runner) {
+    for (const k of ["main", "consult", "doc", "trigger_prompt"]) if (!(Array.isArray(P2.runner[k]) && P2.runner[k].length && P2.runner[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.runner.${k}는 문장 배열`);
+    if (P2.runner.main && !P2.runner.main.join("\n").includes("{{job}}")) e2.push("prompts_v2.runner.main에 {{job}} 자리표시자가 없음");
+    if (P2.runner.main && !P2.runner.main.some(x => x.includes("{{url_hint}}"))) e2.push("prompts_v2.runner.main에 {{url_hint}} 자리표시자가 없음");
+  }
+  if (cat.features && cat.features.background && !(P2.runner && Array.isArray(P2.runner.main))) e2.push("features.background가 켜져 있는데 prompts_v2.runner가 없음");
+  if (cat.features && cat.features.background) for (const k of ["bg_stale_min", "bg_start_min", "bg_keep_days"]) if (!(Number(cat.features[k]) > 0)) e2.push(`features.${k}는 양수`);
   if (P2.doc) for (const k of ["rules", "pptx", "other", "tail"]) if (P2.doc[k] && !(Array.isArray(P2.doc[k]) && P2.doc[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.doc.${k}는 문장 배열`);
   if (cat.models !== undefined) {
     if (!Array.isArray(cat.models) || !cat.models.length) e2.push("models는 비어 있지 않은 배열");
