@@ -2,7 +2,7 @@
   "functions": {
     "api/mcp.js": {
       "maxDuration": 300,
-      "includeFiles": "node_modules/{@expo-google-fonts/noto-sans-kr/400Regular/NotoSansKR_400Regular.ttf,@expo-google-fonts/noto-sans-kr/700Bold/NotoSansKR_700Bold.ttf,pdfkit/js/data/**}"
+      "includeFiles": "node_modules/{@expo-google-fonts/noto-sans-kr/400Regular/NotoSansKR_400Regular.ttf,@expo-google-fonts/noto-sans-kr/700Bold/NotoSansKR_700Bold.ttf,pdfkit/js/data/**,pdfkit/js/standard-fonts/**}"
     }
   }
 }
