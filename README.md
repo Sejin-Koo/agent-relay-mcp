@@ -62,10 +62,16 @@
 
 ## 파일 변환기 — 원본은 계정 스킬
 
-`build_file`(Excel 가치평가 모델·표 → 시트, 한글 HWPX)이 쓰는 변환기의 **원본은 계정 스킬 `sys-file-builder`**이고,
+`build_file`(Word·PowerPoint·PDF·한글 HWPX 문서, Excel 가치평가 모델·표 → 시트)이 쓰는 변환기의 **원본은 계정 스킬 `sys-file-builder`**이고,
 `lib/filebuilder/`는 그 사본이다. 이 서버는 사용자에게 계정의 기능을 공유하는 통로이므로 기능을 이 저장소에서 먼저
 만들거나 사본을 직접 고치지 않는다. 원본 스킬을 고친 뒤 `node scripts/sync-filebuilder.js <스킬 폴더>`로 다시 복사하고,
 `SOURCE.json`(버전·해시)이 함께 바뀐다. `scripts/check-catalog.js`는 사본이 기록과 다르면 실패한다.
+
+서버가 만들 형식은 설정 `features.server_files`가 정한다(2026-10-26부터 다섯 형식 전부). 페이지는 그림 블록을 PNG로 그려
+`figures`로 보내고(서버에는 그림 엔진이 없다), Word 표지·목차 판단값(`meta.estimate`)을 함께 보낸다. 도식은 서버가 배치를
+다시 계산해 Word·PowerPoint에서 고칠 수 있는 도형으로 넣는다. PDF는 본고딕(Noto Sans KR) 글꼴을 함께 싣는다(`vercel.json`의
+`includeFiles`). 서버 호출이 실패하면 페이지가 자기 변환 코드로 만든다(대체 경로 — 대외비 줄·핵심 메시지 상자·소제목 번호는
+서버 경로에만 있다).
 
 ## 환경변수
 
