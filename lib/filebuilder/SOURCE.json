@@ -1,10 +1,10 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-10-26.6",
+ "version": "2026-10-26.7",
  "copied": "2026-10-26",
  "files": {
   "build.js": "304478647e762768b1c1a76e969ff7acd313b538ceeead7cdc3ddd5e4a30eea1",
-  "diagram.js": "4931f057a1a390bfe1e555cf7365f7bcb1db86e898d9f2f1fff298e18698ba99",
+  "diagram.js": "7b40e50cb205a3ca91d2af2a15bc795cc780663e27c9c345b08177ed6d4ed43c",
   "docexport.js": "852bce368f8ba1613213ec0ca1970aa24a5de85f5cc430c375a86e62927fc6f8",
   "hwpx-tpl.json": "18615b732c0a40c3092263ea0762ad3465cbf73a555f29e0c144fd6a774e60e6",
   "pdf.js": "baa08159df439318567a16329c4ddae9adabc2bad276c0745ccaf9c979a15d47",
