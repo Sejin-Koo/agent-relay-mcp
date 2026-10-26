@@ -1,16 +1,16 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-10-27.2",
+ "version": "2026-10-27.3",
  "copied": "2026-10-26",
  "files": {
-  "build.js": "672ca8cd7a9ee7caeed9395722deadc7c9eb950114a84e5d1734eaa013fe7567",
+  "build.js": "54067c97fc958402be61205955cc127b0204247ec397b027f66dc9fd321ae99b",
   "diagram.js": "7b40e50cb205a3ca91d2af2a15bc795cc780663e27c9c345b08177ed6d4ed43c",
-  "docexport.js": "b8261df244a7d2fa2d98022fae389ee2bdfcd67fc9b968690307ab217fc23042",
+  "docexport.js": "3c5750ba0241ca411dd5a5a4c513426bbaf87379bbf483c1a76ea5d4ec761a5f",
   "hwpx-tpl.json": "18615b732c0a40c3092263ea0762ad3465cbf73a555f29e0c144fd6a774e60e6",
-  "pdf.js": "60cb3d79a0181223f9c5d19d5eec3c8b005ec96c2aa1ae40bcf9089c61fd0098",
+  "pdf.js": "d449b52c289f47da7e82d05b8cb192df1444e0b16f7fed371382ffd0ad651c49",
   "pptx-chart.js": "6f901f5f799bf0e4053d89999f7e1f6709fe05ba0e422fbd42b837ef86d43f0d",
   "xlsx-chart.js": "bafa82c782d0143755038c3fdbdec55af654f9961f0faa9757d1d65a626e7ea3",
   "xlsx-generic.js": "f1295d528eae31e74ecc380be02d28edef6edfe82e83c6aebe33f276af90d7de",
-  "xlsx-valuation.js": "d51a84e30c4cc0256344de51cd8bcc09610e3f695c2bd1d0efa0364e440e9528"
+  "xlsx-valuation.js": "c2d14aa461ce321eb71de2e82a5c222e6011aea7e11f8c6c32c3ce750d16c4a0"
  }
 }
