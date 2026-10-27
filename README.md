@@ -57,7 +57,7 @@
 - `fetch_page`: 직접 접속(무료) → 본문이 거의 없거나 접속이 막히면 Nimble extract(브라우저 렌더, 국내 IP, 월 상한) → 그래도 안 되면 Tavily extract(basic, 월 무료 크레딧). PDF는 Nimble을 건너뛰고 Tavily로.
 - `web_search`: Tavily search(basic, 1크레딧) → 실패·한도 소진이면 Nimble search(lite).
 - robots.txt가 막은 주소는 어느 경로로도 읽지 않는다. 사설망·루프백·메타데이터 주소는 DNS 해석 결과까지 확인해 막고, 리다이렉트마다 다시 확인한다.
-- 한도(Redis 카운터, 키 `w:<날짜>:<사용자>:<종류>`·`w:nimble:<월>`): 사람별 하루 `WEB_SEARCH_DAILY`(기본 60)·`WEB_FETCH_DAILY`(기본 400)·`WEB_PAID_FETCH_DAILY`(대체 경로, 기본 40), 서버 전체 월 `NIMBLE_MONTHLY_MAX`(기본 1000). 실패한 호출은 한도에서 되돌린다.
+- 한도(Redis 카운터, 키 `w:<날짜>:<사용자>:<종류>`·`w:nimble:<월>`): 사람별 하루 `WEB_SEARCH_DAILY`(기본 60)·`WEB_FETCH_DAILY`(기본 400)·`WEB_PAID_FETCH_DAILY`(대체 경로, 기본 40), 서버 전체 월 `NIMBLE_MONTHLY_MAX`(기본 5000). 실패한 호출은 한도에서 되돌린다.
 - 이 도구들도 커넥터를 등록한 사람의 일반 채팅에서 쓰인다(같은 한도가 적용된다).
 
 ## 파일 변환기 — 원본은 계정 스킬
