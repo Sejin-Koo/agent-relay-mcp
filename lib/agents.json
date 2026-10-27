@@ -1,5 +1,5 @@
 {
- "version": "2026-10-27.3",
+ "version": "2026-10-27.4",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -3965,7 +3965,7 @@
   "figure": [
    "- 수치의 추이(3개 시점 이상), 항목 간 비교, 구성비가 답변의 핵심이면 표와 함께 그림 블록을 넣습니다. 지분·지배구조, 거래구조, 시스템 구성, 절차·의사결정 흐름처럼 관계가 핵심이면 도식 블록을 넣습니다. 한 그림에는 한 가지 메시지만 담고, 답변 하나에 그림은 4개 이내로 씁니다.",
    "- 그림의 숫자는 답변의 표·조회값과 같은 값만 씁니다. 차트만으로 정보를 전하지 말고 같은 숫자를 표로도 보여 줍니다(그림이 들어가지 않는 파일 형식이 있음).",
-   "- 기본 차트: ```chart 블록 안에 JSON 한 개. {\"title\":\"그림 제목\",\"type\":\"bar|line|area|stacked|hbar|pie|donut|scatter|combo\",\"x\":[\"2023\",\"2024\"],\"series\":[{\"name\":\"매출액\",\"data\":[2921,3083]}],\"unit\":\"억원\",\"source\":\"자료 출처·기준일\"}. combo는 계열마다 \"type\":\"bar\" 또는 \"line\", 단위가 다른 계열은 \"axis\":1(보조축). pie·donut은 x 순서에 맞춘 값 한 계열.",
+   "- 기본 차트: ```chart 블록 안에 JSON 한 개. {\"title\":\"그림 제목\",\"type\":\"bar|line|area|stacked|hbar|pie|donut|scatter|combo\",\"x\":[\"2023\",\"2024\"],\"series\":[{\"name\":\"매출액\",\"data\":[2921,3083]}],\"unit\":\"억원\",\"source\":\"자료 출처·기준일\"}. combo는 계열마다 \"type\":\"bar\" 또는 \"line\", 단위가 다른 계열은 \"axis\":1(보조축). pie·donut은 x 순서에 맞춘 값 한 계열이고 조각은 8개 이하(넘으면 작은 조각을 '기타'로 묶어 넣음). 꺾은선 점이 8개를 넘으면 \"labels\":\"last\"(끝 점만 숫자)로 씁니다.",
    "- 그 밖의 차트(히트맵·트리맵·레이더·깔때기·생키·상자수염·게이지 등): series 대신 \"option\"에 ECharts 설정을 JSON으로 넣습니다. {\"title\":\"…\",\"source\":\"…\",\"option\":{\"series\":[{\"type\":\"treemap\",\"data\":[{\"name\":\"정제\",\"value\":1678}]}]}}. 함수는 못 쓰므로 표시 형식은 \"{b}: {c}억원\" 같은 문자열로 씁니다. 폭포(워터폴)는 투명 막대를 아래에 깐 누적 막대(\"stack\" 같은 이름, 아래 계열 \"itemStyle\":{\"color\":\"transparent\"}), 간트는 시작값을 투명 막대로 깐 가로 누적 막대로 그립니다.",
    "- 도식: ```diagram 블록 안에 JSON 한 개. {\"type\":\"graph\",\"direction\":\"TB 또는 LR\",\"title\":\"…\",\"source\":\"…\",\"nodes\":[{\"id\":\"h\",\"label\":\"A홀딩스\",\"sub\":\"지주회사\",\"shape\":\"roundRect\",\"style\":\"primary\"}],\"edges\":[{\"from\":\"h\",\"to\":\"s\",\"label\":\"51.0%\"}],\"groups\":[{\"id\":\"g\",\"label\":\"응용 계층\"}]}. Word·PowerPoint 파일에는 고칠 수 있는 실제 도형·글상자·화살표로 들어갑니다.",
    "- 도식 상자 shape: rect, roundRect(기본), ellipse(개인·외부 주체), diamond(판단), hexagon, can(데이터베이스), parallelogram(입출력), chevron·homePlate(단계), flowChartDocument(문서), cloud, text(테두리 없는 글). style: primary(핵심·강조), default, muted(외부·참고), accent(주의할 대상), warning(위험), white. 상자 설명(sub)이 길어 저절로 줄이 바뀌면 한두 낱말만 다음 줄로 넘어가 어색하므로, 설명은 한 줄에 들어가게 짧게 쓰거나 \"\\n\"으로 줄을 직접 나눕니다(예: \"sub\":\"KB국민은행·롯데GRS\\n한국투자증권·삼성생명\").",

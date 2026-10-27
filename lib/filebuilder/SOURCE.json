@@ -1,18 +1,18 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-10-27.6",
+ "version": "2026-10-27.7",
  "copied": "2026-10-27",
  "files": {
-  "build.js": "acd3ca8aad2778c318997e14d76e12d627f33febeacc1a78e2bd427c307d1a44",
-  "chart-spec.js": "34f66c90b52419e5fe82269b3c4d7d9c28153ac96b8f7b4745a84feb591e339a",
+  "build.js": "632e72a704f21b8e1d449a274c252a6904136a615854b472df6fa8e2ab6cc7e9",
+  "chart-spec.js": "df4f00ae1d360d8be8a8aa6fd3f3d9d0fea84ec53e8e197c7894e78224752b5f",
   "diagram.js": "eccf4c16a380be1ca3907f387ff76f77e787994ec9d5f696cb3a8d7b9be4d860",
-  "docexport.js": "3c5750ba0241ca411dd5a5a4c513426bbaf87379bbf483c1a76ea5d4ec761a5f",
+  "docexport.js": "86668cd485058a8b6d9cf529519877734b9fcfa752b433a4b0fc1b542b6ac37b",
   "hwpx-tpl.json": "18615b732c0a40c3092263ea0762ad3465cbf73a555f29e0c144fd6a774e60e6",
-  "pdf.js": "d449b52c289f47da7e82d05b8cb192df1444e0b16f7fed371382ffd0ad651c49",
+  "pdf.js": "a085ff9f05222c6211c64787f177106dadfac78a7307a7eb63cdfd6bcf515562",
   "pptx-chart.js": "6f901f5f799bf0e4053d89999f7e1f6709fe05ba0e422fbd42b837ef86d43f0d",
-  "xlsx-bar.js": "54fa0eee39a0cf83470da24983f61b4a81a44cfbf188c6a0701ccaf86f2f3759",
+  "xlsx-bar.js": "e382da649781136ee09499a648ac86a59acb6266e5ae61d7c6bed598d4514ff9",
   "xlsx-chart.js": "bafa82c782d0143755038c3fdbdec55af654f9961f0faa9757d1d65a626e7ea3",
-  "xlsx-generic.js": "a0372664c1df46b8732967474d158e953b1a8364f27f24a2b7ee76813c24046f",
+  "xlsx-generic.js": "8ae8b2e28fcce626a62a8ef9a1cb9139d1f3c0740770e0660bdb60fed676f943",
   "xlsx-valuation.js": "c2d14aa461ce321eb71de2e82a5c222e6011aea7e11f8c6c32c3ce750d16c4a0"
  }
 }
