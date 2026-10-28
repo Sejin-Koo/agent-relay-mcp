@@ -35,6 +35,8 @@ function keyLabel(k) {
 
 function backendKey(b) {
   if (b.noKey) return "";
+  // strictKey: 그 서버 전용 키(keyEnv)만 쓴다. 없을 때 BACKEND_KEY로 대신 접속하면 범위 제한이 풀릴 수 있어 빈 값으로 둔다
+  if (b.strictKey) return (b.keyEnv && process.env[b.keyEnv]) || "";
   return (b.keyEnv && process.env[b.keyEnv]) || process.env.BACKEND_KEY || "";
 }
 
@@ -97,6 +99,8 @@ const listCache = {}; // id -> { at, tools }
 async function backendTools(id) {
   const b = BACKENDS[id];
   if (b.local) return localOf(b).TOOLS.filter(t => b.tools.includes(t.name));
+  // staticTools: 범위 제한 키처럼 tools/list를 부를 수 없는 서버는 도구 정의를 설정에 둔다
+  if (Array.isArray(b.staticTools)) return b.staticTools.filter(t => b.tools.includes(t.name));
   const c = listCache[id];
   if (c && Date.now() - c.at < LIST_TTL_MS) return c.tools;
   try {
@@ -436,6 +440,13 @@ async function callTool(params, caller, page, viaPage) {
       await usage.recordCall(caller, name, Date.now() - t0, false, page);
       return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구 오류: ${e.message}` }] } };
     }
+  }
+  // forceArgs: 이 서버 호출에는 항상 이 인자 값을 넣는다(예: 공개 컬렉션 하나로 고정)
+  if (b.forceArgs) args = Object.assign({}, args || {}, b.forceArgs);
+  if (b.strictKey && !backendKey(b)) {
+    console.log(`[call] caller=${caller} tool=${name} backend=${id} 전용 키 없음`);
+    await usage.recordCall(caller, name, Date.now() - t0, false, page);
+    return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구가 아직 준비되지 않았습니다(서버 설정 필요). 이 도구 없이 진행하고 확인하지 못한 항목으로 밝히세요.` }] } };
   }
   try {
     const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS, caller);
