@@ -138,6 +138,12 @@ function pageOk(a) {
   if (!PAGE_KEYS.length) return true;
   return typeof a.pk === "string" && PAGE_KEYS.includes(a.pk);
 }
+// 거절 사유 기록(진단용) — 값 자체는 남기지 않고 없음/형식/길이만 남긴다
+function pageRejectWhy(a) {
+  if (!a || !a.page) return "no-page";
+  if (typeof a.pk !== "string" || !a.pk) return "no-pk";
+  return `bad-pk len=${a.pk.length} prefix_ok=${a.pk.startsWith("pgk_")}`;
+}
 // 옛 페이지(page 인자 없이 부르는 첫 페이지와 그 사본)에는 종료 안내만 담은 설정을 내려보낸다(2026-10-24 사용자 결정).
 // 옛 페이지 코드가 받아들이는 형식(agents·groups·servers·ui)에 맞추되, 조회 도구는 하나도 없다.
 const RETIRED_MSG = "이 에이전트 페이지는 더 이상 작동하지 않습니다. 에이전트 고도화 작업이 진행 중이니 완료되는 대로 다시 공유해 드리겠습니다. 아티팩트에 있는 이 페이지는 삭제해 주세요. 다만 설정에 등록해 둔 '업무 에이전트 MCP' 커넥터는 지우지 말고 그대로 두세요. 서버 주소가 바뀌지 않아, 새 페이지를 열면 그 커넥터에 그대로 연결됩니다.";
@@ -382,10 +388,11 @@ async function callTool(params, caller, page, viaPage) {
   if (name === "relay_config") {
     const ca = (params && params.arguments) || {};
     if (!ca.page) {
+      console.log(`[pagekey] reject tool=relay_config caller=${caller} why=no-page(retired) part=${ca.part || ""}`);
       if (ca.since_version === RETIRED_VERSION) return { result: { content: [{ type: "text", text: RETIRED_MSG }], structuredContent: { version: RETIRED_VERSION, unchanged: true } } };
       return { result: { content: [{ type: "text", text: RETIRED_MSG }], structuredContent: retiredCatalog() } };
     }
-    if (!pageOk(ca)) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
+    if (!pageOk(ca)) { console.log(`[pagekey] reject tool=relay_config caller=${caller} why=${pageRejectWhy(ca)}`); return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } }; }
     try {
       return { result: await configResult((params && params.arguments) || {}, caller) };
     } catch (e) {
@@ -396,7 +403,7 @@ async function callTool(params, caller, page, viaPage) {
     const a = (params && params.arguments) || {};
     const inner = String(a.tool || "");
     const page = a.page ? String(a.page).slice(0, 20) : "";
-    if (!pageOk(a)) return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } };
+    if (!pageOk(a)) { console.log(`[pagekey] reject tool=relay_call inner=${inner.slice(0, 60)} caller=${caller} why=${pageRejectWhy(a)}`); return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } }; }
     if (!inner || inner.startsWith("relay_") || !ROUTE[inner]) {
       return { result: { isError: true, content: [{ type: "text", text: `relay_call로 부를 수 없는 도구입니다: ${inner || "(없음)"}` }] } };
     }
