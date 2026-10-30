@@ -96,6 +96,8 @@
 
 조회는 관리자 전용 도구 `relay_usage`(from·to·group_by)로 한다. 관리자 키가 아니면 `tools/list`에 보이지 않고 호출도 거부된다.
 
+에이전트별 사용량(2026-10-30): 페이지(7판 이후 새로 만든 사본)가 `relay_call`에 `agent`(에이전트 id)를 함께 보내면 `@agent:<id>`(호출·실패·소요)와 `@at:<id>|<도구>`를 더 쌓는다. 에이전트 간 통신은 묻는 쪽이 아니라 받는 쪽 에이전트로 센다. `relay_usage`의 `group_by`에 `agent`·`user_agent`·`day_agent`·`agent_tool`이 있고, id를 보내지 않은 호출은 `(미구분)`으로 나온다. 질문 내용은 저장하지 않는다.
+
 Vercel 함수 로그의 `[call] caller=… tool=…` 줄은 무료 요금제에서 1시간만 보관되므로 즉시 확인용으로만 쓴다.
 
 ## 배포
