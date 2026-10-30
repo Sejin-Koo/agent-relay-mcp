@@ -186,7 +186,8 @@ const CALL_TOOL = {
     tool: { type: "string", description: "호출할 도구 이름(이 서버 tools/list에 있는 이름)" },
     arguments: { type: "object", description: "그 도구의 인자" },
     page: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
-    pk: { type: "string", description: "페이지 내부 값(페이지가 채운다)" }
+    pk: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
+    agent: { type: "string", description: "페이지 내부 값(사용 기록용 에이전트 id — 페이지가 채운다)" }
   }, required: ["tool"], additionalProperties: false }
 };
 // 공지는 받는 사람과 페이지에 맞는 것만 내려보낸다. audience: "all"(기본) | "v1"(옛 페이지) | "v2"(새 페이지) | 키 식별자 배열
@@ -304,7 +305,7 @@ const USAGE_TOOL = {
     properties: {
       from: { type: "string", description: "시작일 YYYY-MM-DD (기본: 오늘 포함 최근 30일의 첫날)" },
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page"], description: "집계 단위 — user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지)" }
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool"], description: "집계 단위 — user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -320,25 +321,50 @@ async function usageReport(args) {
   const by = args.group_by || "user";
   const all = await usage.readUsage(from, to);
   const isPage = r => r.tool.startsWith("@page:");
-  const rows = by === "user_page" ? all.filter(isPage).map(r => Object.assign({}, r, { tool: r.tool.slice(6) })) : all.filter(r => !isPage(r));
-  const keyOf = { user: r => [r.caller], user_tool: r => [r.caller, r.tool], day: r => [r.date], day_user: r => [r.date, r.caller], user_page: r => [r.caller, r.tool] }[by];
+  const isAgent = r => r.tool.startsWith("@agent:");
+  const isAt = r => r.tool.startsWith("@at:");
+  const isMeta = r => r.tool.startsWith("@");
+  const AGENT_BY = ["agent", "user_agent", "day_agent"];
+  let rows;
+  if (by === "user_page") rows = all.filter(isPage).map(r => Object.assign({}, r, { tool: r.tool.slice(6) }));
+  else if (AGENT_BY.includes(by)) rows = all.filter(isAgent).map(r => Object.assign({}, r, { tool: r.tool.slice(7) }));
+  else if (by === "agent_tool") rows = all.filter(isAt).map(r => { const t = r.tool.slice(4), i = t.indexOf("|"); return Object.assign({}, r, { agent: t.slice(0, i), tool: t.slice(i + 1) }); });
+  else rows = all.filter(r => !isMeta(r));
+  const keyOf = { user: r => [r.caller], user_tool: r => [r.caller, r.tool], day: r => [r.date], day_user: r => [r.date, r.caller], user_page: r => [r.caller, r.tool],
+    agent: r => [r.tool], user_agent: r => [r.caller, r.tool], day_agent: r => [r.date, r.tool], agent_tool: r => [r.agent, r.tool] }[by];
   if (!keyOf) throw new Error(`group_by 값이 올바르지 않습니다: ${by}`);
-  const cols = { user: ["사용자"], user_tool: ["사용자", "도구"], day: ["날짜"], day_user: ["날짜", "사용자"], user_page: ["사용자", "페이지"] }[by];
+  const cols = { user: ["사용자"], user_tool: ["사용자", "도구"], day: ["날짜"], day_user: ["날짜", "사용자"], user_page: ["사용자", "페이지"],
+    agent: ["에이전트"], user_agent: ["사용자", "에이전트"], day_agent: ["날짜", "에이전트"], agent_tool: ["에이전트", "도구"] }[by];
   const agg = new Map();
-  for (const r of rows) {
-    const k = keyOf(r);
+  const bump = (k, r) => {
     const id = k.join("\u0000");
-    const a = agg.get(id) || { key: k, calls: 0, errors: 0, ms: 0, tools: new Set(), days: new Set() };
-    a.calls += r.calls; a.errors += r.errors; a.ms += r.ms; a.tools.add(r.tool); a.days.add(r.date);
+    const a = agg.get(id) || { key: k, calls: 0, errors: 0, ms: 0, tools: new Set(), days: new Set(), users: new Set() };
+    a.calls += r.calls; a.errors += r.errors; a.ms += r.ms; if (r.tool) a.tools.add(r.tool); if (r.date) a.days.add(r.date); if (r.caller) a.users.add(r.caller);
     agg.set(id, a);
+  };
+  for (const r of rows) bump(keyOf(r), r);
+  // 에이전트 id를 보내지 않은 호출(옛 사본)은 같은 단위의 페이지 호출 수에서 에이전트 호출 수를 빼서 (미구분)으로 보인다
+  if (AGENT_BY.includes(by)) {
+    const restOf = { agent: () => [], user_agent: r => [r.caller], day_agent: r => [r.date] }[by];
+    const page = new Map(), ag = new Map();
+    const add = (m, r) => { const k = restOf(r), id = k.join("\u0000"); const o = m.get(id) || { k, n: 0 }; o.n += r.calls; m.set(id, o); };
+    all.filter(isPage).forEach(r => add(page, r));
+    rows.forEach(r => add(ag, r));
+    page.forEach((o, id) => {
+      const diff = o.n - ((ag.get(id) || { n: 0 }).n);
+      if (diff > 0) bump(by === "agent" ? ["(미구분)"] : by === "user_agent" ? [o.k[0], "(미구분)"] : [o.k[0], "(미구분)"], { calls: diff, errors: 0, ms: 0, tool: "", date: "", caller: "" });
+    });
   }
   const list = [...agg.values()].sort((x, y) => (by.startsWith("day") ? (x.key[0] < y.key[0] ? -1 : x.key[0] > y.key[0] ? 1 : y.calls - x.calls) : y.calls - x.calls));
   const out = list.map(a => {
     const o = {};
     cols.forEach((c, i) => { o[c] = a.key[i]; });
+    const ai = cols.indexOf("에이전트");
+    if (ai >= 0) { const ag = ((CATALOG && CATALOG.agents_v2) || []).find(x => x.id === a.key[ai]); o["에이전트명"] = ag ? ag.name : ""; }
     o["호출"] = a.calls; o["실패"] = a.errors;
     o["평균 소요(초)"] = a.calls ? Math.round(a.ms / a.calls / 100) / 10 : 0;
     if (by === "user") { o["사용일수"] = a.days.size; o["사용 도구 수"] = a.tools.size; }
+    if (by === "agent") { o["사용자 수"] = a.users.size; o["사용일수"] = a.days.size; }
     return o;
   });
   const total = rows.reduce((s, r) => s + r.calls, 0);
@@ -375,7 +401,7 @@ function attachText(result) {
 }
 
 // ---------- tools/call: 담당 서버로 그대로 넘긴다 ----------
-async function callTool(params, caller, page, viaPage) {
+async function callTool(params, caller, page, viaPage, agent) {
   const name = params && params.name;
   if (name === "relay_usage") {
     if (!isAdmin(caller)) return { error: { code: -32602, message: `이 서버에서 쓸 수 없는 도구입니다: ${name}` } };
@@ -412,7 +438,7 @@ async function callTool(params, caller, page, viaPage) {
     if (innerArgs !== undefined && (innerArgs === null || typeof innerArgs !== "object" || Array.isArray(innerArgs))) {
       return { result: { isError: true, content: [{ type: "text", text: "arguments는 JSON 객체여야 합니다" }] } };
     }
-    return callTool({ name: inner, arguments: innerArgs || {} }, caller, page, true);
+    return callTool({ name: inner, arguments: innerArgs || {} }, caller, page, true, a.agent ? String(a.agent).slice(0, 40) : "");
   }
   // 조회 도구를 relay_call 없이 직접 부르는 것은 일반 채팅이므로 거절한다
   if (!viaPage) {
@@ -440,11 +466,11 @@ async function callTool(params, caller, page, viaPage) {
     try {
       const result = await localOf(b).call(name, args, caller);
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${!result.isError}`);
-      await usage.recordCall(caller, name, Date.now() - t0, !result.isError, page);
+      await usage.recordCall(caller, name, Date.now() - t0, !result.isError, page, agent);
       return { result };
     } catch (e) {
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
-      await usage.recordCall(caller, name, Date.now() - t0, false, page);
+      await usage.recordCall(caller, name, Date.now() - t0, false, page, agent);
       return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구 오류: ${e.message}` }] } };
     }
   }
@@ -452,19 +478,19 @@ async function callTool(params, caller, page, viaPage) {
   if (b.forceArgs) args = Object.assign({}, args || {}, b.forceArgs);
   if (b.strictKey && !backendKey(b)) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} 전용 키 없음`);
-    await usage.recordCall(caller, name, Date.now() - t0, false, page);
+    await usage.recordCall(caller, name, Date.now() - t0, false, page, agent);
     return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구가 아직 준비되지 않았습니다(서버 설정 필요). 이 도구 없이 진행하고 확인하지 못한 항목으로 밝히세요.` }] } };
   }
   try {
     const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS, caller);
     const ok = !msg.error && !(msg.result && msg.result.isError);
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${ok}`);
-    await usage.recordCall(caller, name, Date.now() - t0, ok, page);
+    await usage.recordCall(caller, name, Date.now() - t0, ok, page, agent);
     if (msg.error) return { error: msg.error };
     return { result: attachText(msg.result) };
   } catch (e) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
-    await usage.recordCall(caller, name, Date.now() - t0, false, page);
+    await usage.recordCall(caller, name, Date.now() - t0, false, page, agent);
     return { result: { isError: true, content: [{ type: "text", text: `중계 오류: ${e.message}` }] } };
   }
 }
