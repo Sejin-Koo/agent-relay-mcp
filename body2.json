@@ -1,0 +1,1 @@
+{"title":"작업 중지 안내 문구 단순화 (2026-10-30.5)","head":"cancel-note-text","base":"main","body":"`ui_v2.msgs.bg_cancel_note`를 '답변 작업을 중지했습니다.'로 변경. 사용자에게 클라우드 실행기 동작을 설명하지 않도록 함.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01NHPX4nCGmctZbiQgE916uv"}
