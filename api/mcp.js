@@ -343,16 +343,29 @@ async function usageReport(args) {
     agg.set(id, a);
   };
   for (const r of rows) bump(keyOf(r), r);
-  // 에이전트 id를 보내지 않은 호출(옛 사본)은 같은 단위의 페이지 호출 수에서 에이전트 호출 수를 빼서 (미구분)으로 보인다
+  // 에이전트 id를 보내지 않은 호출(옛 사본)은 같은 단위의 전체 호출(도구별 기록)에서 에이전트 호출을 빼서 (미구분)으로 보인다.
+  // 호출 수·실패 수·소요시간 모두 같은 방식으로 뺀다. 음수가 되면(기록 시점 차이) 넣지 않는다.
+  const tools = all.filter(r => !isMeta(r));
   if (AGENT_BY.includes(by)) {
     const restOf = { agent: () => [], user_agent: r => [r.caller], day_agent: r => [r.date] }[by];
-    const page = new Map(), ag = new Map();
-    const add = (m, r) => { const k = restOf(r), id = k.join("\u0000"); const o = m.get(id) || { k, n: 0 }; o.n += r.calls; m.set(id, o); };
-    all.filter(isPage).forEach(r => add(page, r));
+    const tot = new Map(), ag = new Map();
+    const add = (m, r) => { const k = restOf(r), id = k.join("\u0000"); const o = m.get(id) || { k, n: 0, e: 0, ms: 0 }; o.n += r.calls; o.e += r.errors; o.ms += r.ms; m.set(id, o); };
+    tools.forEach(r => add(tot, r));
     rows.forEach(r => add(ag, r));
-    page.forEach((o, id) => {
-      const diff = o.n - ((ag.get(id) || { n: 0 }).n);
-      if (diff > 0) bump(by === "agent" ? ["(미구분)"] : by === "user_agent" ? [o.k[0], "(미구분)"] : [o.k[0], "(미구분)"], { calls: diff, errors: 0, ms: 0, tool: "", date: "", caller: "" });
+    tot.forEach((o, id) => {
+      const g = ag.get(id) || { n: 0, e: 0, ms: 0 };
+      const diff = o.n - g.n;
+      if (diff > 0) bump(by === "agent" ? ["(미구분)"] : [o.k[0], "(미구분)"], { calls: diff, errors: Math.max(0, o.e - g.e), ms: Math.max(0, o.ms - g.ms), tool: "", date: "", caller: "" });
+    });
+  } else if (by === "agent_tool") {
+    const tot = new Map(), ag = new Map();
+    const add = (m, r) => { const o = m.get(r.tool) || { n: 0, e: 0, ms: 0 }; o.n += r.calls; o.e += r.errors; o.ms += r.ms; m.set(r.tool, o); };
+    tools.forEach(r => add(tot, r));
+    rows.forEach(r => add(ag, r));
+    tot.forEach((o, t) => {
+      const g = ag.get(t) || { n: 0, e: 0, ms: 0 };
+      const diff = o.n - g.n;
+      if (diff > 0) bump(["(미구분)", t], { calls: diff, errors: Math.max(0, o.e - g.e), ms: Math.max(0, o.ms - g.ms), tool: t, date: "", caller: "" });
     });
   }
   const list = [...agg.values()].sort((x, y) => (by.startsWith("day") ? (x.key[0] < y.key[0] ? -1 : x.key[0] > y.key[0] ? 1 : y.calls - x.calls) : y.calls - x.calls));
@@ -367,7 +380,7 @@ async function usageReport(args) {
     if (by === "agent") { o["사용자 수"] = a.users.size; o["사용일수"] = a.days.size; }
     return o;
   });
-  const total = rows.reduce((s, r) => s + r.calls, 0);
+  const total = out.reduce((s, o) => s + o["호출"], 0);
   const head = Object.keys(out[0] || Object.fromEntries(cols.map(c => [c, ""]).concat([["호출", 0], ["실패", 0], ["평균 소요(초)", 0]])));
   const md = [
     `중계 서버 사용현황 ${from} ~ ${to} (한국시간, ${by} 기준) — 총 ${total}회`,
