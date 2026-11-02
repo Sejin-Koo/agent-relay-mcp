@@ -127,7 +127,7 @@ async function backendTools(id) {
 // 관리자 계정은 각 서버를 커넥터로 직접 연결해 쓰므로, 이 서버를 지워도 계정 업무에는 영향이 없어야 한다(사용자 결정 2026-10-24).
 async function listTools(caller) {
   const tools = [CONFIG_TOOL, CALL_TOOL];
-  if (isAdmin(caller)) tools.push(USAGE_TOOL);
+  if (isAdmin(caller)) tools.push(USAGE_TOOL, USERS_TOOL);
   return tools;
 }
 // 페이지 확인 값: 원본 페이지 코드에 넣어 둔 값과 같아야 relay_config·relay_call을 받는다(2026-10-24 사용자 결정).
@@ -312,6 +312,33 @@ const USAGE_TOOL = {
   annotations: { readOnlyHint: true }
 };
 
+// 사용자 한글 이름표 관리(관리자 전용). 새 게이트키를 발급할 때 함께 등록하면 사용량 조회 결과에 '사용자명' 열로 붙는다.
+const USERS_TOOL = {
+  name: "relay_users",
+  description: "사용자 표시 이름(게이트키 식별자 → 한글 이름)을 관리합니다(관리자 전용). relay_usage 결과의 '사용자명' 열이 여기서 옵니다. 새 게이트키를 발급할 때 이름도 함께 등록하세요. 이름은 코드 저장소가 아니라 사용 기록 저장소에 두며, 자동 삭제되지 않습니다.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      action: { type: "string", enum: ["list", "set", "delete"], description: "list: 등록된 이름 전체, set: 이름 등록·변경, delete: 이름 삭제" },
+      label: { type: "string", description: "게이트키 식별자(plk_<식별자>_… 의 식별자, 예: kangyunkyung). set·delete에 필요" },
+      name: { type: "string", description: "표시할 한글 이름(1~40자). set에 필요" }
+    },
+    required: ["action"],
+    additionalProperties: false
+  }
+};
+
+async function usersAdmin(args) {
+  const action = args.action;
+  if (action === "set") await usage.setName(args.label, args.name);
+  else if (action === "delete") await usage.deleteName(args.label);
+  else if (action !== "list") throw new Error("action은 list·set·delete 중 하나여야 합니다");
+  const names = await usage.readNames();
+  const rows = Object.keys(names).sort().map(k => ({ 식별자: k, 이름: names[k] }));
+  const text = [`사용자 표시 이름 ${rows.length}건` + (action === "list" ? "" : ` (${action} 완료: ${args.label})`), "", "| 식별자 | 이름 |", "|---|---|", ...rows.map(r => `| ${r.식별자} | ${r.이름} |`)].join("\n");
+  return { content: [{ type: "text", text }], structuredContent: { names: rows } };
+}
+
 async function usageReport(args) {
   const DAY = /^\d{4}-\d{2}-\d{2}$/;
   const to = args.to || usage.kstDate();
@@ -369,9 +396,11 @@ async function usageReport(args) {
     });
   }
   const list = [...agg.values()].sort((x, y) => (by.startsWith("day") ? (x.key[0] < y.key[0] ? -1 : x.key[0] > y.key[0] ? 1 : y.calls - x.calls) : y.calls - x.calls));
+  const userCol = cols.indexOf("사용자");
+  const names = userCol >= 0 ? await usage.readNames() : {};
   const out = list.map(a => {
     const o = {};
-    cols.forEach((c, i) => { o[c] = a.key[i]; });
+    cols.forEach((c, i) => { o[c] = a.key[i]; if (i === userCol) o["사용자명"] = names[a.key[i]] || ""; });
     const ai = cols.indexOf("에이전트");
     if (ai >= 0) { const ag = ((CATALOG && CATALOG.agents_v2) || []).find(x => x.id === a.key[ai]); o["에이전트명"] = ag ? ag.name : ""; }
     o["호출"] = a.calls; o["실패"] = a.errors;
@@ -422,6 +451,14 @@ async function callTool(params, caller, page, viaPage, agent) {
       return { result: await usageReport((params && params.arguments) || {}) };
     } catch (e) {
       return { result: { isError: true, content: [{ type: "text", text: `사용현황 조회 오류: ${e.message}` }] } };
+    }
+  }
+  if (name === "relay_users") {
+    if (!isAdmin(caller)) return { error: { code: -32602, message: `이 서버에서 쓸 수 없는 도구입니다: ${name}` } };
+    try {
+      return { result: await usersAdmin((params && params.arguments) || {}) };
+    } catch (e) {
+      return { result: { isError: true, content: [{ type: "text", text: `사용자 이름표 오류: ${e.message}` }] } };
     }
   }
   if (name === "relay_config") {
