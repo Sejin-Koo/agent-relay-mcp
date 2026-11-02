@@ -127,7 +127,7 @@ async function backendTools(id) {
 // 관리자 계정은 각 서버를 커넥터로 직접 연결해 쓰므로, 이 서버를 지워도 계정 업무에는 영향이 없어야 한다(사용자 결정 2026-10-24).
 async function listTools(caller) {
   const tools = [CONFIG_TOOL, CALL_TOOL];
-  if (isAdmin(caller)) tools.push(USAGE_TOOL, USERS_TOOL);
+  if (isAdmin(caller)) tools.push(USAGE_TOOL, USERS_TOOL, FAILURES_TOOL);
   return tools;
 }
 // 페이지 확인 값: 원본 페이지 코드에 넣어 둔 값과 같아야 relay_config·relay_call을 받는다(2026-10-24 사용자 결정).
@@ -306,7 +306,8 @@ const USAGE_TOOL = {
       from: { type: "string", description: "시작일 YYYY-MM-DD (기본: 오늘 포함 최근 30일의 첫날)" },
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
       user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures"], description: "집계 단위 — failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
+      status: { type: "string", enum: ["open", "closed", "all"], description: "issues에서 open: 미처리·재발(기본), closed: 개선완료·조치불필요, all: 전체" },
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues"], description: "집계 단위 — issues: 실패 원인별 묶음(상태 미처리·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -357,6 +358,48 @@ async function failureReport(from, to, user) {
   return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { from, to, group_by: "failures", total_failures: rows.length, rows } };
 }
 
+const STATE_KO = { open: "미처리", reopened: "재발", resolved: "개선완료", ignored: "조치불필요" };
+// 실패 원인별 묶음. 열린 것은 열린 건수가 많은 순, 닫힌 것은 최근에 닫은 순.
+async function issueReport(which) {
+  if (!["open", "closed", "all"].includes(which)) throw new Error("status는 open·closed·all 중 하나여야 합니다");
+  const names = await usage.readNames();
+  const all = await usage.readIssues();
+  const isOpen = i => i.state === "open" || i.state === "reopened";
+  const list = all.filter(i => which === "all" || (which === "open" ? isOpen(i) : !isOpen(i)))
+    .sort((a, b) => (isOpen(a) !== isOpen(b) ? (isOpen(a) ? -1 : 1) : isOpen(a) ? (b.open_count - a.open_count) || (a.last_at < b.last_at ? 1 : -1) : (a.closed_at < b.closed_at ? 1 : -1)));
+  const kst = iso => { if (!iso) return ""; const d = new Date(new Date(iso).getTime() + 9 * 3600 * 1000).toISOString(); return `${d.slice(0, 10)} ${d.slice(11, 16)}`; };
+  const rows = list.map(i => {
+    const ag = ((CATALOG && CATALOG.agents_v2) || []).find(x => x.id === i.last_agent);
+    const be = BACKENDS[i.backend];
+    return { "상태": STATE_KO[i.state] || i.state, "도구": i.tool, "담당 서버": be ? be.label : i.backend, "오류": i.err, "열린 건수": i.open_count, "누적 건수": i.count,
+      "처음": kst(i.first_at), "마지막": kst(i.last_at), "마지막 사용자": names[i.last_caller] || i.last_caller || "", "마지막 에이전트": ag ? ag.name : (i.last_agent || ""),
+      "마지막 인자": i.last_args || "", "닫은 시각": kst(i.closed_at), "조치 메모": i.note || "", "링크": i.link || "", "서명": i.sig };
+  });
+  const head = which === "closed" ? ["상태", "도구", "오류", "누적 건수", "닫은 시각", "조치 메모", "서명"] : ["상태", "도구", "오류", "열린 건수", "마지막", "마지막 사용자", "서명"];
+  const esc = v => String(v === undefined ? "" : v).replace(/\|/g, "\\|");
+  const label = { open: "열린 실패 원인(미처리·재발)", closed: "닫힌 실패 원인(개선완료·조치불필요)", all: "실패 원인 전체" }[which];
+  const md = [`${label} — ${rows.length}건`, "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...rows.map(o => "| " + head.map(h => esc(o[h])).join(" | ") + " |")];
+  if (!rows.length) md.push("", "해당하는 실패 원인이 없습니다.");
+  return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { group_by: "issues", status: which, total: rows.length, rows } };
+}
+
+// 실패 원인 상태 변경(관리자 전용) — 개선해서 배포했으면 resolved, 외부 일시 장애·잘못된 입력이면 ignored.
+const FAILURES_TOOL = {
+  name: "relay_failures",
+  description: "실패 원인의 상태를 바꿉니다(관리자 전용). 실패는 담당 서버·도구·오류 문구가 같으면 한 원인으로 묶입니다(relay_usage group_by=issues로 조회). 원인을 고쳐 배포했으면 resolved, 외부 서버 일시 장애·잘못된 입력처럼 고칠 것이 없으면 ignored로 닫습니다. 닫은 뒤 같은 원인으로 또 실패하면 '재발'로 다시 열린 목록에 나오고, 닫은 뒤 " + usage.RETENTION_DAYS + "일 동안 재발이 없으면 자동 삭제됩니다.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      sig: { type: "string", description: "원인 서명(12자리, group_by=issues 결과의 '서명')" },
+      status: { type: "string", enum: ["resolved", "ignored", "open"], description: "resolved: 개선완료, ignored: 조치불필요, open: 다시 열기" },
+      note: { type: "string", description: "조치 내용 한두 줄(300자까지). 닫을 때 적는다" },
+      link: { type: "string", description: "변경 링크(PR 주소 등, 선택)" }
+    },
+    required: ["sig", "status"],
+    additionalProperties: false
+  }
+};
+
 async function usageReport(args) {
   const DAY = /^\d{4}-\d{2}-\d{2}$/;
   const to = args.to || usage.kstDate();
@@ -365,6 +408,7 @@ async function usageReport(args) {
   if (from > to) throw new Error("from이 to보다 늦습니다");
   const by = args.group_by || "user";
   if (by === "failures") return failureReport(from, to, args.user);
+  if (by === "issues") return issueReport(args.status || "open");
   const all = await usage.readUsage(from, to);
   const isPage = r => r.tool.startsWith("@page:");
   const isAgent = r => r.tool.startsWith("@agent:");
@@ -502,6 +546,16 @@ async function callTool(params, caller, page, viaPage, agent) {
       return { result: await usageReport((params && params.arguments) || {}) };
     } catch (e) {
       return { result: { isError: true, content: [{ type: "text", text: `사용현황 조회 오류: ${e.message}` }] } };
+    }
+  }
+  if (name === "relay_failures") {
+    if (!isAdmin(caller)) return { error: { code: -32602, message: `이 서버에서 쓸 수 없는 도구입니다: ${name}` } };
+    try {
+      const a = (params && params.arguments) || {};
+      const r = await usage.setIssueStatus(a.sig, a.status, a.note, a.link);
+      return { result: { content: [{ type: "text", text: `실패 원인 ${r.sig}를 ${STATE_KO[r.status] || r.status}(으)로 바꿨습니다.` }], structuredContent: r } };
+    } catch (e) {
+      return { result: { isError: true, content: [{ type: "text", text: `실패 원인 상태 변경 오류: ${e.message}` }] } };
     }
   }
   if (name === "relay_users") {
