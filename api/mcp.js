@@ -306,8 +306,8 @@ const USAGE_TOOL = {
       from: { type: "string", description: "시작일 YYYY-MM-DD (기본: 오늘 포함 최근 30일의 첫날)" },
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
       user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
-      status: { type: "string", enum: ["open", "closed", "all"], description: "issues에서 open: 미처리·재발(기본), closed: 개선완료·조치불필요, all: 전체" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues"], description: "집계 단위 — issues: 실패 원인별 묶음(상태 미처리·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
+      status: { type: "string", enum: ["open", "closed", "all"], description: "issues에서 open: 확인 필요·재발(기본), closed: 개선완료·조치불필요, all: 전체" },
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues"], description: "집계 단위 — issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -358,7 +358,7 @@ async function failureReport(from, to, user) {
   return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { from, to, group_by: "failures", total_failures: rows.length, rows } };
 }
 
-const STATE_KO = { open: "미처리", reopened: "재발", resolved: "개선완료", ignored: "조치불필요" };
+const STATE_KO = { open: "확인 필요", reopened: "재발", resolved: "개선완료", ignored: "조치불필요" };
 // 실패 원인별 묶음. 열린 것은 열린 건수가 많은 순, 닫힌 것은 최근에 닫은 순.
 async function issueReport(which) {
   if (!["open", "closed", "all"].includes(which)) throw new Error("status는 open·closed·all 중 하나여야 합니다");
@@ -377,9 +377,9 @@ async function issueReport(which) {
   });
   const head = which === "closed" ? ["상태", "도구", "오류", "누적 건수", "닫은 시각", "조치 메모", "서명"] : ["상태", "도구", "오류", "열린 건수", "마지막", "마지막 사용자", "서명"];
   const esc = v => String(v === undefined ? "" : v).replace(/\|/g, "\\|");
-  const label = { open: "열린 실패 원인(미처리·재발)", closed: "닫힌 실패 원인(개선완료·조치불필요)", all: "실패 원인 전체" }[which];
+  const label = { open: "개선 필요 오류(확인 필요·재발)", closed: "개선 완료된 오류(개선완료·조치불필요)", all: "오류 전체" }[which];
   const md = [`${label} — ${rows.length}건`, "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...rows.map(o => "| " + head.map(h => esc(o[h])).join(" | ") + " |")];
-  if (!rows.length) md.push("", "해당하는 실패 원인이 없습니다.");
+  if (!rows.length) md.push("", "해당하는 오류가 없습니다.");
   return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { group_by: "issues", status: which, total: rows.length, rows } };
 }
 
@@ -553,7 +553,7 @@ async function callTool(params, caller, page, viaPage, agent) {
     try {
       const a = (params && params.arguments) || {};
       const r = await usage.setIssueStatus(a.sig, a.status, a.note, a.link);
-      return { result: { content: [{ type: "text", text: `실패 원인 ${r.sig}를 ${STATE_KO[r.status] || r.status}(으)로 바꿨습니다.` }], structuredContent: r } };
+      return { result: { content: [{ type: "text", text: `오류 ${r.sig}의 상태를 '${r.status === "open" ? "확인 필요" : (STATE_KO[r.status] || r.status)}'(으)로 바꿨습니다.` }], structuredContent: r } };
     } catch (e) {
       return { result: { isError: true, content: [{ type: "text", text: `실패 원인 상태 변경 오류: ${e.message}` }] } };
     }
