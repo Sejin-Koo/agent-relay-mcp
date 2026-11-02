@@ -299,13 +299,14 @@ async function configResult(args, caller) {
 // ---------- 관리자 전용: 사용자별 사용현황 ----------
 const USAGE_TOOL = {
   name: "relay_usage",
-  description: "업무 에이전트 중계 서버의 사용자별 사용현황을 조회합니다(관리자 전용). 사용자는 게이트키 식별자(예: kangyunkyung)로 표시되며, 호출 수·실패 수·평균 소요시간을 집계합니다. 질문 내용은 기록되지 않습니다. 기록은 한국시간 날짜 기준이며 " + usage.RETENTION_DAYS + "일이 지나면 자동 삭제됩니다.",
+  description: "업무 에이전트 중계 서버의 사용자별 사용현황을 조회합니다(관리자 전용). 사용자는 게이트키 식별자(예: kangyunkyung)로 표시되며, 호출 수·실패 수·평균 소요시간을 집계합니다. 질문 내용은 기록되지 않습니다(실패한 호출만 원인 확인용으로 오류 문구와 인자 요약을 남깁니다 — group_by=failures). 기록은 한국시간 날짜 기준이며 " + usage.RETENTION_DAYS + "일이 지나면 자동 삭제됩니다.",
   inputSchema: {
     type: "object",
     properties: {
       from: { type: "string", description: "시작일 YYYY-MM-DD (기본: 오늘 포함 최근 30일의 첫날)" },
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool"], description: "집계 단위 — user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
+      user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures"], description: "집계 단위 — failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -339,6 +340,23 @@ async function usersAdmin(args) {
   return { content: [{ type: "text", text }], structuredContent: { names: rows } };
 }
 
+// 실패한 호출 한 건씩. 시각은 한국시간.
+async function failureReport(from, to, user) {
+  const names = await usage.readNames();
+  const list = (await usage.readFailures(from, to)).filter(f => !user || f.caller === user);
+  const kst = iso => { const d = new Date(new Date(iso).getTime() + 9 * 3600 * 1000).toISOString(); return `${d.slice(0, 10)} ${d.slice(11, 19)}`; };
+  const rows = list.map(f => {
+    const ag = ((CATALOG && CATALOG.agents_v2) || []).find(x => x.id === f.agent);
+    return { "시각": kst(f.at), "사용자": f.caller, "사용자명": names[f.caller] || "", "에이전트": f.agent || "", "에이전트명": ag ? ag.name : "", "도구": f.tool, "소요(초)": Math.round((f.ms || 0) / 100) / 10, "오류": f.err || "", "인자": f.args || "" };
+  });
+  const head = ["시각", "사용자명", "에이전트명", "도구", "소요(초)", "오류", "인자"];
+  const esc = v => String(v === undefined ? "" : v).replace(/\|/g, "\\|");
+  const md = [`중계 서버 실패 호출 ${from} ~ ${to} (한국시간${user ? `, 사용자 ${user}` : ""}) — ${rows.length}건`, "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|",
+    ...rows.map(o => "| " + head.map(h => esc(o[h] || (h === "사용자명" ? o["사용자"] : h === "에이전트명" ? o["에이전트"] : o[h]))).join(" | ") + " |")];
+  if (!rows.length) md.push("", "이 기간에 기록된 실패 상세가 없습니다(실패 상세는 2026-11-02 배포 이후 실패분부터 남습니다).");
+  return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { from, to, group_by: "failures", total_failures: rows.length, rows } };
+}
+
 async function usageReport(args) {
   const DAY = /^\d{4}-\d{2}-\d{2}$/;
   const to = args.to || usage.kstDate();
@@ -346,6 +364,7 @@ async function usageReport(args) {
   if (!DAY.test(from) || !DAY.test(to)) throw new Error("from·to는 YYYY-MM-DD 형식이어야 합니다");
   if (from > to) throw new Error("from이 to보다 늦습니다");
   const by = args.group_by || "user";
+  if (by === "failures") return failureReport(from, to, args.user);
   const all = await usage.readUsage(from, to);
   const isPage = r => r.tool.startsWith("@page:");
   const isAgent = r => r.tool.startsWith("@agent:");
@@ -442,6 +461,38 @@ function attachText(result) {
   }
 }
 
+// ---------- 실패 상세: 오류 문구와 인자 요약 ----------
+// 담당 서버가 돌려준 오류 문구(JSON-RPC error 또는 isError 결과의 글)를 한 줄로 줄인다.
+function errTextOf(msg) {
+  try {
+    if (msg && msg.error) return oneLine(`[${msg.error.code}] ${msg.error.message || ""}`);
+    const r = msg && msg.result;
+    if (r && r.isError) {
+      const t = (r.content || []).filter(c => c && c.type === "text" && c.text).map(c => c.text).join(" ");
+      return oneLine(t || "(오류 문구 없음)");
+    }
+  } catch (e) { /* 아래로 */ }
+  return "";
+}
+function oneLine(t, n) { const s = String(t || "").replace(/\s+/g, " ").trim(); const max = n || 300; return s.length > max ? s.slice(0, max) + "…" : s; }
+// 인자 요약: 값마다 80자, 전체 300자까지. 어떤 문서·대상을 불렀는지 알아보는 용도다.
+function argSummary(args) {
+  try {
+    const o = {};
+    Object.keys(args || {}).slice(0, 12).forEach(k => {
+      const v = args[k];
+      o[k] = typeof v === "string" ? oneLine(v, 80) : (v && typeof v === "object" ? oneLine(JSON.stringify(v), 80) : v);
+    });
+    return oneLine(JSON.stringify(o), 300);
+  } catch (e) {
+    return "";
+  }
+}
+async function noteFail(caller, name, id, ms, err, args, agent) {
+  console.log(`[fail] caller=${caller} tool=${name} backend=${id} ms=${ms} agent=${agent || "-"} err=${err} args=${argSummary(args)}`);
+  await usage.recordFailure({ caller, tool: name, backend: id, agent: agent || "", ms, err, args: argSummary(args) });
+}
+
 // ---------- tools/call: 담당 서버로 그대로 넘긴다 ----------
 async function callTool(params, caller, page, viaPage, agent) {
   const name = params && params.name;
@@ -515,12 +566,16 @@ async function callTool(params, caller, page, viaPage, agent) {
   if (b.local) {
     try {
       const result = await localOf(b).call(name, args, caller);
-      console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${!result.isError}`);
-      await usage.recordCall(caller, name, Date.now() - t0, !result.isError, page, agent);
+      const ms = Date.now() - t0;
+      console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} ok=${!result.isError}`);
+      await usage.recordCall(caller, name, ms, !result.isError, page, agent);
+      if (result.isError) await noteFail(caller, name, id, ms, errTextOf({ result }), args, agent);
       return { result };
     } catch (e) {
-      console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
-      await usage.recordCall(caller, name, Date.now() - t0, false, page, agent);
+      const ms = Date.now() - t0;
+      console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} fail=${e.message}`);
+      await usage.recordCall(caller, name, ms, false, page, agent);
+      await noteFail(caller, name, id, ms, oneLine(`중계 예외: ${e.message}`), args, agent);
       return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구 오류: ${e.message}` }] } };
     }
   }
@@ -529,18 +584,23 @@ async function callTool(params, caller, page, viaPage, agent) {
   if (b.strictKey && !backendKey(b)) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} 전용 키 없음`);
     await usage.recordCall(caller, name, Date.now() - t0, false, page, agent);
+    await noteFail(caller, name, id, Date.now() - t0, "중계 서버에 이 담당 서버의 전용 키가 설정되지 않음", args, agent);
     return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구가 아직 준비되지 않았습니다(서버 설정 필요). 이 도구 없이 진행하고 확인하지 못한 항목으로 밝히세요.` }] } };
   }
   try {
     const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS, caller);
     const ok = !msg.error && !(msg.result && msg.result.isError);
-    console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} ok=${ok}`);
-    await usage.recordCall(caller, name, Date.now() - t0, ok, page, agent);
+    const ms = Date.now() - t0;
+    console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} ok=${ok}`);
+    await usage.recordCall(caller, name, ms, ok, page, agent);
+    if (!ok) await noteFail(caller, name, id, ms, errTextOf(msg), args, agent);
     if (msg.error) return { error: msg.error };
     return { result: attachText(msg.result) };
   } catch (e) {
-    console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${Date.now() - t0} fail=${e.message}`);
-    await usage.recordCall(caller, name, Date.now() - t0, false, page, agent);
+    const ms = Date.now() - t0;
+    console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} fail=${e.message}`);
+    await usage.recordCall(caller, name, ms, false, page, agent);
+    await noteFail(caller, name, id, ms, oneLine(`중계 예외: ${e.message}`), args, agent);
     return { result: { isError: true, content: [{ type: "text", text: `중계 오류: ${e.message}` }] } };
   }
 }
