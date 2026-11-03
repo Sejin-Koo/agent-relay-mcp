@@ -108,6 +108,21 @@ if (cat.agents_v2) {
     (n.agents || []).forEach(id => { if (!v2ids.has(id)) e2.push(`notices[${i}]: 없는 에이전트 ${id}`); });
   });
   if (cat.legacy_until && !day.test(cat.legacy_until)) e2.push("legacy_until은 YYYY-MM-DD");
+  // 화면 모양 규칙(ui_v2.css, 페이지 8판부터): CSS 글 또는 줄 배열, 60,000자 이내. 바깥 자원을 부르는 구문과 역슬래시는 금지
+  // (페이지 applyServerCss와 같은 기준 — 페이지는 이런 구문이 있으면 통째로 적용하지 않는다)
+  const ucss = cat.ui_v2 && cat.ui_v2.css;
+  if (ucss !== undefined) {
+    const ok = typeof ucss === "string" || (Array.isArray(ucss) && ucss.every(x => typeof x === "string"));
+    if (!ok) e2.push("ui_v2.css는 CSS 글 또는 줄 배열");
+    else {
+      const t = Array.isArray(ucss) ? ucss.join("\n") : ucss;
+      if (t.length > 60000) e2.push("ui_v2.css는 60,000자 이내");
+      if (/url\s*\(|image-set\s*\(|image\s*\(|src\s*\(|@import|@font-face|expression\s*\(|javascript:|behavior\s*:|-moz-binding|\\/i.test(t.replace(/\/\*[\s\S]*?\*\//g, "")))
+        e2.push("ui_v2.css에 허용하지 않는 구문(url( · image-set( · @import · @font-face · 역슬래시 등) — 페이지가 통째로 적용하지 않음");
+      const open = (t.match(/\{/g) || []).length, close = (t.match(/\}/g) || []).length;
+      if (open !== close) e2.push(`ui_v2.css 중괄호 짝이 맞지 않음({ ${open}개, } ${close}개)`);
+    }
+  }
   if (e2.length) { console.error(e2.join("\n")); process.exit(1); }
   console.log(`새 페이지 설정: 에이전트 ${cat.agents_v2.length}개, 출처 ${Object.keys(src).length}개, 공지 ${(cat.notices || []).length}건 검사 통과`);
 }
