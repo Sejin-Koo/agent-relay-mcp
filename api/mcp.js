@@ -84,7 +84,9 @@ async function rpcToBackend(b, method, params, timeoutMs, caller) {
       throw err;
     }
     const msg = parseRpc(text, r.headers.get("content-type"), id);
-    if (!msg) throw new Error(`${b.label} 서버 응답을 해석하지 못했습니다`);
+    // 응답이 비었거나 SSE가 결과 없이 끝난 경우 — 대부분 뒤 서버의 함수 실행 한도 초과로 강제 종료된 것이다
+    // (2026-11-04 건설 서버 60초 한도 실측). 같은 인자로 되풀이하지 않도록 대처를 함께 알린다.
+    if (!msg) throw new Error(`${b.label} 서버 응답이 결과 없이 끊겼습니다(그 서버의 처리 시간 한도를 넘겼을 수 있음) — 같은 인자로 되풀이하지 말고 조회 범위(기간·페이지·건수)를 줄여 다시 부르세요`);
     return msg;
   } catch (e) {
     if (e.name === "AbortError") throw new Error(`${b.label} 서버가 ${Math.round(timeoutMs / 1000)}초 안에 응답하지 않았습니다`);
