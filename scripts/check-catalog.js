@@ -77,6 +77,10 @@ if (cat.agents_v2) {
   // 다음 질문 예약·답변 중 새 대화(페이지 10판)
   if (cat.features) {
     for (const k of ["queue", "bg_detach"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true|false`);
+    if (cat.features.att_guide !== undefined && typeof cat.features.att_guide !== "boolean") e2.push("features.att_guide는 true|false");
+    const amf = cat.features.att_max_files, amm = cat.features.att_max_mb;
+    if (amf !== undefined && !(Number.isInteger(amf) && amf >= 1 && amf <= 1000)) e2.push("features.att_max_files는 1~1000 정수");
+    if (amm !== undefined && !(Number.isInteger(amm) && amm >= 1 && amm <= 200)) e2.push("features.att_max_mb는 1~200 정수");
     const qm = cat.features.queue_max;
     if (qm !== undefined && !(Number.isInteger(qm) && qm >= 1 && qm <= 10)) e2.push("features.queue_max는 1~10 정수");
   }
