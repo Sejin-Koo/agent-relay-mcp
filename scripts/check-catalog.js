@@ -123,6 +123,43 @@ if (cat.agents_v2) {
       if (open !== close) e2.push(`ui_v2.css 중괄호 짝이 맞지 않음({ ${open}개, } ${close}개)`);
     }
   }
+  // 서버 단추(ui_v2.buttons, 페이지 9판부터): 기본 단추의 이름·숨기기·위치, 새 단추(정해진 동작 중 하나). 페이지 applyButtons와 같은 기준
+  const ub = cat.ui_v2 && cat.ui_v2.buttons;
+  if (ub !== undefined) {
+    const BUILTIN = { hist_top: "top", notice: "top", jobs: "top", setup: "top", back: "pane", agent_hist: "pane", agent_info: "pane", new_chat: "pane" };
+    const ACTIONS = ["history_all", "history", "notices", "jobs", "setup", "home", "agent", "new_chat", "agent_info", "group", "link"];
+    const gids2 = new Set((cat.groups_v2 || []).map(g => g.id));
+    if (!Array.isArray(ub)) e2.push("ui_v2.buttons는 배열");
+    else {
+      if (ub.length > 40) e2.push("ui_v2.buttons는 40개 이내");
+      const slotOf = {}, seen = new Set();
+      ub.forEach(b => { if (b && b.id) slotOf[b.id] = BUILTIN[b.id] || b.slot; });
+      ub.forEach((b, i) => {
+        const w = `ui_v2.buttons[${i}]${b && b.id ? "(" + b.id + ")" : ""}`;
+        if (!b || typeof b !== "object" || !SAFE_ID.test(String(b.id || ""))) { e2.push(`${w}: id는 영문 소문자·숫자·-·_`); return; }
+        if (seen.has(b.id)) e2.push(`${w}: id 중복`); seen.add(b.id);
+        if (b.label !== undefined && !(typeof b.label === "string" && b.label.trim() && b.label.length <= 24)) e2.push(`${w}: label은 24자 이내 글`);
+        if (b.hidden !== undefined && typeof b.hidden !== "boolean") e2.push(`${w}: hidden은 true|false`);
+        if (!BUILTIN[b.id]) {
+          if (!["top", "pane", "home"].includes(b.slot)) e2.push(`${w}: 새 단추의 slot은 top|pane|home`);
+          if (!ACTIONS.includes(b.action)) e2.push(`${w}: action은 ${ACTIONS.join("|")} 중 하나`);
+          if (!b.label) e2.push(`${w}: 새 단추에는 label 필요`);
+          if (b.action === "agent" && !v2ids.has(b.agent)) e2.push(`${w}: agent 대상 없음 ${b.agent}`);
+          if (b.action === "group" && !gids2.has(b.group)) e2.push(`${w}: group 대상 없음 ${b.group}`);
+          if (b.action === "link" && !/^https:\/\/[^\s"'<>]+$/.test(String(b.url || ""))) e2.push(`${w}: url은 https 주소`);
+          if (b.q !== undefined && !(typeof b.q === "string" && b.q.length <= 2000)) e2.push(`${w}: q는 2000자 이내 글`);
+          (b.agents || []).forEach(id => { if (!v2ids.has(id)) e2.push(`${w}: agents에 없는 에이전트 ${id}`); });
+          if (b.agents && b.slot !== "pane") e2.push(`${w}: agents(에이전트별 표시)는 slot pane에서만`);
+        } else if (b.slot || b.action) e2.push(`${w}: 기본 단추는 slot·action을 바꿀 수 없음(label·hidden·before·after만)`);
+        const ref = b.before || b.after;
+        if (b.before && b.after) e2.push(`${w}: before와 after는 하나만`);
+        if (ref) {
+          if (!slotOf[ref] && !BUILTIN[ref]) e2.push(`${w}: 위치 기준 단추 없음 ${ref}`);
+          else if ((slotOf[ref] || BUILTIN[ref]) !== slotOf[b.id]) e2.push(`${w}: 위치 기준 ${ref}가 다른 자리(slot)에 있음`);
+        }
+      });
+    }
+  }
   if (e2.length) { console.error(e2.join("\n")); process.exit(1); }
   console.log(`새 페이지 설정: 에이전트 ${cat.agents_v2.length}개, 출처 ${Object.keys(src).length}개, 공지 ${(cat.notices || []).length}건 검사 통과`);
 }
