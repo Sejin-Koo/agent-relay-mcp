@@ -113,6 +113,15 @@ if (cat.agents_v2) {
       }
     }
   }
+  // 다른 에이전트의 질문에 답할 때도 지킬 공통 줄(2026-11-04): [답변 구성](report)은 그때 빠지므로, 웹 검색·근거 확인 줄을
+  // base.system에 "[by]" 사본으로 둔다(페이지 14판부터). by_shared는 사본을 둔 report 줄 번호 — report를 고치면 사본도 같이 고친다
+  if (P2.by_shared !== undefined) {
+    if (!Array.isArray(P2.by_shared) || !P2.by_shared.every(i => Number.isInteger(i) && Array.isArray(P2.report) && P2.report[i] !== undefined)) e2.push("prompts_v2.by_shared는 prompts_v2.report 줄 번호 배열");
+    else {
+      const sysL = P2.base && Array.isArray(P2.base.system) ? P2.base.system : [];
+      P2.by_shared.forEach(i => { if (!sysL.includes("[by]" + P2.report[i])) e2.push(`prompts_v2.report[${i}]와 prompts_v2.base.system의 [by] 사본이 다름 — 둘을 같이 고치거나 by_shared 번호를 맞출 것`); });
+    }
+  }
   if (P2.tool_docs !== undefined) {
     if (!P2.tool_docs || typeof P2.tool_docs !== "object" || Array.isArray(P2.tool_docs)) e2.push("prompts_v2.tool_docs는 객체");
     else for (const [k, v] of Object.entries(P2.tool_docs)) if (typeof v !== "string" || !v.trim()) e2.push(`prompts_v2.tool_docs.${k}는 빈 글이 아닌 글`);
