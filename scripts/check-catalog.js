@@ -83,12 +83,54 @@ if (cat.agents_v2) {
     if (amm !== undefined && !(Number.isInteger(amm) && amm >= 1 && amm <= 200)) e2.push("features.att_max_mb는 1~200 정수");
     const qm = cat.features.queue_max;
     if (qm !== undefined && !(Number.isInteger(qm) && qm >= 1 && qm <= 10)) e2.push("features.queue_max는 1~10 정수");
+    // 숫자 설정(페이지 14판부터, 페이지 applyNumbers와 같은 범위 — 벗어나면 페이지가 기본값을 쓴다)
+    const NUMS = { hist_days: [7, 365], hist_list: [20, 300], hist_board_show: [1, 30], past_scan: [5, 100], past_read: [2000, 60000], convo_in_max: [20000, 400000], ctx_turns: [2, 40], ctx_last_max: [2000, 60000], ctx_prev_max: [500, 20000] };
+    for (const [k, [lo, hi]] of Object.entries(NUMS)) { const v = cat.features[k]; if (v !== undefined && !(typeof v === "number" && v >= lo && v <= hi)) e2.push(`features.${k}는 ${lo}~${hi} 숫자(벗어나면 페이지가 기본값을 씀)`); }
   }
   if (cat.features && cat.features.background) for (const k of ["bg_stale_min", "bg_start_min", "bg_keep_days"]) if (!(Number(cat.features[k]) > 0)) e2.push(`features.${k}는 양수`);
   if (P2.convo) {
     for (const k of ["plan", "section"]) if (P2.convo[k] !== undefined && !(Array.isArray(P2.convo[k]) && P2.convo[k].length && P2.convo[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.convo.${k}는 문장 배열`);
     if (P2.convo.sources !== undefined && !["auto", "list", "line", "none"].includes(P2.convo.sources)) e2.push("prompts_v2.convo.sources는 auto·list·line·none 중 하나");
     if (Array.isArray(P2.convo.section) && !P2.convo.section.join("\n").includes("{{h}}")) e2.push("prompts_v2.convo.section에 {{h}}(절 제목) 자리표시자가 없음");
+  }
+  // 지침 문구(prompts_v2.base)·페이지 자체 도구 설명(prompts_v2.tool_docs), 페이지 14판부터. 페이지 BASE_DEF·TDS와 같은 기준
+  if (P2.base !== undefined) {
+    if (!P2.base || typeof P2.base !== "object" || Array.isArray(P2.base)) e2.push("prompts_v2.base는 객체");
+    else {
+      const KNOWN = ["system", "consult_target", "no_rules", "ack", "consult_q", "tool_head", "tool_head_bg", "tool_group", "attach_none", "attach", "attach_more", "notes_head", "doc", "doc_off", "cont", "hist_clip", "hist_skip", "hist_clip_fg", "hist_skip_fg"];
+      const FLAGS = ["bg", "by", "consult", "find", "past", "prev", "dl", "att", "folder", "notes", "draft"];
+      for (const [k, v] of Object.entries(P2.base)) {
+        if (!KNOWN.includes(k)) e2.push(`prompts_v2.base.${k}: 페이지가 쓰지 않는 키`);
+        if (!(typeof v === "string" || (Array.isArray(v) && v.every(x => typeof x === "string")))) { e2.push(`prompts_v2.base.${k}는 글 또는 줄 배열`); continue; }
+        (Array.isArray(v) ? v : [v]).forEach(l => {
+          let m, t = l;
+          while ((m = t.match(/^\[(!?)([a-z_]+)\]/))) { if (!FLAGS.includes(m[2])) e2.push(`prompts_v2.base.${k}: 모르는 조건 [${m[1]}${m[2]}] — 페이지는 그 줄을 빼 버림`); t = t.slice(m[0].length); }
+        });
+      }
+      if (P2.base.system !== undefined) {
+        const sysT = Array.isArray(P2.base.system) ? P2.base.system.join("\n") : String(P2.base.system);
+        for (const ph of ["{{tool_docs}}", "{{agent_rules}}"]) if (!sysT.includes(ph)) e2.push(`prompts_v2.base.system에 ${ph} 자리표시자가 없음`);
+      }
+    }
+  }
+  if (P2.tool_docs !== undefined) {
+    if (!P2.tool_docs || typeof P2.tool_docs !== "object" || Array.isArray(P2.tool_docs)) e2.push("prompts_v2.tool_docs는 객체");
+    else for (const [k, v] of Object.entries(P2.tool_docs)) if (typeof v !== "string" || !v.trim()) e2.push(`prompts_v2.tool_docs.${k}는 빈 글이 아닌 글`);
+  }
+  // 화면 문구 바꾸기(ui_v2.text, 페이지 14판부터): {"원래 문구": "새 문구"}. 페이지 applyTextMap과 같은 기준
+  const utx = cat.ui_v2 && cat.ui_v2.text;
+  if (utx !== undefined) {
+    if (!utx || typeof utx !== "object" || Array.isArray(utx)) e2.push("ui_v2.text는 {\"원래 문구\": \"새 문구\"} 객체");
+    else {
+      const ks = Object.keys(utx);
+      if (ks.length > 2000) e2.push("ui_v2.text는 2,000개 이내");
+      const keys = new Set(ks.map(k => k.trim()));
+      ks.forEach(k => {
+        const v = utx[k], w = `ui_v2.text["${k.slice(0, 30)}"]`;
+        if (!k.trim() || k.length > 2000 || typeof v !== "string" || v.length > 2000) e2.push(`${w}: 원래 문구와 새 문구는 2,000자 이내 글`);
+        else if (v && v !== k && keys.has(v.trim())) e2.push(`${w}: 새 문구가 다른 원래 문구와 같아 페이지가 적용하지 않음(되풀이 방지)`);
+      });
+    }
   }
   if (P2.doc) for (const k of ["rules", "pptx", "other", "tail"]) if (P2.doc[k] && !(Array.isArray(P2.doc[k]) && P2.doc[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.doc.${k}는 문장 배열`);
   if (cat.models !== undefined) {
