@@ -81,6 +81,11 @@ if (cat.agents_v2) {
     if (qm !== undefined && !(Number.isInteger(qm) && qm >= 1 && qm <= 10)) e2.push("features.queue_max는 1~10 정수");
   }
   if (cat.features && cat.features.background) for (const k of ["bg_stale_min", "bg_start_min", "bg_keep_days"]) if (!(Number(cat.features[k]) > 0)) e2.push(`features.${k}는 양수`);
+  if (P2.convo) {
+    for (const k of ["plan", "section"]) if (P2.convo[k] !== undefined && !(Array.isArray(P2.convo[k]) && P2.convo[k].length && P2.convo[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.convo.${k}는 문장 배열`);
+    if (P2.convo.sources !== undefined && !["auto", "list", "line", "none"].includes(P2.convo.sources)) e2.push("prompts_v2.convo.sources는 auto·list·line·none 중 하나");
+    if (Array.isArray(P2.convo.section) && !P2.convo.section.join("\n").includes("{{h}}")) e2.push("prompts_v2.convo.section에 {{h}}(절 제목) 자리표시자가 없음");
+  }
   if (P2.doc) for (const k of ["rules", "pptx", "other", "tail"]) if (P2.doc[k] && !(Array.isArray(P2.doc[k]) && P2.doc[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.doc.${k}는 문장 배열`);
   if (cat.models !== undefined) {
     if (!Array.isArray(cat.models) || !cat.models.length) e2.push("models는 비어 있지 않은 배열");
