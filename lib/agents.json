@@ -1,5 +1,5 @@
 {
- "version": "2026-11-04.7",
+ "version": "2026-11-04.8",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -929,13 +929,16 @@
  },
  "ui_v2": {
   "buttons": [
-    { "id": "jobs", "after": "hist_top" }
+    { "id": "jobs", "after": "hist_top" },
+    { "id": "new_chat", "after": "agent_hist" }
   ],
   "css": [
     "/* 이전 대화 목록: 대화 제목은 굵게, 질문 목록은 들여 써서 제목에 딸린 항목으로 보이게 (2026-11-04 B안) */",
     ".hist-open .t { font-weight: 700; }",
     ".hist-qs { margin-left: 12px; padding-left: 12px; border-left: 2px solid var(--line); }",
-    ".hist-qs button { border-top: 0; padding: 3px 0; font-size: 13px; }"
+    ".hist-qs button { border-top: 0; padding: 3px 0; font-size: 13px; }",
+    "/* 휴대폰 폭 에이전트 머리줄 단추 순서: 이전 대화 - 새 대화 - 에이전트 안내 (2026-11-04) */",
+    "@media (max-width: 760px) { #reset { order: 4; } #infoBtn { order: 5; } }"
   ],
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
