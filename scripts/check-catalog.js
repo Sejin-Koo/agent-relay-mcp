@@ -74,6 +74,12 @@ if (cat.agents_v2) {
     if (P2.runner.main && !P2.runner.main.some(x => x.includes("{{url_hint}}"))) e2.push("prompts_v2.runner.main에 {{url_hint}} 자리표시자가 없음");
   }
   if (cat.features && cat.features.background && !(P2.runner && Array.isArray(P2.runner.main))) e2.push("features.background가 켜져 있는데 prompts_v2.runner가 없음");
+  // 다음 질문 예약·답변 중 새 대화(페이지 10판)
+  if (cat.features) {
+    for (const k of ["queue", "bg_detach"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true|false`);
+    const qm = cat.features.queue_max;
+    if (qm !== undefined && !(Number.isInteger(qm) && qm >= 1 && qm <= 10)) e2.push("features.queue_max는 1~10 정수");
+  }
   if (cat.features && cat.features.background) for (const k of ["bg_stale_min", "bg_start_min", "bg_keep_days"]) if (!(Number(cat.features[k]) > 0)) e2.push(`features.${k}는 양수`);
   if (P2.doc) for (const k of ["rules", "pptx", "other", "tail"]) if (P2.doc[k] && !(Array.isArray(P2.doc[k]) && P2.doc[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.doc.${k}는 문장 배열`);
   if (cat.models !== undefined) {

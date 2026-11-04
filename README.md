@@ -55,6 +55,7 @@
   - 기본 단추(`hist_top` 상단 이전 대화, `notice` 공지, `jobs` 작업함, `setup` 사용 준비 — 상단 바 / `back` 목록, `agent_hist` 이전 대화, `agent_info` 에이전트 안내, `new_chat` 새 대화 — 에이전트 머리줄)는 `label`(24자 이내)·`hidden`(true면 숨김)·`before`|`after`(같은 자리의 다른 단추 id 앞·뒤로 옮김)만 바꾼다.
   - 새 단추는 `slot`(`top` 상단 바, `pane` 에이전트 머리줄, `home` 첫 화면 공지 아래), `label`, `action`(페이지에 들어 있는 동작 중 하나: `history_all` 전체 이전 대화, `history` 지금 화면의 이전 대화, `notices` 공지, `jobs` 작업함, `setup` 사용 준비, `home` 첫 화면, `agent` 에이전트 열기(`agent` id, 선택 `q`는 입력창에 넣기만 하고 보내지 않음), `new_chat`, `agent_info`, `group` 첫 화면의 묶음으로 이동(`group` id), `link` 새 창으로 https 주소 열기(`url`))를 적는다. 선택 `title`(마우스 올리면 보이는 설명), `agents`(pane 단추를 그 에이전트 화면에서만 보이기), `before`|`after`.
   - 서버는 값만 보낸다. 목록에 없는 동작은 페이지가 무시하고 `check-catalog`도 실패한다. 새 '동작'이 필요하면 페이지 코드(`BTN_ACTIONS`)에 더하고 이 목록과 검사도 함께 고친다. 적용 결과는 '연결 상태 확인'의 "서버 단추 적용 N개(무시 M개)" 줄로 본다.
+- 답변 중 다음 질문 예약·답변 중 새 대화(2026-11-04, 페이지 10판부터)는 `features`로 켜고 끈다: `queue`(답변 중 입력창에 쓴 질문을 '예약'해 두었다가 답변이 끝나면 같은 대화에 이어 보냄, 기본 true), `queue_max`(대화당 예약 개수 1~10, 기본 3), `bg_detach`(클라우드 실행 중 '새 대화'·다른 이전 대화 열기를 허용 — 진행 중인 답변은 클라우드에서 계속되고 끝나면 원래 대화에 저장됨, 기본 true. 화면 안 실행은 떼어 낼 수 없어 해당 없음). 사용자가 중지했거나 답변이 실패하면 예약은 멈추고 '지금 보내기'를 기다린다. 그 에이전트 화면이 아닐 때 끝나면 그 에이전트를 열 때 보낸다(모델 선택이 화면 기준이라). 문구는 `ui_v2.msgs`의 `queue_btn`·`queue_btn_title`·`stop_btn_title`·`queue_note`·`queue_paused`·`queue_send_now`·`queue_cancel`·`queue_full`(`{n}`)·`queue_wait`(`{agent}`)·`detach_note`·`detach_queue_dropped`(`{n}`)·`detach_title`·`detach_local`로 바꾼다.
 
 ## 웹 도구 (2026-10-22)
 
