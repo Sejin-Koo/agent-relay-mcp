@@ -40,6 +40,16 @@ function backendKey(b) {
   return (b.keyEnv && process.env[b.keyEnv]) || process.env.BACKEND_KEY || "";
 }
 
+// envHeaders: { 헤더이름: 환경변수이름 } — 그 환경변수가 있을 때만 헤더로 보낸다(값은 코드·저장소에 두지 않는다)
+function envHeaders(b) {
+  const out = {};
+  for (const [h, env] of Object.entries(b.envHeaders || {})) {
+    const v = process.env[env];
+    if (v && String(v).trim()) out[h] = String(v).trim();
+  }
+  return out;
+}
+
 function backendUrl(b) {
   const k = backendKey(b);
   return k ? `${b.url}${b.url.includes("?") ? "&" : "?"}k=${encodeURIComponent(k)}` : b.url;
@@ -73,7 +83,7 @@ async function rpcToBackend(b, method, params, timeoutMs, caller) {
       method: "POST",
       // sendCaller 서버(web-reader-mcp)는 사람별 한도를 이 헤더의 사용자 식별자로 센다
       headers: Object.assign({ "Content-Type": "application/json", "Accept": "application/json, text/event-stream" },
-        b.sendCaller && caller ? { "X-Relay-Caller": String(caller) } : {}),
+        b.sendCaller && caller ? { "X-Relay-Caller": String(caller) } : {}, envHeaders(b)),
       body: JSON.stringify({ jsonrpc: "2.0", id, method, params: params || {} }),
       signal: ctl.signal
     });
