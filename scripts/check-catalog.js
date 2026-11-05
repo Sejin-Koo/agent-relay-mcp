@@ -83,6 +83,8 @@ if (cat.agents_v2) {
     if (amm !== undefined && !(Number.isInteger(amm) && amm >= 1 && amm <= 200)) e2.push("features.att_max_mb는 1~200 정수");
     const qm = cat.features.queue_max;
     if (qm !== undefined && !(Number.isInteger(qm) && qm >= 1 && qm <= 10)) e2.push("features.queue_max는 1~10 정수");
+    // 이전 대화 목록 접기(페이지 15판부터): 켜기·처음 상태(true면 접힌 채로 시작)
+    for (const k of ["hist_fold", "hist_fold_default"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
     // 숫자 설정(페이지 14판부터, 페이지 applyNumbers와 같은 범위 — 벗어나면 페이지가 기본값을 쓴다)
     const NUMS = { hist_days: [7, 365], hist_list: [20, 300], hist_board_show: [1, 30], past_scan: [5, 100], past_read: [2000, 60000], convo_in_max: [20000, 400000], ctx_turns: [2, 40], ctx_last_max: [2000, 60000], ctx_prev_max: [500, 20000] };
     for (const [k, [lo, hi]] of Object.entries(NUMS)) { const v = cat.features[k]; if (v !== undefined && !(typeof v === "number" && v >= lo && v <= hi)) e2.push(`features.${k}는 ${lo}~${hi} 숫자(벗어나면 페이지가 기본값을 씀)`); }
