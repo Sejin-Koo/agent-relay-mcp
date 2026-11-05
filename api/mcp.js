@@ -106,6 +106,66 @@ async function rpcToBackend(b, method, params, timeoutMs, caller) {
   }
 }
 
+// ---------- 시간 초과 시 나눠 다시 부르기(splitRetry) ----------
+// 외부 서버처럼 함수 실행 한도(60초)가 짧은 곳은 종목이 많거나 평가기준일 캐시가 없으면 504로 끊긴다(2026-11-05 실측).
+// 그 오류일 때만 종목을 3개씩(3개 이하면 1개씩) 나눠 동시에 다시 부르고, 1종목이면 한 번 더 부른다. 결과는 종목 행 배열로 합치고,
+// 끝내 못 받은 종목은 {code, error} 행으로 넣어 에이전트가 무엇이 빠졌는지 알게 한다. 뒤 서버 호출은 SPLIT_MAX_CALLS까지,
+// 새 호출은 처음부터 SPLIT_DEADLINE_MS 안에서만 시작한다(함수 한도 300초 안에 끝내기 위함 — 끊김 한 번이 약 60초).
+const SPLIT_MAX_CALLS = 16;
+const SPLIT_DEADLINE_MS = 170 * 1000;
+const jsonOr = (t) => { try { return JSON.parse(t); } catch (e) { return null; } };
+function isCutOff(e) {
+  return !!e && (e.httpStatus === 504 || e.httpStatus === 502 || /결과 없이 끊겼/.test(String(e.message || "")));
+}
+function rowsOfResult(result) {
+  const text = ((result && result.content) || []).filter(c => c && c.type === "text" && c.text).map(c => c.text).join("\n");
+  const j = jsonOr(text);
+  if (Array.isArray(j)) return j;
+  if (j && typeof j === "object") return [j];
+  return null;
+}
+async function callSplitRetry(b, upName, args, caller, budget) {
+  const sr = b.splitRetry;
+  let codes = args[sr.arg] !== undefined ? args[sr.arg] : args.stock_code;
+  if (typeof codes === "string") { const j = jsonOr(codes); codes = Array.isArray(j) ? j : [codes]; }
+  if (!Array.isArray(codes) || !codes.length) return rpcToBackend(b, "tools/call", { name: upName, arguments: args }, CALL_TIMEOUT_MS, caller);
+  const one = async (list, retry) => {
+    budget.n++;
+    const a = Object.assign({}, args); delete a.stock_code; a[sr.arg] = list.length === 1 ? list[0] : list;
+    try {
+      const msg = await rpcToBackend(b, "tools/call", { name: upName, arguments: a }, CALL_TIMEOUT_MS, caller);
+      if (msg.error || (msg.result && msg.result.isError)) return { msg, codes: list };
+      const rows = rowsOfResult(msg.result);
+      return rows ? { rows, msg, codes: list } : { msg, codes: list };
+    } catch (e) {
+      if (!isCutOff(e) || budget.n >= SPLIT_MAX_CALLS || Date.now() - budget.t0 > SPLIT_DEADLINE_MS) return { err: e, codes: list };
+      if (list.length === 1) {
+        if (!retry) return { err: e, codes: list };
+        console.log(`[split] tool=${upName} retry code=${list[0]} why=${e.message}`);
+        return one(list, false);
+      }
+      const size = list.length > 3 ? 3 : 1; const chunks = [];
+      for (let i = 0; i < list.length; i += size) chunks.push(list.slice(i, i + size));
+      console.log(`[split] tool=${upName} n=${list.length} -> ${chunks.map(c => c.length).join("+")} why=${e.message}`);
+      const parts = await Promise.all(chunks.map(c => one(c, true)));
+      return { parts };
+    }
+  };
+  const flat = (r, out) => { if (r.parts) r.parts.forEach(p => flat(p, out)); else out.push(r); return out; };
+  const res = flat(await one(codes, true), []);
+  if (res.length === 1 && res[0].msg) return res[0].msg;          // 한 번에 받았거나 1종목 재시도로 받음 — 뒤 서버 답 그대로
+  if (res.length === 1 && res[0].err) throw res[0].err;           // 나눌 수 없거나 한도 — 원래 오류 그대로
+  const rows = []; const missed = [];
+  for (const r of res) {
+    if (r.rows) rows.push(...r.rows);
+    else if (r.err) { missed.push(...r.codes); r.codes.forEach(c => rows.push({ code: c, error: `${b.label} 서버가 처리 시간 한도 안에 답하지 못해 이 종목을 받지 못했습니다 — 이 종목만 따로 한 번 더 부르거나, 이자부부채는 dart_interest_bearing_debt로 보완하세요` })); }
+    else if (r.msg) r.codes.forEach(c => rows.push({ code: c, error: oneLine(errTextOf(r.msg)) }));
+  }
+  if (!rows.some(x => !x.error)) { const e = (res.find(r => r.err) || {}).err; if (e) throw e; }
+  console.log(`[split] tool=${upName} merged rows=${rows.length} missed=${missed.length} calls=${budget.n}`);
+  return { result: { content: [{ type: "text", text: JSON.stringify(rows) }] } };
+}
+
 // ---------- tools/list: 서버별 도구 정의를 받아 허용 목록만 남긴다 ----------
 const listCache = {}; // id -> { at, tools }
 async function backendTools(id) {
@@ -654,7 +714,9 @@ async function callTool(params, caller, page, viaPage, agent) {
     return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구가 아직 준비되지 않았습니다(서버 설정 필요). 이 도구 없이 진행하고 확인하지 못한 항목으로 밝히세요.` }] } };
   }
   try {
-    const msg = await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS, caller);
+    const msg = (b.splitRetry && b.splitRetry.tool === name)
+      ? await callSplitRetry(b, UPSTREAM[name] || name, args || {}, caller, { n: 0, t0: Date.now() })
+      : await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS, caller);
     const ok = !msg.error && !(msg.result && msg.result.isError);
     const ms = Date.now() - t0;
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} ok=${ok}`);
