@@ -1,5 +1,5 @@
 {
- "version": "2026-11-05.6",
+ "version": "2026-11-05.7",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -943,7 +943,12 @@
     "/* 첨부 목록: 요약 줄을 맨 위로, 파일 칸은 두 줄(휴대폰은 요약 + 한 줄)만 보이고 나머지는 스크롤 — 대화 창을 넓게 (2026-11-04) */",
     ".attach-bar { max-height: 70px; overflow-y: auto; align-content: flex-start; }",
     ".attach-bar .att-sum, .attach-bar .att-clear { order: -1; }",
-    "@media (max-width: 760px) { .attach-bar { max-height: 62px; margin-bottom: 6px; } .att .nm { max-width: 150px; } .att-note { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }"
+    "@media (max-width: 760px) { .attach-bar { max-height: 62px; margin-bottom: 6px; } .att .nm { max-width: 150px; } .att-note { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }",
+    "/* 진행 단계 목록: 단계 이름이 길면 줄바꿈하고 결과 요약 칸이 한 글자 폭으로 눌리지 않게(2026-11-05) */",
+    ".steps li { grid-template-columns: 14px minmax(0, max-content) minmax(10em, 1fr); }",
+    ".steps .name { white-space: normal; overflow-wrap: anywhere; }",
+    "/* 휴대폰 폭: 결과 요약은 단계 이름 아래 줄로, 클라우드 실행 안내는 위에 붙어 있지 않고 같이 스크롤(2026-11-05) */",
+    "@media (max-width: 760px) { .steps li { grid-template-columns: 14px minmax(0, 1fr); } .steps .meta { grid-column: 2; } .note.pin { position: static; max-height: none; box-shadow: none; } }"
   ],
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -1027,7 +1032,7 @@
    "img_fail": "이미지 판독 실패",
    "sample_copy": {"not_granted": "이 페이지의 Claude 사용이 허용되지 않았습니다. 페이지를 새로고침하고 허용을 눌러 주세요.", "sampling_disabled": "이 계정에서는 페이지에서 Claude를 호출할 수 없습니다.", "not_declared": "이 페이지는 Claude 호출 권한이 없습니다.", "tools_unavailable": "이 화면에서는 에이전트가 조회 도구를 쓸 수 없습니다. claude.ai 웹이나 데스크톱 앱에서 열어 주세요.", "rate_limited": "사용 한도에 도달했습니다. 잠시 후 다시 보내 주세요.", "session_expired": "로그인이 만료됐습니다. claude.ai에 다시 로그인해 주세요.", "refused": "이 질문에는 답하지 않았습니다. 질문을 바꿔 보세요.", "empty_completion": "답변이 비어 있습니다. 질문을 조금 더 구체적으로 바꿔 보세요.", "prompt_too_large": "대화가 너무 길어졌습니다. '새 대화'로 다시 시작해 주세요.", "upstream_error": "연결 문제로 답변이 끊겼습니다. 다시 보내 주세요.", "images_unavailable": "이 화면에서는 이미지를 보낼 수 없습니다.", "image_rejected": "이미지를 받지 못했습니다(형식·크기 확인).", "capability_disabled": "이 화면에서는 Claude 호출을 쓸 수 없습니다.", "capability_removed": "이 화면에서는 Claude 호출을 쓸 수 없습니다."},
    "dl_copy": {"declined": "저장을 취소했습니다.", "rate_limited": "다른 저장 창이 열려 있습니다. 닫은 뒤 다시 눌러 주세요.", "too_large": "파일이 너무 커서 저장할 수 없습니다. 내용을 나눠 요청해 주세요.", "rejected_extension": "이 화면에서는 이 형식을 저장할 수 없습니다.", "extension_not_enabled": "이 화면에서는 이 형식을 저장할 수 없습니다.", "bad_request": "파일을 만드는 중 오류가 났습니다."},
-   "bg_note_run": "클라우드에서 실행 중입니다. 시작에 10~30초가 더 걸리고, 답변이 글자 단위로 흐르지 않고 진행 단계만 보이다가 완성본이 한 번에 나옵니다. 멈춘 것이 아니니 기다려 주세요. 지금 화면을 닫거나 다른 에이전트를 써도 작업은 계속됩니다. 작업 중에는 위쪽 '작업함'에서 진행 상황을 볼 수 있고, 완료되면 이 에이전트의 '이전 대화'로 옮겨져 90일 동안 다시 확인하고 파일로 받을 수 있습니다. 예약 작업 목록에 '업무 에이전트 작업 실행기'라는 이름의 작업이 만들어지며(고른 모델에 따라 이름 끝에 모델명이 붙습니다), 브라우저 창을 닫거나 다른 에이전트를 실행해도 작업을 계속할 수 있도록 하는 클라우드 실행용이니 지우지 마세요.",
+   "bg_note_run": "클라우드에서 실행 중입니다. 진행 단계만 보이다가 완성본이 한 번에 나옵니다. 멈춘 것이 아니니 기다려 주세요. 화면을 닫아도 작업은 계속되고, 끝나면 이 에이전트의 '이전 대화'에 저장됩니다. 예약 작업 목록의 '업무 에이전트 작업 실행기'는 이 실행용이니 지우지 마세요.",
    "pin_em": ["진행 단계만 보이다가 완성본이 한 번에 나옵니다. 멈춘 것이 아니니 기다려 주세요."],
    "bg_stay": "답변이 끝날 때까지 이 화면을 닫거나 새로고침하거나 다른 앱으로 바꾸지 마세요. 그러면 답변이 중단됩니다.",
    "bg_fallback_tail": " 이 질문은 이 화면에서 실행합니다.",
