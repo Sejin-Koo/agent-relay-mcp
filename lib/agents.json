@@ -1,5 +1,5 @@
 {
- "version": "2026-11-05.7",
+ "version": "2026-11-05.8",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -948,7 +948,10 @@
     ".steps li { grid-template-columns: 14px minmax(0, max-content) minmax(10em, 1fr); }",
     ".steps .name { white-space: normal; overflow-wrap: anywhere; }",
     "/* 휴대폰 폭: 결과 요약은 단계 이름 아래 줄로, 클라우드 실행 안내는 위에 붙어 있지 않고 같이 스크롤(2026-11-05) */",
-    "@media (max-width: 760px) { .steps li { grid-template-columns: 14px minmax(0, 1fr); } .steps .meta { grid-column: 2; } .note.pin { position: static; max-height: none; box-shadow: none; } }"
+    "@media (max-width: 760px) { .steps li { grid-template-columns: 14px minmax(0, 1fr); } .steps .meta { grid-column: 2; } .note.pin { position: static; max-height: none; box-shadow: none; } }",
+    "/* 상단 바: 좁은 폭에서 '업무 에이전트' 글자가 단추와 겹치지 않게(2026-11-05) — 넓을 때도 모자라면 말줄임, 420px 이하는 AI 표시만 */",
+    ".brand-name { overflow: hidden; text-overflow: ellipsis; min-width: 0; }",
+    "@media (max-width: 420px) { .brand-name { display: none; } }"
   ],
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
