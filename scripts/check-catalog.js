@@ -64,6 +64,9 @@ if (cat.agents_v2) {
     const OUTL = (cat.prompts_v2 && cat.prompts_v2.outlines) || {};
     (a.outlines || []).forEach(t => { if (!OUTL[t]) e2.push(`${a.id}: prompts_v2.outlines에 없는 골격 ${t}`); });
     if (a.rules && /\bMCP\b|plk_|vercel/i.test(a.rules)) e2.push(`${a.id}: 규칙에 내부 서버·키 표기`);
+    if (a.hub !== undefined && typeof a.hub !== "boolean") e2.push(`${a.id}: hub는 true|false`);
+    if (a.consultable !== undefined && typeof a.consultable !== "boolean") e2.push(`${a.id}: consultable은 true|false`);
+    if (a.hub === true && a.consultable !== false) e2.push(`${a.id}: 통합 에이전트(hub)는 consultable false여야 함(다른 에이전트가 되묻는 고리 방지)`);
   }
   if (cat.prompts_v2 && cat.prompts_v2.report && !Array.isArray(cat.prompts_v2.report)) e2.push("prompts_v2.report는 문장 배열");
   const P2 = cat.prompts_v2 || {};
@@ -83,6 +86,11 @@ if (cat.agents_v2) {
     if (amm !== undefined && !(Number.isInteger(amm) && amm >= 1 && amm <= 200)) e2.push("features.att_max_mb는 1~200 정수");
     const qm = cat.features.queue_max;
     if (qm !== undefined && !(Number.isInteger(qm) && qm >= 1 && qm <= 10)) e2.push("features.queue_max는 1~10 정수");
+    // 통합 에이전트(페이지 16판부터): 작업 배정 칸 켜기, 동시에 진행하는 묻기 수, assign_agents 한 번에 맡기는 수
+    if (cat.features.hub_panel !== undefined && typeof cat.features.hub_panel !== "boolean") e2.push("features.hub_panel은 true|false");
+    const hp = cat.features.hub_parallel, hm = cat.features.hub_max;
+    if (hp !== undefined && !(Number.isInteger(hp) && hp >= 1 && hp <= 8)) e2.push("features.hub_parallel은 1~8 정수");
+    if (hm !== undefined && !(Number.isInteger(hm) && hm >= 1 && hm <= 10)) e2.push("features.hub_max는 1~10 정수");
     // 이전 대화 목록 접기(페이지 15판부터): 켜기·처음 상태(true면 접힌 채로 시작)
     for (const k of ["hist_fold", "hist_fold_default"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
     // 숫자 설정(페이지 14판부터, 페이지 applyNumbers와 같은 범위 — 벗어나면 페이지가 기본값을 쓴다)
