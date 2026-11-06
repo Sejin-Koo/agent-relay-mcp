@@ -246,8 +246,10 @@ const CONFIG_TOOL = {
     since_version: { type: "string", description: "페이지가 이미 가진 설정 버전" },
     page: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
     pk: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
-    part: { type: "string", enum: ["catalog", "tools", "rules"], description: "tools면 도구 찾기용 전체 도구 목록만, rules면 agents에 적은 에이전트의 상세 지침만 돌려준다" },
-    agents: { type: "array", items: { type: "string" }, description: "part=rules일 때 지침을 받을 에이전트 id 목록" }
+    part: { type: "string", enum: ["catalog", "tools", "rules", "q"], description: "tools면 도구 찾기용 전체 도구 목록만, rules면 agents에 적은 에이전트의 상세 지침만 돌려준다. q는 페이지가 질문 1건을 알리는 사용 기록용(질문 내용은 보내지 않음)" },
+    agents: { type: "array", items: { type: "string" }, description: "part=rules일 때 지침을 받을 에이전트 id 목록" },
+    agent: { type: "string", description: "part=q일 때 질문을 받은 에이전트 id(페이지가 채운다)" },
+    mode: { type: "string", enum: ["fg", "bg"], description: "part=q일 때 화면 실행(fg)·클라우드 실행(bg)" }
   }, additionalProperties: false },
   annotations: { readOnlyHint: true }
 };
@@ -259,7 +261,8 @@ const CALL_TOOL = {
     arguments: { type: "object", description: "그 도구의 인자" },
     page: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
     pk: { type: "string", description: "페이지 내부 값(페이지가 채운다)" },
-    agent: { type: "string", description: "페이지 내부 값(사용 기록용 에이전트 id — 페이지가 채운다)" }
+    agent: { type: "string", description: "페이지 내부 값(사용 기록용 에이전트 id — 페이지가 채운다)" },
+    via: { type: "string", description: "페이지 내부 값(다른 에이전트가 맡겨서 부를 때 맡긴 에이전트 id — 사용 기록용)" }
   }, required: ["tool"], additionalProperties: false }
 };
 // 공지는 받는 사람과 페이지에 맞는 것만 내려보낸다. audience: "all"(기본) | "v1"(옛 페이지) | "v2"(새 페이지) | 키 식별자 배열
@@ -379,7 +382,7 @@ const USAGE_TOOL = {
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
       user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
       status: { type: "string", enum: ["open", "closed", "all"], description: "issues에서 open: 확인 필요·재발(기본), closed: 개선완료·조치불필요, all: 전체" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens"], description: "집계 단위 — opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens", "questions", "agent_questions", "day_questions", "via"], description: "집계 단위 — questions: 사용자×에이전트 질문 수(화면·클라우드 실행 구분, 페이지 17판 이후분 — 통합 질문과 개별 에이전트 중 어디에 묻는지 보는 용도), agent_questions: 에이전트별 질문 수·질문한 사용자 수, day_questions: 날짜×에이전트 질문 수, via: 맡긴 에이전트(주로 통합 질문)×맡은 에이전트별 조회 호출(맡은 에이전트 집계와 중복), opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -501,6 +504,49 @@ async function openReport(from, to) {
   return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { from, to, group_by: "opens", rows: out } };
 }
 
+// 질문 수·경유 호출 집계 — 질문 내용은 기록하지 않고 건수만 센다(페이지 17판부터)
+async function questionReport(from, to, by) {
+  const all = await usage.readUsage(from, to);
+  const agName = id => { const ag = ((CATALOG && CATALOG.agents_v2) || []).find(x => x.id === id); return ag ? ag.name : ""; };
+  const names = await usage.readNames();
+  const agg = new Map();
+  const get = (key, init) => { const id = key.join("\u0000"); let a = agg.get(id); if (!a) { a = Object.assign({ key }, init); agg.set(id, a); } return a; };
+  let head, title;
+  if (by === "via") {
+    for (const r of all.filter(r => r.tool.startsWith("@via:"))) {
+      const t = r.tool.slice(5), i = t.indexOf("|"), a = get([t.slice(0, i), t.slice(i + 1)], { n: 0, e: 0, users: new Set(), days: new Set() });
+      a.n += r.calls; a.users.add(r.caller); a.days.add(r.date);
+    }
+    const list = [...agg.values()].sort((x, y) => y.n - x.n);
+    head = ["맡긴 에이전트", "맡긴 에이전트명", "맡은 에이전트", "맡은 에이전트명", "조회 호출", "사용자 수", "사용일수"];
+    title = `다른 에이전트가 맡겨서 한 조회 ${from} ~ ${to} (한국시간) — 맡은 에이전트의 사용현황에도 같은 호출이 들어 있어 더하면 중복입니다. 페이지 17판 이후분`;
+    const out = list.map(a => ({ "맡긴 에이전트": a.key[0], "맡긴 에이전트명": agName(a.key[0]), "맡은 에이전트": a.key[1], "맡은 에이전트명": agName(a.key[1]), "조회 호출": a.n, "사용자 수": a.users.size, "사용일수": a.days.size }));
+    return mdTable(title, head, out, { from, to, group_by: by, total_calls: out.reduce((s, o) => s + o["조회 호출"], 0), rows: out });
+  }
+  const q = all.filter(r => r.tool.startsWith("@q:")), qm = all.filter(r => r.tool.startsWith("@qm:"));
+  const keyOf = { questions: r => [r.caller, r.ag], agent_questions: r => [r.ag], day_questions: r => [r.date, r.ag] }[by];
+  for (const r of q) { r.ag = r.tool.slice(3); const a = get(keyOf(r), { n: 0, fg: 0, bg: 0, users: new Set(), days: new Set() }); a.n += r.calls; a.users.add(r.caller); a.days.add(r.date); }
+  for (const r of qm) { const t = r.tool.slice(4), i = t.lastIndexOf("|"); r.ag = t.slice(0, i); const m = t.slice(i + 1); const a = get(keyOf(r), { n: 0, fg: 0, bg: 0, users: new Set(), days: new Set() }); a[m === "bg" ? "bg" : "fg"] += r.calls; }
+  const list = [...agg.values()].sort((x, y) => (by === "day_questions" ? (x.key[0] < y.key[0] ? -1 : x.key[0] > y.key[0] ? 1 : y.n - x.n) : by === "questions" ? (x.key[0] < y.key[0] ? -1 : x.key[0] > y.key[0] ? 1 : y.n - x.n) : y.n - x.n));
+  const out = list.map(a => {
+    const o = {};
+    if (by === "questions") { o["사용자"] = a.key[0]; o["사용자명"] = names[a.key[0]] || ""; }
+    if (by === "day_questions") o["날짜"] = a.key[0];
+    const ag = a.key[a.key.length - 1]; o["에이전트"] = ag; o["에이전트명"] = agName(ag);
+    o["질문"] = a.n; o["화면 실행"] = a.fg; o["클라우드 실행"] = a.bg;
+    if (by === "agent_questions") { o["질문한 사용자 수"] = a.users.size; o["사용일수"] = a.days.size; }
+    return o;
+  });
+  head = Object.keys(out[0] || { [by === "questions" ? "사용자" : by === "day_questions" ? "날짜" : "에이전트"]: "", "에이전트명": "", "질문": 0 });
+  title = `에이전트별 질문 수 ${from} ~ ${to} (한국시간, ${by} 기준, 질문 내용은 기록하지 않음) — 페이지 17판 이후분`;
+  return mdTable(title, head, out, { from, to, group_by: by, total_questions: out.reduce((s, o) => s + o["질문"], 0), rows: out });
+}
+function mdTable(title, head, out, sc) {
+  const md = [title, "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...out.map(o => "| " + head.map(h => o[h]).join(" | ") + " |")];
+  if (!out.length) md.push("| " + head.map(() => "-").join(" | ") + " |", "", "이 기간에 기록이 없습니다.");
+  return { content: [{ type: "text", text: md.join("\n") }], structuredContent: sc };
+}
+
 async function usageReport(args) {
   const DAY = /^\d{4}-\d{2}-\d{2}$/;
   const to = args.to || usage.kstDate();
@@ -511,6 +557,7 @@ async function usageReport(args) {
   if (by === "failures") return failureReport(from, to, args.user);
   if (by === "issues") return issueReport(args.status || "open");
   if (by === "opens") return openReport(from, to);
+  if (["questions", "agent_questions", "day_questions", "via"].includes(by)) return questionReport(from, to, by);
   const all = await usage.readUsage(from, to);
   const isPage = r => r.tool.startsWith("@page:");
   const isAgent = r => r.tool.startsWith("@agent:");
@@ -678,6 +725,10 @@ async function callTool(params, caller, page, viaPage, agent) {
     }
     if (!pageOk(ca)) { console.log(`[pagekey] reject tool=relay_config caller=${caller} why=${pageRejectWhy(ca)}`); return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } }; }
     if (!ca.part || ca.part === "catalog") await usage.recordOpen(caller, ca.page);
+    if (ca.part === "q") {
+      await usage.recordQuestion(caller, ca.agent, ca.mode);
+      return { result: { content: [{ type: "text", text: "ok" }], structuredContent: { ok: true } } };
+    }
     try {
       return { result: await configResult((params && params.arguments) || {}, caller) };
     } catch (e) {
@@ -697,7 +748,10 @@ async function callTool(params, caller, page, viaPage, agent) {
     if (innerArgs !== undefined && (innerArgs === null || typeof innerArgs !== "object" || Array.isArray(innerArgs))) {
       return { result: { isError: true, content: [{ type: "text", text: "arguments는 JSON 객체여야 합니다" }] } };
     }
-    return callTool({ name: inner, arguments: innerArgs || {} }, caller, page, true, a.agent ? String(a.agent).slice(0, 40) : "");
+    const ag = a.agent ? String(a.agent).slice(0, 40) : "";
+    const res = await callTool({ name: inner, arguments: innerArgs || {} }, caller, page, true, ag);
+    if (a.via) await usage.recordVia(caller, String(a.via), ag, !!(res && res.result && !res.result.isError));
+    return res;
   }
   // 조회 도구를 relay_call 없이 직접 부르는 것은 일반 채팅이므로 거절한다
   if (!viaPage) {
