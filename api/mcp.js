@@ -379,7 +379,7 @@ const USAGE_TOOL = {
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
       user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
       status: { type: "string", enum: ["open", "closed", "all"], description: "issues에서 open: 확인 필요·재발(기본), closed: 개선완료·조치불필요, all: 전체" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues"], description: "집계 단위 — issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens"], description: "집계 단위 — opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -472,6 +472,35 @@ const FAILURES_TOOL = {
   }
 };
 
+// 페이지를 연 기록(relay_config) — 사용자×페이지 버전. 질문하지 않아 도구 호출이 없는 사람도 사본을 열었는지 볼 수 있다.
+async function openReport(from, to) {
+  const rows = await usage.readOpens(from, to);
+  const names = await usage.readNames();
+  const agg = new Map();
+  for (const r of rows) {
+    const id = r.caller + "\u0000" + r.page;
+    const a = agg.get(id) || { caller: r.caller, page: r.page, first: r.date, last: r.date, days: new Set(), n: 0 };
+    if (r.date < a.first) a.first = r.date;
+    if (r.date > a.last) a.last = r.date;
+    a.days.add(r.date); a.n += r.n;
+    agg.set(id, a);
+  }
+  const list = [...agg.values()].sort((x, y) => (x.caller < y.caller ? -1 : x.caller > y.caller ? 1 : y.last < x.last ? -1 : y.last > x.last ? 1 : 0));
+  const out = list.map(a => ({ "사용자": a.caller, "사용자명": names[a.caller] || "", "페이지": a.page, "처음 연 날": a.first, "마지막 연 날": a.last, "연 날수": a.days.size, "설정 받기": a.n }));
+  const seen = new Set(list.map(a => a.caller));
+  Object.keys(names).filter(l => !seen.has(l)).sort().forEach(l => out.push({ "사용자": l, "사용자명": names[l], "페이지": "기록 없음", "처음 연 날": "", "마지막 연 날": "", "연 날수": 0, "설정 받기": 0 }));
+  const head = ["사용자", "사용자명", "페이지", "처음 연 날", "마지막 연 날", "연 날수", "설정 받기"];
+  const md = [
+    `페이지 열기 기록 ${from} ~ ${to} (한국시간, 사용자×페이지 버전, v1 = 옛 페이지) — 2026-11-06 배포 이후분만 있습니다`,
+    "",
+    "| " + head.join(" | ") + " |",
+    "|" + head.map(() => "---").join("|") + "|",
+    ...out.map(o => "| " + head.map(h => o[h]).join(" | ") + " |")
+  ];
+  if (!out.length) md.push("| " + head.map(() => "-").join(" | ") + " |");
+  return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { from, to, group_by: "opens", rows: out } };
+}
+
 async function usageReport(args) {
   const DAY = /^\d{4}-\d{2}-\d{2}$/;
   const to = args.to || usage.kstDate();
@@ -481,6 +510,7 @@ async function usageReport(args) {
   const by = args.group_by || "user";
   if (by === "failures") return failureReport(from, to, args.user);
   if (by === "issues") return issueReport(args.status || "open");
+  if (by === "opens") return openReport(from, to);
   const all = await usage.readUsage(from, to);
   const isPage = r => r.tool.startsWith("@page:");
   const isAgent = r => r.tool.startsWith("@agent:");
@@ -642,10 +672,12 @@ async function callTool(params, caller, page, viaPage, agent) {
     const ca = (params && params.arguments) || {};
     if (!ca.page) {
       console.log(`[pagekey] reject tool=relay_config caller=${caller} why=no-page(retired) part=${ca.part || ""}`);
+      if (!ca.part || ca.part === "catalog") await usage.recordOpen(caller, "v1");
       if (ca.since_version === RETIRED_VERSION) return { result: { content: [{ type: "text", text: RETIRED_MSG }], structuredContent: { version: RETIRED_VERSION, unchanged: true } } };
       return { result: { content: [{ type: "text", text: RETIRED_MSG }], structuredContent: retiredCatalog() } };
     }
     if (!pageOk(ca)) { console.log(`[pagekey] reject tool=relay_config caller=${caller} why=${pageRejectWhy(ca)}`); return { result: { isError: true, content: [{ type: "text", text: PAGE_ONLY_MSG }] } }; }
+    if (!ca.part || ca.part === "catalog") await usage.recordOpen(caller, ca.page);
     try {
       return { result: await configResult((params && params.arguments) || {}, caller) };
     } catch (e) {
