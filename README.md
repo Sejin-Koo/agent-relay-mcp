@@ -13,6 +13,8 @@
   페이지는 열릴 때 `relay_config`로 이 내용을 받아 쓰고, 도구는 `relay_call`(tool, arguments)로 이 서버를 거쳐 부른다.
   페이지 사본에는 이 두 도구 이름만 들어 있으므로 **에이전트 추가·삭제, 도구 배정, 규칙 수정은 이 파일만 고쳐 push하면 사본에도 반영된다.**
 - 고친 뒤에는 `version` 값을 올리고 `node scripts/check-catalog.js`로 배정된 도구가 모두 허용 목록 안에 있는지 확인한다.
+- 지침·도구 안내에 `도구(인자=값)`으로 적은 인자 이름은 `node scripts/check-tool-args.js`가 배포된 중계 서버의 실제 도구 스키마와 대조한다(키는 환경변수 `RELAY_KEY`·`RELAY_PAGE_KEY`, 또는 `relay_config {part:"tools"}` 결과 파일 경로). PR·main push 때 GitHub Actions(`.github/workflows/check.yml`)가 두 검사를 함께 돌린다.
+- 자동 점검(2026-11-08): 비공개 저장소 `agent-relay-monitor`의 GitHub Actions가 매일 04:17(한국시간) 도구를 시험 호출하고 도구 인자 변경을 감지한다. 점검 키는 환경변수 `RELAY_MONITOR_KEYS`(MCP_GATE_KEYS와 별도)에 두며, 이 키의 호출은 사용량 합계에 넣지 않고 실패만 '개선 필요 오류'에 남긴다. 점검 완료·인자 변경은 `relay_monitor`(점검 키·관리자 전용)로 기록하고, `relay_usage {group_by:"issues"}` 맨 위에 마지막 실행 시각이 나온다(48시간 넘으면 경고).
 
 `lib/agents.json` 항목 (모두 페이지 재게시 없이 반영된다)
 
