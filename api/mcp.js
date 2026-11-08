@@ -8,7 +8,7 @@ const usage = require("../lib/usage");
 const files = require("../lib/files");
 const LOCAL = { files }; // 이 서버가 직접 수행하는 도구 묶음(backends.js의 local 항목 module 이름) — 페이지 전용 파일 만들기만 남긴다
 const localOf = (b) => LOCAL[b.module];
-const { coerceArgs } = require("../lib/coerce");
+const { coerceArgs, missingRequired } = require("../lib/coerce");
 const CATALOG = require("../lib/agents.json");
 
 const SERVER_INFO = { name: "agent-relay-mcp", version: "1.0.0" };
@@ -794,15 +794,40 @@ async function callTool(params, caller, page, viaPage, agent) {
   const t0 = Date.now();
   // 인자를 담당 서버 스키마에 맞춘다(형 변환·범위 맞춤). 스키마를 못 받으면 그대로 넘긴다
   let args = (params && params.arguments) || {};
+  // 실패 기록에는 보정 전 인자와 보정 내역을 함께 남긴다(보정이 인자를 지워 원인을 못 보는 일이 있었다 — 2026-11-07 {} 기록)
+  const rawArgs = args;
+  let fixNote = "";
+  let missing = [], schemaDef = null;
   try {
     const def = (await backendTools(id)).find(t => t.name === name);
     if (def) {
-      const fixed = coerceArgs(def.inputSchema, args);
-      if (fixed.changes.length) console.log(`[coerce] tool=${name} ${fixed.changes.join("; ")}`);
+      schemaDef = def.inputSchema;
+      const fixed = coerceArgs(def.inputSchema, args, UPSTREAM[name] || name);
+      if (fixed.changes.length) {
+        console.log(`[coerce] tool=${name} ${fixed.changes.join("; ")}`);
+        fixNote = fixed.changes.join("; ");
+      }
       args = fixed.args;
+      missing = missingRequired(def.inputSchema, args, b.forceArgs);
     }
   } catch (e) {
     console.log(`[coerce] tool=${name} 건너뜀: ${e.message}`);
+  }
+  const failArgs = fixNote ? Object.assign({}, rawArgs, { "(보정)": fixNote }) : rawArgs;
+  // 필수 인자가 비어 있으면 담당 서버에 보내지 않고, 받을 이름과 형식을 바로 알려 준다
+  if (missing.length && schemaDef && schemaDef.properties) {
+    const want = missing.map(p => {
+      const s = schemaDef.properties[p] || {};
+      const d = String(s.description || "").replace(/\s+/g, " ").slice(0, 80);
+      const en = Array.isArray(s.enum) ? ` 값: ${s.enum.slice(0, 12).join("|")}` : "";
+      return `${p}${d ? ` (${d})` : ""}${en}`;
+    }).join(" / ");
+    const got = Object.keys(rawArgs || {}).join(", ") || "없음";
+    const text = `필수 인자가 비어 있습니다: ${want}. 받은 인자 이름: ${got}. 이 도구가 받는 인자 이름: ${Object.keys(schemaDef.properties).join(", ")}. 이름을 고쳐 다시 부르세요(같은 인자로 되풀이하지 마세요).`;
+    const ms = Date.now() - t0;
+    await usage.recordCall(caller, name, ms, false, page, agent);
+    await noteFail(caller, name, id, ms, `필수 인자 누락: ${missing.join(", ")}`, failArgs, agent);
+    return { result: { isError: true, content: [{ type: "text", text }] } };
   }
   if (b.local) {
     try {
@@ -810,13 +835,13 @@ async function callTool(params, caller, page, viaPage, agent) {
       const ms = Date.now() - t0;
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} ok=${!result.isError}`);
       await usage.recordCall(caller, name, ms, !result.isError, page, agent);
-      if (result.isError) await noteFail(caller, name, id, ms, errTextOf({ result }), args, agent);
+      if (result.isError) await noteFail(caller, name, id, ms, errTextOf({ result }), failArgs, agent);
       return { result };
     } catch (e) {
       const ms = Date.now() - t0;
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} fail=${e.message}`);
       await usage.recordCall(caller, name, ms, false, page, agent);
-      await noteFail(caller, name, id, ms, oneLine(`중계 예외: ${e.message}`), args, agent);
+      await noteFail(caller, name, id, ms, oneLine(`중계 예외: ${e.message}`), failArgs, agent);
       return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구 오류: ${e.message}` }] } };
     }
   }
@@ -825,7 +850,7 @@ async function callTool(params, caller, page, viaPage, agent) {
   if (b.strictKey && !backendKey(b)) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} 전용 키 없음`);
     await usage.recordCall(caller, name, Date.now() - t0, false, page, agent);
-    await noteFail(caller, name, id, Date.now() - t0, "중계 서버에 이 담당 서버의 전용 키가 설정되지 않음", args, agent);
+    await noteFail(caller, name, id, Date.now() - t0, "중계 서버에 이 담당 서버의 전용 키가 설정되지 않음", failArgs, agent);
     return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구가 아직 준비되지 않았습니다(서버 설정 필요). 이 도구 없이 진행하고 확인하지 못한 항목으로 밝히세요.` }] } };
   }
   try {
@@ -836,14 +861,14 @@ async function callTool(params, caller, page, viaPage, agent) {
     const ms = Date.now() - t0;
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} ok=${ok}`);
     await usage.recordCall(caller, name, ms, ok, page, agent);
-    if (!ok) await noteFail(caller, name, id, ms, errTextOf(msg), args, agent);
+    if (!ok) await noteFail(caller, name, id, ms, errTextOf(msg), failArgs, agent);
     if (msg.error) return { error: msg.error };
     return { result: attachText(msg.result) };
   } catch (e) {
     const ms = Date.now() - t0;
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} fail=${e.message}`);
     await usage.recordCall(caller, name, ms, false, page, agent);
-    await noteFail(caller, name, id, ms, oneLine(`중계 예외: ${e.message}`), args, agent);
+    await noteFail(caller, name, id, ms, oneLine(`중계 예외: ${e.message}`), failArgs, agent);
     return { result: { isError: true, content: [{ type: "text", text: `중계 오류: ${e.message}` }] } };
   }
 }
