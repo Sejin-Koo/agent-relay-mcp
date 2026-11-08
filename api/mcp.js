@@ -18,6 +18,10 @@ const LATEST = SUPPORTED[0];
 
 const GATE_KEYS = (process.env.MCP_GATE_KEYS || "").split(",").map(s => s.trim()).filter(Boolean);
 const GATE_MODE = (process.env.MCP_GATE_MODE || "observe").trim().toLowerCase();
+// 자동 점검 전용 키(비공개 점검 저장소의 GitHub Actions가 매일 도구를 시험 호출). MCP_GATE_KEYS와 따로 둬서
+// 기존 목록을 건드리지 않고 넣고 뺄 수 있게 했다. 이 키의 호출은 사용량 합계에 넣지 않고, 실패만 '개선 필요 오류'에 남긴다.
+const MONITOR_KEYS = (process.env.RELAY_MONITOR_KEYS || "").split(",").map(s => s.trim()).filter(Boolean);
+const isMonitor = (caller) => MONITOR_KEYS.some(k => keyLabel(k) === caller);
 
 const LIST_TTL_MS = 10 * 60 * 1000;   // 백엔드 도구 정의 캐시
 const CALL_TIMEOUT_MS = 280 * 1000;   // vercel.json maxDuration(300초)보다 짧게
@@ -200,6 +204,7 @@ async function backendTools(id) {
 async function listTools(caller) {
   const tools = [CONFIG_TOOL, CALL_TOOL];
   if (isAdmin(caller)) tools.push(USAGE_TOOL, USERS_TOOL, FAILURES_TOOL);
+  if (isAdmin(caller) || isMonitor(caller)) tools.push(MONITOR_TOOL);
   return tools;
 }
 // 페이지 확인 값: 원본 페이지 코드에 넣어 둔 값과 같아야 relay_config·relay_call을 받는다(2026-10-24 사용자 결정).
@@ -453,7 +458,16 @@ async function issueReport(which) {
   const head = which === "closed" ? ["상태", "도구", "오류", "누적 건수", "닫은 시각", "조치 메모", "서명"] : ["상태", "도구", "오류", "열린 건수", "마지막", "마지막 사용자", "서명"];
   const esc = v => String(v === undefined ? "" : v).replace(/\|/g, "\\|");
   const label = { open: "개선 필요 오류(확인 필요·재발)", closed: "개선 완료된 오류(개선완료·조치불필요)", all: "오류 전체" }[which];
-  const md = [`${label} — ${rows.length}건`, "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...rows.map(o => "| " + head.map(h => esc(o[h])).join(" | ") + " |")];
+  let beatLine = "";
+  try {
+    const b = await usage.readMonitorBeat();
+    if (b && b.at) {
+      const hrs = (Date.now() - new Date(b.at).getTime()) / 3600000;
+      const nums = ["tested", "failed", "skipped", "changed"].filter(k => b[k] !== undefined).map(k => `${{ tested: "시험", failed: "실패", skipped: "건너뜀", changed: "인자 변경" }[k]} ${b[k]}`).join(", ");
+      beatLine = `자동 점검 마지막 실행: ${kst(b.at)}${nums ? ` (${nums})` : ""}${hrs > 48 ? " — ⚠ 48시간 넘게 실행되지 않음(점검 저장소의 Actions 확인 필요)" : ""}`;
+    } else beatLine = "자동 점검 실행 기록 없음";
+  } catch (e) { beatLine = ""; }
+  const md = [`${label} — ${rows.length}건`, ...(beatLine ? [beatLine] : []), "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...rows.map(o => "| " + head.map(h => esc(o[h])).join(" | ") + " |")];
   if (!rows.length) md.push("", "해당하는 오류가 없습니다.");
   return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { group_by: "issues", status: which, total: rows.length, rows } };
 }
@@ -471,6 +485,25 @@ const FAILURES_TOOL = {
       link: { type: "string", description: "변경 링크(PR 주소 등, 선택)" }
     },
     required: ["sig", "status"],
+    additionalProperties: false
+  }
+};
+
+// 자동 점검 결과 기록(점검 키·관리자). report: 시험 호출 밖에서 찾은 문제(도구 인자 변경 등)를 '개선 필요 오류'에 올린다.
+// beat: 점검 1회가 끝났음을 남긴다 — relay_usage issues 결과 맨 위에 마지막 실행 시각이 나오고, 오래 안 돌면 경고가 붙는다.
+const MONITOR_TOOL = {
+  name: "relay_monitor",
+  description: "자동 점검 결과를 기록합니다(점검 키·관리자 전용). report는 도구 인자 변경처럼 시험 호출 밖에서 찾은 문제를 개선 필요 오류 목록에 올리고, beat는 점검 1회 완료(시험 수·실패 수 등)를 남깁니다.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      action: { type: "string", enum: ["report", "beat"], description: "report: 문제 1건 기록, beat: 점검 완료 기록" },
+      tool: { type: "string", description: "report — 문제가 난 도구 이름" },
+      err: { type: "string", description: "report — 문제 문구(같은 문구면 한 원인으로 묶임)" },
+      detail: { type: "string", description: "report — 자세한 내용(바뀐 인자 등, 300자까지)" },
+      summary: { type: "object", description: "beat — {tested, failed, skipped, changed, weekly} 같은 숫자 요약" }
+    },
+    required: ["action"],
     additionalProperties: false
   }
 };
@@ -715,6 +748,12 @@ async function noteFail(caller, name, id, ms, err, args, agent) {
   await usage.recordFailure({ caller, tool: name, backend: id, agent: agent || "", ms, err, args: argSummary(args) });
 }
 
+// 자동 점검 키의 호출은 사용량 합계(사용자별·도구별)에 넣지 않는다 — 실패는 noteFail로 따로 남는다
+async function recordCallFor(caller, ...rest) {
+  if (isMonitor(caller)) return;
+  return usage.recordCall(caller, ...rest);
+}
+
 // ---------- tools/call: 담당 서버로 그대로 넘긴다 ----------
 async function callTool(params, caller, page, viaPage, agent) {
   const name = params && params.name;
@@ -734,6 +773,24 @@ async function callTool(params, caller, page, viaPage, agent) {
       return { result: { content: [{ type: "text", text: `오류 ${r.sig}의 상태를 '${r.status === "open" ? "확인 필요" : (STATE_KO[r.status] || r.status)}'(으)로 바꿨습니다.` }], structuredContent: r } };
     } catch (e) {
       return { result: { isError: true, content: [{ type: "text", text: `실패 원인 상태 변경 오류: ${e.message}` }] } };
+    }
+  }
+  if (name === "relay_monitor") {
+    if (!isAdmin(caller) && !isMonitor(caller)) return { error: { code: -32602, message: `이 서버에서 쓸 수 없는 도구입니다: ${name}` } };
+    const a = (params && params.arguments) || {};
+    try {
+      if (a.action === "report") {
+        if (!a.tool || !a.err) throw new Error("report에는 tool·err가 필요합니다");
+        await usage.recordFailure({ caller, tool: String(a.tool).slice(0, 80), backend: "monitor", agent: "", ms: 0, err: oneLine(a.err, 300), args: oneLine(a.detail || "", 300) });
+        return { result: { content: [{ type: "text", text: "기록했습니다." }], structuredContent: { ok: true } } };
+      }
+      if (a.action === "beat") {
+        await usage.setMonitorBeat(Object.assign({ at: new Date().toISOString(), caller }, (a.summary && typeof a.summary === "object") ? a.summary : {}));
+        return { result: { content: [{ type: "text", text: "점검 완료를 기록했습니다." }], structuredContent: { ok: true } } };
+      }
+      throw new Error("action은 report·beat 중 하나여야 합니다");
+    } catch (e) {
+      return { result: { isError: true, content: [{ type: "text", text: `점검 기록 오류: ${e.message}` }] } };
     }
   }
   if (name === "relay_users") {
@@ -825,7 +882,7 @@ async function callTool(params, caller, page, viaPage, agent) {
     const got = Object.keys(rawArgs || {}).join(", ") || "없음";
     const text = `필수 인자가 비어 있습니다: ${want}. 받은 인자 이름: ${got}. 이 도구가 받는 인자 이름: ${Object.keys(schemaDef.properties).join(", ")}. 이름을 고쳐 다시 부르세요(같은 인자로 되풀이하지 마세요).`;
     const ms = Date.now() - t0;
-    await usage.recordCall(caller, name, ms, false, page, agent);
+    await recordCallFor(caller, name, ms, false, page, agent);
     await noteFail(caller, name, id, ms, `필수 인자 누락: ${missing.join(", ")}`, failArgs, agent);
     return { result: { isError: true, content: [{ type: "text", text }] } };
   }
@@ -834,13 +891,13 @@ async function callTool(params, caller, page, viaPage, agent) {
       const result = await localOf(b).call(name, args, caller);
       const ms = Date.now() - t0;
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} ok=${!result.isError}`);
-      await usage.recordCall(caller, name, ms, !result.isError, page, agent);
+      await recordCallFor(caller, name, ms, !result.isError, page, agent);
       if (result.isError) await noteFail(caller, name, id, ms, errTextOf({ result }), failArgs, agent);
       return { result };
     } catch (e) {
       const ms = Date.now() - t0;
       console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} fail=${e.message}`);
-      await usage.recordCall(caller, name, ms, false, page, agent);
+      await recordCallFor(caller, name, ms, false, page, agent);
       await noteFail(caller, name, id, ms, oneLine(`중계 예외: ${e.message}`), failArgs, agent);
       return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구 오류: ${e.message}` }] } };
     }
@@ -849,7 +906,7 @@ async function callTool(params, caller, page, viaPage, agent) {
   if (b.forceArgs) args = Object.assign({}, args || {}, b.forceArgs);
   if (b.strictKey && !backendKey(b)) {
     console.log(`[call] caller=${caller} tool=${name} backend=${id} 전용 키 없음`);
-    await usage.recordCall(caller, name, Date.now() - t0, false, page, agent);
+    await recordCallFor(caller, name, Date.now() - t0, false, page, agent);
     await noteFail(caller, name, id, Date.now() - t0, "중계 서버에 이 담당 서버의 전용 키가 설정되지 않음", failArgs, agent);
     return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구가 아직 준비되지 않았습니다(서버 설정 필요). 이 도구 없이 진행하고 확인하지 못한 항목으로 밝히세요.` }] } };
   }
@@ -860,14 +917,14 @@ async function callTool(params, caller, page, viaPage, agent) {
     const ok = !msg.error && !(msg.result && msg.result.isError);
     const ms = Date.now() - t0;
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} ok=${ok}`);
-    await usage.recordCall(caller, name, ms, ok, page, agent);
+    await recordCallFor(caller, name, ms, ok, page, agent);
     if (!ok) await noteFail(caller, name, id, ms, errTextOf(msg), failArgs, agent);
     if (msg.error) return { error: msg.error };
     return { result: attachText(msg.result) };
   } catch (e) {
     const ms = Date.now() - t0;
     console.log(`[call] caller=${caller} tool=${name} backend=${id} ms=${ms} fail=${e.message}`);
-    await usage.recordCall(caller, name, ms, false, page, agent);
+    await recordCallFor(caller, name, ms, false, page, agent);
     await noteFail(caller, name, id, ms, oneLine(`중계 예외: ${e.message}`), failArgs, agent);
     return { result: { isError: true, content: [{ type: "text", text: `중계 오류: ${e.message}` }] } };
   }
@@ -931,7 +988,7 @@ module.exports = async (req, res) => {
   if (!gk) {
     try { gk = new URL(req.url, "http://localhost").searchParams.get("k"); } catch (e) { gk = null; }
   }
-  const allowed = GATE_KEYS.length === 0 || (!!gk && GATE_KEYS.includes(gk));
+  const allowed = GATE_KEYS.length === 0 || (!!gk && (GATE_KEYS.includes(gk) || MONITOR_KEYS.includes(gk)));
   const caller = keyLabel(gk);
   console.log(`[gate] mode=${GATE_MODE} method=${req.method} caller=${caller} allowed=${allowed}`);
   if (!allowed && GATE_MODE === "enforce") {
