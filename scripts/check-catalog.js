@@ -75,6 +75,8 @@ if (cat.agents_v2) {
     for (const k of ["main", "consult", "doc", "trigger_prompt"]) if (!(Array.isArray(P2.runner[k]) && P2.runner[k].length && P2.runner[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.runner.${k}는 문장 배열`);
     if (P2.runner.main && !P2.runner.main.join("\n").includes("{{job}}")) e2.push("prompts_v2.runner.main에 {{job}} 자리표시자가 없음");
     if (P2.runner.main && !P2.runner.main.some(x => x.includes("{{url_hint}}"))) e2.push("prompts_v2.runner.main에 {{url_hint}} 자리표시자가 없음");
+    // 초안 에이전트를 클라우드에서 실행할 때 지침에 넣는 줄(페이지 18판, 없으면 페이지 기본 문구)
+    if (P2.runner.draft !== undefined && !(Array.isArray(P2.runner.draft) && P2.runner.draft.length && P2.runner.draft.every(x => typeof x === "string"))) e2.push("prompts_v2.runner.draft는 문장 배열");
   }
   if (cat.features && cat.features.background && !(P2.runner && Array.isArray(P2.runner.main))) e2.push("features.background가 켜져 있는데 prompts_v2.runner가 없음");
   // 다음 질문 예약·답변 중 새 대화(페이지 10판)
@@ -92,7 +94,7 @@ if (cat.agents_v2) {
     if (hp !== undefined && !(Number.isInteger(hp) && hp >= 1 && hp <= 8)) e2.push("features.hub_parallel은 1~8 정수");
     if (hm !== undefined && !(Number.isInteger(hm) && hm >= 1 && hm <= 10)) e2.push("features.hub_max는 1~10 정수");
     // 이전 대화 목록 접기(페이지 15판부터): 켜기·처음 상태(true면 접힌 채로 시작)
-    for (const k of ["hist_fold", "hist_fold_default"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
+    for (const k of ["hist_fold", "hist_fold_default", "bg_draft"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
     // 숫자 설정(페이지 14판부터, 페이지 applyNumbers와 같은 범위 — 벗어나면 페이지가 기본값을 쓴다)
     const NUMS = { hist_days: [7, 365], hist_list: [20, 300], hist_board_show: [1, 30], past_scan: [5, 100], past_read: [2000, 60000], convo_in_max: [20000, 400000], ctx_turns: [2, 40], ctx_last_max: [2000, 60000], ctx_prev_max: [500, 20000] };
     for (const [k, [lo, hi]] of Object.entries(NUMS)) { const v = cat.features[k]; if (v !== undefined && !(typeof v === "number" && v >= lo && v <= hi)) e2.push(`features.${k}는 ${lo}~${hi} 숫자(벗어나면 페이지가 기본값을 씀)`); }
