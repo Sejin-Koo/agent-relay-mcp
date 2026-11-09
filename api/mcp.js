@@ -387,7 +387,7 @@ const USAGE_TOOL = {
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
       user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
       status: { type: "string", enum: ["open", "mine", "closed", "all"], description: "issues에서 open: 열린 항목 전체(직접 조치 필요·수정 대기·재발·확인 필요·관찰 중, 기본), mine: 사용자가 할 일만(직접 조치 필요·수정 대기), closed: 개선완료·조치불필요, all: 전체" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens", "questions", "agent_questions", "day_questions", "via", "web_paths", "day_web_paths", "web_vendor"], description: "집계 단위 — web_vendor: Tavily·Nimble 회사가 집계한 이번 달 사용량(계정 전체 / 웹 도구 서버 전용 키 / 그 밖 — 계정 채팅에서 Tavily·Nimble 커넥터를 직접 부른 것 등. Tavily는 크레딧, Nimble은 요청 수. from·to는 쓰지 않음), web_paths: 사용자×경로(계정 커넥터/업무 에이전트)별 웹 도구 호출과 Tavily·Nimble 외부 요청 수(웹 도구 서버 기록, 2026-11-07 이후분), day_web_paths: 날짜×경로별 같은 값, questions: 사용자×에이전트 질문 수(화면·클라우드 실행 구분, 페이지 17판 이후분 — 통합 질문과 개별 에이전트 중 어디에 묻는지 보는 용도), agent_questions: 에이전트별 질문 수·질문한 사용자 수, day_questions: 날짜×에이전트 질문 수, via: 맡긴 에이전트(주로 통합 질문)×맡은 에이전트별 조회 호출(맡은 에이전트 집계와 중복), opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens", "questions", "agent_questions", "day_questions", "via", "web_paths", "day_web_paths", "web_vendor", "web_vendor_summary", "web_vendor_sources"], description: "집계 단위 — web_vendor_summary: Tavily·Nimble 서비스별 이번 달(1일~오늘) 사용·무료 제공·사용률·과금 사용·월말 추정, web_vendor_sources: 같은 달의 출처별 내역(계정 채팅 커넥터 직접 호출 / 계정 웹 도구 커넥터 / 업무 에이전트 사용자별 / 본인 키 서버 / 미분류 — 더하면 계정 전체), web_vendor: Tavily·Nimble 회사가 집계한 이번 달 사용량(계정 전체 / 웹 도구 서버 전용 키 / 그 밖 — 계정 채팅에서 Tavily·Nimble 커넥터를 직접 부른 것 등. Tavily는 크레딧, Nimble은 요청 수. from·to는 쓰지 않음), web_paths: 사용자×경로(계정 커넥터/업무 에이전트)별 웹 도구 호출과 Tavily·Nimble 외부 요청 수(웹 도구 서버 기록, 2026-11-07 이후분), day_web_paths: 날짜×경로별 같은 값, questions: 사용자×에이전트 질문 수(화면·클라우드 실행 구분, 페이지 17판 이후분 — 통합 질문과 개별 에이전트 중 어디에 묻는지 보는 용도), agent_questions: 에이전트별 질문 수·질문한 사용자 수, day_questions: 날짜×에이전트 질문 수, via: 맡긴 에이전트(주로 통합 질문)×맡은 에이전트별 조회 호출(맡은 에이전트 집계와 중복), opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -612,12 +612,24 @@ async function webPathReport(from, to, by) {
 }
 // Tavily·Nimble 회사 측 사용량 — 키를 가진 웹 도구 서버의 관리자 전용 도구(web_vendor_usage)를 중계 서버 내부 키로 부른다.
 // 이 도구는 backends.js의 web 도구 목록에 넣지 않는다(에이전트·사용자에게 열리지 않게 — relay_usage는 관리자 전용).
-async function webVendorReport() {
+async function webVendorReport(by) {
   const msg = await rpcToBackend(BACKENDS.web, "tools/call", { name: "web_vendor_usage", arguments: {} }, 40000, null);
   if (msg.error) throw new Error(`웹 도구 서버: ${msg.error.message}`);
   const r = msg.result || {};
   if (r.isError) throw new Error(((r.content || [])[0] || {}).text || "웹 도구 서버 오류");
-  return { content: r.content || [], structuredContent: Object.assign({ group_by: "web_vendor" }, r.structuredContent || {}) };
+  const sc = r.structuredContent || {};
+  if (by === "web_vendor") return { content: r.content || [], structuredContent: Object.assign({ group_by: by }, sc) };
+  // 과금 관리용 표: 요약(서비스별) / 출처별(사용자 식별자 옆에 사용자명)
+  let rows = (by === "web_vendor_summary" ? sc.summary : sc.sources) || [], head;
+  if (by === "web_vendor_sources") {
+    const names = await usage.readNames();
+    rows = rows.map(o => Object.assign({}, o, { "사용자명": names[o["사용자"]] || (o["사용자"] === "(계정)" ? "계정" : o["사용자"]) }));
+    head = ["경로", "사용자", "사용자명", "Tavily", "Nimble", "비고"];
+  } else head = ["서비스", "단위", "이번 달 사용", "무료 제공", "사용률", "과금 표시", "월말 추정", "기준"];
+  const title = by === "web_vendor_summary"
+    ? `Tavily·Nimble 이번 달 사용과 과금 (${sc.month || ""}, 1일~오늘) — Tavily는 크레딧, Nimble은 요청 수. 월말 추정은 지금까지의 일평균 × 그 달 일수`
+    : `Tavily·Nimble 이번 달 출처별 사용 (${sc.month || ""}, 1일~오늘) — 행을 더하면 계정 전체. Tavily 열은 직접 호출·미분류·합계 행이 크레딧, 그 밖은 요청 수`;
+  return mdTable(title, head, rows, { group_by: by, month: sc.month || null, rows });
 }
 function mdTable(title, head, out, sc) {
   const md = [title, "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...out.map(o => "| " + head.map(h => o[h]).join(" | ") + " |")];
@@ -637,7 +649,7 @@ async function usageReport(args) {
   if (by === "opens") return openReport(from, to);
   if (["questions", "agent_questions", "day_questions", "via"].includes(by)) return questionReport(from, to, by);
   if (by === "web_paths" || by === "day_web_paths") return webPathReport(from, to, by);
-  if (by === "web_vendor") return webVendorReport();
+  if (by === "web_vendor" || by === "web_vendor_summary" || by === "web_vendor_sources") return webVendorReport(by);
   const all = await usage.readUsage(from, to);
   const isPage = r => r.tool.startsWith("@page:");
   const isAgent = r => r.tool.startsWith("@agent:");
