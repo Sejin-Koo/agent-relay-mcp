@@ -1,5 +1,5 @@
 {
- "version": "2026-11-09.6",
+ "version": "2026-11-09.7",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -928,7 +928,13 @@
   "legal": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 2.8h8l4 4v14.4H6z\"/><path d=\"M14 2.8v4h4\"/><path d=\"M9 13.5l2.2 2.2L15.5 11\"/></svg>"
  },
  "ui_v2": {
-  "text": {},
+  "text": {
+   "초안 이어 쓰기": "보고서 이어 쓰기",
+   "초안 새로 쓰기": "보고서 새로 쓰기",
+   "초안 읽기": "보고서 읽기",
+   "초안 확인": "보고서 확인",
+   "쌓인 초안 없음": "쌓인 보고서 없음"
+  },
   "buttons": [
     { "id": "hub_top", "slot": "top", "label": "통합 질문", "action": "agent", "agent": "hub", "title": "어떤 에이전트에 물을지 모를 때 — 질문만 하면 필요한 에이전트들에 나눠 맡기고 결과를 종합합니다", "before": "hist_top" },
     { "id": "jobs", "after": "hist_top" },
@@ -956,7 +962,12 @@
     "/* 통합 질문: 첫 화면 맨 위 카드를 한 줄 전체·강조 테두리로, 상단 단추 강조 (2026-11-07) */",
     "#grp-hub .cards { grid-template-columns: 1fr !important; }",
     ".card[data-agent=\"hub\"] { border: 2px solid var(--gold); }",
-    ".card[data-agent=\"hub\"] .nm { font-weight: 700; }"
+    ".card[data-agent=\"hub\"] .nm { font-weight: 700; }",
+    "/* 파일 받기 줄 아래 설명(2026-11-09): 대화 종합 보고서와 작성한 보고서의 차이를 늘 보이게. 작성한 보고서 줄은 18판 사본에 class가 없어 바로 앞 줄로 고른다(새 사본은 .export.draft) */",
+    ".export.convo::after, .export.draft::after, .export.convo + .export:not(.convo)::after, .export:not(.convo) + .export:not(.convo)::after { flex-basis: 100%; color: var(--muted); font-size: 12px; font-weight: 400; line-height: 1.5; }",
+    ".export.convo::after { content: \"지금까지의 답변을 모아 보고서 한 편으로 새로 정리합니다. 누르면 그때 작성합니다.\"; }",
+    ".export.convo:has(+ .export:not(.convo))::after { content: \"지금까지의 답변을 모아 보고서 한 편으로 새로 정리합니다. 누르면 그때 작성합니다. 에이전트가 장별로 쓴 보고서 본문은 들어가지 않으니 아래 '작성한 보고서로 받기'에서 받으세요.\"; }",
+    ".export.draft::after, .export.convo + .export:not(.convo)::after, .export:not(.convo) + .export:not(.convo)::after { content: \"에이전트가 장별로 써 둔 보고서 본문을 그대로 파일로 만듭니다.\"; }"
   ],
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -1054,8 +1065,8 @@
    "bg_why_nohist": "이 화면에서는 대화 저장소를 쓸 수 없어 클라우드 실행을 쓸 수 없습니다.",
    "bg_why_files": "첨부 파일이 있는 질문은 파일을 이 화면에서 읽기 때문에 클라우드 검색을 하지 않습니다.",
    "bg_why_draft": "문서 초안을 쌓아 가는 에이전트는 클라우드 실행을 하지 않습니다.",
-   "draft_save": "작성한 보고서 저장({n}자)",
-   "hist_draft_note": "작성한 보고서('작성한 보고서 저장' 단추)는 {days}일이 지나면 먼저 삭제됩니다. ",
+   "draft_save": "작성한 보고서로 받기({n}자)",
+   "hist_draft_note": "작성한 보고서('작성한 보고서로 받기' 줄)는 {days}일이 지나면 먼저 삭제됩니다. ",
    "bg_handing": "클라우드 실행기에 작업을 맡기는 중… (맡기는 동안은 이 화면을 유지해 주세요)",
    "bg_model_mismatch": "선택하신 {want} 모델용 실행기가 없어 {got} 모델로 실행합니다."
  },
@@ -4825,7 +4836,7 @@
    ],
    "draft": [
      "- 이 클라우드 실행에서는 draft_append·draft_read·draft_status·create_document(use_draft=true)를 부를 수 없습니다. 지침에서 초안을 쌓으라고 한 곳은 실행기 지시서의 [3-1. 초안 파일]대로 초안 파일에 쌓습니다. 앞선 대화에서 쌓은 초안도 그 파일에 들어 있으므로 이어 쓰기·고치기는 그 파일에서 하고, 새로 시작하라는 요청일 때만 비우고 다시 씁니다.",
-     "- 초안을 쌓은 답변의 채팅 본문에는 지침대로 이번에 쓴 장 목록과 남은 장만 알리고 본문 전체를 붙이지 않습니다. 답변 맨 끝(출처 줄 다음)에 한 줄로 안내합니다: \"지금까지 작성한 보고서 전체는 이 답변 아래 '작성한 보고서 저장'에서 형식을 누르면 파일로 저장됩니다.\"",
+     "- 초안을 쌓은 답변의 채팅 본문에는 지침대로 이번에 쓴 장 목록과 남은 장만 알리고 본문 전체를 붙이지 않습니다. 답변 맨 끝(출처 줄 다음)에 한 줄로 안내합니다: \"지금까지 작성한 보고서 전체는 이 답변 아래 '작성한 보고서로 받기'에서 형식을 누르면 파일로 받습니다.\"",
      "- 새로 쓸 내용 없이 초안을 파일로만 달라는 요청이면 초안 파일을 고치지 않고 위 안내 한 줄과 지금 초안의 장 목록으로 답합니다. 쌓인 초안이 없으면 그렇다고 알리고 무엇부터 쓸지 묻습니다."
    ],
    "trigger_prompt": [
