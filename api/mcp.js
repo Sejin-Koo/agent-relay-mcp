@@ -523,17 +523,18 @@ async function openReport(from, to) {
   const agg = new Map();
   for (const r of rows) {
     const id = r.caller + "\u0000" + r.page;
-    const a = agg.get(id) || { caller: r.caller, page: r.page, first: r.date, last: r.date, days: new Set(), n: 0 };
+    const a = agg.get(id) || { caller: r.caller, page: r.page, first: r.date, last: r.date, at: r.at || "", days: new Set(), n: 0 };
     if (r.date < a.first) a.first = r.date;
     if (r.date > a.last) a.last = r.date;
     a.days.add(r.date); a.n += r.n;
     agg.set(id, a);
   }
   const list = [...agg.values()].sort((x, y) => (x.caller < y.caller ? -1 : x.caller > y.caller ? 1 : y.last < x.last ? -1 : y.last > x.last ? 1 : 0));
-  const out = list.map(a => ({ "사용자": a.caller, "사용자명": names[a.caller] || "", "페이지": a.page, "처음 연 날": a.first, "마지막 연 날": a.last, "연 날수": a.days.size, "설정 받기": a.n }));
+  // 마지막 연 시각은 기간 끝보다 늦을 수 있어(기간을 과거로 잡은 경우) 그 판의 마지막 연 날과 날짜가 같을 때만 쓴다
+  const out = list.map(a => ({ "사용자": a.caller, "사용자명": names[a.caller] || "", "페이지": a.page, "처음 연 날": a.first, "마지막 연 날": a.last, "마지막 연 시각": a.at && a.at.slice(0, 10) === a.last ? a.at : "", "연 날수": a.days.size, "설정 받기": a.n }));
   const seen = new Set(list.map(a => a.caller));
-  Object.keys(names).filter(l => !seen.has(l)).sort().forEach(l => out.push({ "사용자": l, "사용자명": names[l], "페이지": "기록 없음", "처음 연 날": "", "마지막 연 날": "", "연 날수": 0, "설정 받기": 0 }));
-  const head = ["사용자", "사용자명", "페이지", "처음 연 날", "마지막 연 날", "연 날수", "설정 받기"];
+  Object.keys(names).filter(l => !seen.has(l)).sort().forEach(l => out.push({ "사용자": l, "사용자명": names[l], "페이지": "기록 없음", "처음 연 날": "", "마지막 연 날": "", "마지막 연 시각": "", "연 날수": 0, "설정 받기": 0 }));
+  const head = ["사용자", "사용자명", "페이지", "처음 연 날", "마지막 연 날", "마지막 연 시각", "연 날수", "설정 받기"];
   const md = [
     `페이지 열기 기록 ${from} ~ ${to} (한국시간, 사용자×페이지 버전, v1 = 옛 페이지) — 2026-11-06 배포 이후분만 있습니다`,
     "",
