@@ -365,6 +365,7 @@ async function configResult(args, caller) {
   const out = Object.assign({}, CATALOG);
   if (page) V1_ONLY.forEach(k => { delete out[k]; });
   else V2_KEYS.forEach(k => { delete out[k]; });
+  delete out.recopy_notified; // 운영 현황 전용(사람 식별자) — 페이지에는 보내지 않는다
   if (page) out.notices = noticesFor(caller, page);
   if (page && Number(page) >= 3 && Array.isArray(out.agents_v2)) {
     out.agents_v2 = out.agents_v2.map(a => { const b = Object.assign({}, a); if (typeof b.rules === "string") { b.rules_len = b.rules.length; delete b.rules; } return b; });
@@ -552,7 +553,13 @@ async function openReport(from, to) {
     seen.add(l);
   });
   Object.keys(names).filter(l => !seen.has(l)).sort().forEach(l => out.push({ "사용자": l, "사용자명": names[l], "페이지": "기록 없음", "처음 연 날": "", "마지막 연 날": "", "마지막 연 시각": "", "연 날수": 0, "설정 받기": 0, "근거": "" }));
-  const head = ["사용자", "사용자명", "페이지", "처음 연 날", "마지막 연 날", "마지막 연 시각", "연 날수", "설정 받기", "근거"];
+  // 공지일: 사본을 다시 만들라고 알린 가장 최근 날짜 — 페이지 안 공지(id가 recopy-로 시작, audience에 그 사람)와 다른 경로로 알린 기록(recopy_notified)
+  const notified = {};
+  const putN = (who, day) => { if (who && /^\d{4}-\d{2}-\d{2}$/.test(String(day || "")) && (!notified[who] || day > notified[who])) notified[who] = day; };
+  (CATALOG.notices || []).forEach(n => { if (n && String(n.id || "").startsWith("recopy-") && Array.isArray(n.audience)) n.audience.forEach(w => putN(w, n.from)); });
+  Object.entries(CATALOG.recopy_notified || {}).forEach(([w, day]) => { if (!w.startsWith("_")) putN(w, day); });
+  out.forEach(o => { o["공지일"] = notified[o["사용자"]] || ""; });
+  const head = ["사용자", "사용자명", "페이지", "처음 연 날", "마지막 연 날", "마지막 연 시각", "연 날수", "설정 받기", "근거", "공지일"];
   const md = [
     `페이지 열기 기록 ${from} ~ ${to} (한국시간, 사용자×페이지 버전, v1 = 옛 페이지) — 열기 기록은 2026-11-06 배포 이후분. 그 기간에 연 기록이 없는 사람은 최근 ${usage.RETENTION_DAYS}일 도구 호출 기록에서 마지막으로 쓴 판을 근거 '도구 호출'로 보탭니다(판 번호를 남기기 전 호출뿐이면 '판 확인 불가')`,
     "",
