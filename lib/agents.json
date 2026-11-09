@@ -1,5 +1,5 @@
 {
- "version": "2026-11-09.7",
+ "version": "2026-11-09.8",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -963,11 +963,12 @@
     "#grp-hub .cards { grid-template-columns: 1fr !important; }",
     ".card[data-agent=\"hub\"] { border: 2px solid var(--gold); }",
     ".card[data-agent=\"hub\"] .nm { font-weight: 700; }",
-    "/* 파일 받기 줄 아래 설명(2026-11-09): 대화 종합 보고서와 작성한 보고서의 차이를 늘 보이게. 작성한 보고서 줄은 18판 사본에 class가 없어 바로 앞 줄로 고른다(새 사본은 .export.draft) */",
-    ".export.convo::after, .export.draft::after, .export.convo + .export:not(.convo)::after, .export:not(.convo) + .export:not(.convo)::after { flex-basis: 100%; color: var(--muted); font-size: 12px; font-weight: 400; line-height: 1.5; }",
-    ".export.convo::after { content: \"지금까지의 답변을 모아 보고서 한 편으로 새로 정리합니다. 누르면 그때 작성합니다.\"; }",
-    ".export.convo:has(+ .export:not(.convo))::after { content: \"지금까지의 답변을 모아 보고서 한 편으로 새로 정리합니다. 누르면 그때 작성합니다. 에이전트가 장별로 쓴 보고서 본문은 들어가지 않으니 아래 '작성한 보고서로 받기'에서 받으세요.\"; }",
-    ".export.draft::after, .export.convo + .export:not(.convo)::after, .export:not(.convo) + .export:not(.convo)::after { content: \"에이전트가 장별로 써 둔 보고서 본문을 그대로 파일로 만듭니다.\"; }"
+    "/* 파일 받기 줄 아래 설명(2026-11-09): 채팅 답변·대화 종합 보고서·작성한 보고서의 차이를 늘 보이게. 작성한 보고서 줄은 18판 사본에 class가 없어 인접 줄로 고른다(새 사본은 .export.draft). 파일로 받기 줄 설명은 작성한 보고서 줄이 있는 답변에만 */",
+    ".export.convo::after, .export.draft::after, .export.convo + .export:not(.convo)::after, .export:not(.convo) + .export:not(.convo)::after, .export:not(.convo):not(.draft):has(~ .export.draft)::after, .export:not(.convo):has(+ .export:not(.convo))::after, .export:not(.convo):has(+ .export.convo + .export:not(.convo))::after { flex-basis: 100%; color: var(--muted); font-size: 12px; font-weight: 400; line-height: 1.5; }",
+    ".export:not(.convo):not(.draft):has(~ .export.draft)::after, .export:not(.convo):has(+ .export:not(.convo))::after, .export:not(.convo):has(+ .export.convo + .export:not(.convo))::after { content: \"이 답변에 보이는 내용만 담깁니다. 에이전트가 장별로 쓴 보고서 본문은 아래 '작성한 보고서로 받기'에서 받으세요.\"; }",
+    ".export.convo::after { content: \"지금까지의 채팅 답변들을 모아 보고서 한 편으로 새로 정리합니다. 누르면 그때 작성합니다.\"; }",
+    ".export.convo:has(+ .export:not(.convo))::after { content: \"지금까지의 채팅 답변들을 모아 보고서 한 편으로 새로 정리합니다. 누르면 그때 작성합니다. 장별로 쓴 보고서 본문은 들어가지 않습니다.\"; }",
+    ".export.draft::after, .export.convo + .export:not(.convo)::after, .export:not(.convo) + .export:not(.convo)::after { content: \"에이전트가 장별로 써 둔 보고서 본문 전체를 그대로 파일로 만듭니다. 채팅 답변은 이 본문의 요약이므로, 근거·세부 분석까지 보려면 여기서 받으세요.\"; }"
   ],
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
