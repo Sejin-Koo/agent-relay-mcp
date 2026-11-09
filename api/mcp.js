@@ -386,7 +386,7 @@ const USAGE_TOOL = {
       from: { type: "string", description: "시작일 YYYY-MM-DD (기본: 오늘 포함 최근 30일의 첫날)" },
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
       user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
-      status: { type: "string", enum: ["open", "closed", "all"], description: "issues에서 open: 확인 필요·재발(기본), closed: 개선완료·조치불필요, all: 전체" },
+      status: { type: "string", enum: ["open", "mine", "closed", "all"], description: "issues에서 open: 열린 항목 전체(직접 조치 필요·수정 대기·재발·확인 필요·관찰 중, 기본), mine: 사용자가 할 일만(직접 조치 필요·수정 대기), closed: 개선완료·조치불필요, all: 전체" },
       group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens", "questions", "agent_questions", "day_questions", "via", "web_paths", "day_web_paths"], description: "집계 단위 — web_paths: 사용자×경로(계정 커넥터/업무 에이전트)별 웹 도구 호출과 Tavily·Nimble 외부 요청 수(웹 도구 서버 기록, 2026-11-07 이후분), day_web_paths: 날짜×경로별 같은 값, questions: 사용자×에이전트 질문 수(화면·클라우드 실행 구분, 페이지 17판 이후분 — 통합 질문과 개별 에이전트 중 어디에 묻는지 보는 용도), agent_questions: 에이전트별 질문 수·질문한 사용자 수, day_questions: 날짜×에이전트 질문 수, via: 맡긴 에이전트(주로 통합 질문)×맡은 에이전트별 조회 호출(맡은 에이전트 집계와 중복), opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
@@ -438,15 +438,18 @@ async function failureReport(from, to, user) {
   return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { from, to, group_by: "failures", total_failures: rows.length, rows } };
 }
 
-const STATE_KO = { open: "확인 필요", reopened: "재발", resolved: "개선완료", ignored: "조치불필요" };
+const STATE_KO = { open: "확인 필요", reopened: "재발", pending: "수정 대기", needs_user: "직접 조치 필요", watching: "관찰 중", resolved: "개선완료", ignored: "조치불필요" };
+// 열린 상태 정렬 순서 — 사용자가 할 일(직접 조치·승인)이 먼저
+const OPEN_ORDER = { needs_user: 0, pending: 1, reopened: 2, open: 3, watching: 4 };
 // 실패 원인별 묶음. 열린 것은 열린 건수가 많은 순, 닫힌 것은 최근에 닫은 순.
 async function issueReport(which) {
-  if (!["open", "closed", "all"].includes(which)) throw new Error("status는 open·closed·all 중 하나여야 합니다");
+  if (!["open", "closed", "all", "mine"].includes(which)) throw new Error("status는 open·mine·closed·all 중 하나여야 합니다");
   const names = await usage.readNames();
   const all = await usage.readIssues();
-  const isOpen = i => i.state === "open" || i.state === "reopened";
-  const list = all.filter(i => which === "all" || (which === "open" ? isOpen(i) : !isOpen(i)))
-    .sort((a, b) => (isOpen(a) !== isOpen(b) ? (isOpen(a) ? -1 : 1) : isOpen(a) ? (b.open_count - a.open_count) || (a.last_at < b.last_at ? 1 : -1) : (a.closed_at < b.closed_at ? 1 : -1)));
+  const isOpen = i => i.state in OPEN_ORDER;
+  const isMine = i => i.state === "needs_user" || i.state === "pending";
+  const list = all.filter(i => which === "all" || (which === "mine" ? isMine(i) : which === "open" ? isOpen(i) : !isOpen(i)))
+    .sort((a, b) => (isOpen(a) !== isOpen(b) ? (isOpen(a) ? -1 : 1) : isOpen(a) ? (OPEN_ORDER[a.state] - OPEN_ORDER[b.state]) || (b.open_count - a.open_count) || (a.last_at < b.last_at ? 1 : -1) : (a.closed_at < b.closed_at ? 1 : -1)));
   const kst = iso => { if (!iso) return ""; const d = new Date(new Date(iso).getTime() + 9 * 3600 * 1000).toISOString(); return `${d.slice(0, 10)} ${d.slice(11, 16)}`; };
   const rows = list.map(i => {
     const ag = ((CATALOG && CATALOG.agents_v2) || []).find(x => x.id === i.last_agent);
@@ -455,9 +458,14 @@ async function issueReport(which) {
       "처음": kst(i.first_at), "마지막": kst(i.last_at), "마지막 사용자": names[i.last_caller] || i.last_caller || "", "마지막 에이전트": ag ? ag.name : (i.last_agent || ""),
       "마지막 인자": i.last_args || "", "닫은 시각": kst(i.closed_at), "조치 메모": i.note || "", "링크": i.link || "", "서명": i.sig };
   });
-  const head = which === "closed" ? ["상태", "도구", "오류", "누적 건수", "닫은 시각", "조치 메모", "서명"] : ["상태", "도구", "오류", "열린 건수", "마지막", "마지막 사용자", "서명"];
+  const hasMemo = rows.some(o => o["조치 메모"] || o["링크"]);
+  const head = which === "closed" ? ["상태", "도구", "오류", "누적 건수", "닫은 시각", "조치 메모", "서명"]
+    : ["상태", "도구", "오류", "열린 건수", "마지막", "마지막 사용자", ...(hasMemo ? ["조치 메모", "링크"] : []), "서명"];
   const esc = v => String(v === undefined ? "" : v).replace(/\|/g, "\\|");
-  const label = { open: "개선 필요 오류(확인 필요·재발)", closed: "개선 완료된 오류(개선완료·조치불필요)", all: "오류 전체" }[which];
+  const label = { open: "개선 필요 오류(직접 조치 필요·수정 대기·재발·확인 필요·관찰 중)", mine: "구전무님 확인이 필요한 항목(직접 조치 필요·수정 대기)", closed: "개선 완료된 오류(개선완료·조치불필요)", all: "오류 전체" }[which];
+  // 열린 항목 상태별 건수 한 줄
+  const openAll = all.filter(isOpen);
+  const countLine = openAll.length ? "열린 항목: " + Object.keys(OPEN_ORDER).map(s => [STATE_KO[s], openAll.filter(i => i.state === s).length]).filter(x => x[1]).map(x => `${x[0]} ${x[1]}`).join(" · ") : "";
   let beatLine = "";
   try {
     const b = await usage.readMonitorBeat();
@@ -467,7 +475,7 @@ async function issueReport(which) {
       beatLine = `자동 점검 마지막 실행: ${kst(b.at)}${nums ? ` (${nums})` : ""}${hrs > 48 ? " — ⚠ 48시간 넘게 실행되지 않음(점검 저장소의 Actions 확인 필요)" : ""}`;
     } else beatLine = "자동 점검 실행 기록 없음";
   } catch (e) { beatLine = ""; }
-  const md = [`${label} — ${rows.length}건`, ...(beatLine ? [beatLine] : []), "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...rows.map(o => "| " + head.map(h => esc(o[h])).join(" | ") + " |")];
+  const md = [`${label} — ${rows.length}건`, ...(beatLine ? [beatLine] : []), ...(countLine && which !== "closed" ? [countLine] : []), "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...rows.map(o => "| " + head.map(h => esc(o[h])).join(" | ") + " |")];
   if (!rows.length) md.push("", "해당하는 오류가 없습니다.");
   return { content: [{ type: "text", text: md.join("\n") }], structuredContent: { group_by: "issues", status: which, total: rows.length, rows } };
 }
@@ -480,8 +488,8 @@ const FAILURES_TOOL = {
     type: "object",
     properties: {
       sig: { type: "string", description: "원인 서명(12자리, group_by=issues 결과의 '서명')" },
-      status: { type: "string", enum: ["resolved", "ignored", "open"], description: "resolved: 개선완료, ignored: 조치불필요, open: 다시 열기" },
-      note: { type: "string", description: "조치 내용 한두 줄(300자까지). 닫을 때 적는다" },
+      status: { type: "string", enum: ["resolved", "ignored", "open", "pending", "needs_user", "watching"], description: "resolved: 개선완료, ignored: 조치불필요, open: 다시 열기(확인 필요), pending: 수정 대기(PR을 만들어 승인을 기다림 — link에 PR 주소), needs_user: 직접 조치 필요(키·환경변수·외부 서버처럼 사용자가 해야 함 — note에 할 일), watching: 관찰 중(일시 장애로 보고 재발을 지켜봄)" },
+      note: { type: "string", description: "조치 내용·할 일 한두 줄(300자까지). 닫을 때, pending·needs_user·watching으로 둘 때 적는다" },
       link: { type: "string", description: "변경 링크(PR 주소 등, 선택)" }
     },
     required: ["sig", "status"],
@@ -770,7 +778,7 @@ async function callTool(params, caller, page, viaPage, agent) {
     try {
       const a = (params && params.arguments) || {};
       const r = await usage.setIssueStatus(a.sig, a.status, a.note, a.link);
-      return { result: { content: [{ type: "text", text: `오류 ${r.sig}의 상태를 '${r.status === "open" ? "확인 필요" : (STATE_KO[r.status] || r.status)}'(으)로 바꿨습니다.` }], structuredContent: r } };
+      return { result: { content: [{ type: "text", text: `오류 ${r.sig}의 상태를 '${STATE_KO[r.status] || r.status}'(으)로 바꿨습니다.` }], structuredContent: r } };
     } catch (e) {
       return { result: { isError: true, content: [{ type: "text", text: `실패 원인 상태 변경 오류: ${e.message}` }] } };
     }
