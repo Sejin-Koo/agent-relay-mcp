@@ -387,7 +387,7 @@ const USAGE_TOOL = {
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
       user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
       status: { type: "string", enum: ["open", "mine", "closed", "all"], description: "issues에서 open: 열린 항목 전체(직접 조치 필요·수정 대기·재발·확인 필요·관찰 중, 기본), mine: 사용자가 할 일만(직접 조치 필요·수정 대기), closed: 개선완료·조치불필요, all: 전체" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens", "questions", "agent_questions", "day_questions", "via", "web_paths", "day_web_paths"], description: "집계 단위 — web_paths: 사용자×경로(계정 커넥터/업무 에이전트)별 웹 도구 호출과 Tavily·Nimble 외부 요청 수(웹 도구 서버 기록, 2026-11-07 이후분), day_web_paths: 날짜×경로별 같은 값, questions: 사용자×에이전트 질문 수(화면·클라우드 실행 구분, 페이지 17판 이후분 — 통합 질문과 개별 에이전트 중 어디에 묻는지 보는 용도), agent_questions: 에이전트별 질문 수·질문한 사용자 수, day_questions: 날짜×에이전트 질문 수, via: 맡긴 에이전트(주로 통합 질문)×맡은 에이전트별 조회 호출(맡은 에이전트 집계와 중복), opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens", "questions", "agent_questions", "day_questions", "via", "web_paths", "day_web_paths", "web_vendor"], description: "집계 단위 — web_vendor: Tavily·Nimble 회사가 집계한 이번 달 사용량(계정 전체 / 웹 도구 서버 전용 키 / 그 밖 — 계정 채팅에서 Tavily·Nimble 커넥터를 직접 부른 것 등. Tavily는 크레딧, Nimble은 요청 수. from·to는 쓰지 않음), web_paths: 사용자×경로(계정 커넥터/업무 에이전트)별 웹 도구 호출과 Tavily·Nimble 외부 요청 수(웹 도구 서버 기록, 2026-11-07 이후분), day_web_paths: 날짜×경로별 같은 값, questions: 사용자×에이전트 질문 수(화면·클라우드 실행 구분, 페이지 17판 이후분 — 통합 질문과 개별 에이전트 중 어디에 묻는지 보는 용도), agent_questions: 에이전트별 질문 수·질문한 사용자 수, day_questions: 날짜×에이전트 질문 수, via: 맡긴 에이전트(주로 통합 질문)×맡은 에이전트별 조회 호출(맡은 에이전트 집계와 중복), opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -610,6 +610,15 @@ async function webPathReport(from, to, by) {
   const title = `웹 도구 경로별 사용 ${from} ~ ${to} (한국시간, ${by} 기준) — 계정은 계정 채팅의 웹 도구 커넥터, 업무 에이전트는 에이전트 페이지. Tavily·Nimble 커넥터를 계정 채팅에서 직접 부른 것과 기본 웹 검색은 포함되지 않음. 2026-11-07 이후분`;
   return mdTable(title, head, out, { from, to, group_by: by, rows: out });
 }
+// Tavily·Nimble 회사 측 사용량 — 키를 가진 웹 도구 서버의 관리자 전용 도구(web_vendor_usage)를 중계 서버 내부 키로 부른다.
+// 이 도구는 backends.js의 web 도구 목록에 넣지 않는다(에이전트·사용자에게 열리지 않게 — relay_usage는 관리자 전용).
+async function webVendorReport() {
+  const msg = await rpcToBackend(BACKENDS.web, "tools/call", { name: "web_vendor_usage", arguments: {} }, 40000, null);
+  if (msg.error) throw new Error(`웹 도구 서버: ${msg.error.message}`);
+  const r = msg.result || {};
+  if (r.isError) throw new Error(((r.content || [])[0] || {}).text || "웹 도구 서버 오류");
+  return { content: r.content || [], structuredContent: Object.assign({ group_by: "web_vendor" }, r.structuredContent || {}) };
+}
 function mdTable(title, head, out, sc) {
   const md = [title, "", "| " + head.join(" | ") + " |", "|" + head.map(() => "---").join("|") + "|", ...out.map(o => "| " + head.map(h => o[h]).join(" | ") + " |")];
   if (!out.length) md.push("| " + head.map(() => "-").join(" | ") + " |", "", "이 기간에 기록이 없습니다.");
@@ -628,6 +637,7 @@ async function usageReport(args) {
   if (by === "opens") return openReport(from, to);
   if (["questions", "agent_questions", "day_questions", "via"].includes(by)) return questionReport(from, to, by);
   if (by === "web_paths" || by === "day_web_paths") return webPathReport(from, to, by);
+  if (by === "web_vendor") return webVendorReport();
   const all = await usage.readUsage(from, to);
   const isPage = r => r.tool.startsWith("@page:");
   const isAgent = r => r.tool.startsWith("@agent:");
