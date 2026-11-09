@@ -387,7 +387,7 @@ const USAGE_TOOL = {
       to: { type: "string", description: "종료일 YYYY-MM-DD (기본: 오늘)" },
       user: { type: "string", description: "failures에서 이 사용자(게이트키 식별자)의 실패만 보기" },
       status: { type: "string", enum: ["open", "mine", "closed", "all"], description: "issues에서 open: 열린 항목 전체(직접 조치 필요·수정 대기·재발·확인 필요·관찰 중, 기본), mine: 사용자가 할 일만(직접 조치 필요·수정 대기), closed: 개선완료·조치불필요, all: 전체" },
-      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens", "questions", "agent_questions", "day_questions", "via", "web_paths", "day_web_paths", "web_vendor", "web_vendor_summary", "web_vendor_sources", "web_vendor_daily", "web_vendor_monthly"], description: "집계 단위 — web_vendor_daily: Tavily·Nimble 날짜별 사용(지난달 1일부터 — Nimble은 회사 일별 집계 UTC, Tavily는 매일 저장한 누적값의 전날 대비 차, 저장 시작 전 날짜는 비어 있음), web_vendor_monthly: 월별 합계(최근 3개월 — Tavily는 그 달 마지막 저장값, Nimble은 회사 월 합계, 커넥터 직접·전용 키·본인 키 구분), web_vendor_summary: Tavily·Nimble 서비스별 이번 달(1일~오늘) 사용·무료 제공·사용률·과금 사용·월말 추정, web_vendor_sources: 같은 달의 출처별 내역(계정 채팅 커넥터 직접 호출 / 계정 웹 도구 커넥터 / 업무 에이전트 사용자별 / 본인 키 서버 / 미분류 — 더하면 계정 전체), web_vendor: Tavily·Nimble 회사가 집계한 이번 달 사용량(계정 전체 / 웹 도구 서버 전용 키 / 그 밖 — 계정 채팅에서 Tavily·Nimble 커넥터를 직접 부른 것 등. Tavily는 크레딧, Nimble은 요청 수. from·to는 쓰지 않음), web_paths: 사용자×경로(계정 커넥터/업무 에이전트)별 웹 도구 호출과 Tavily·Nimble 외부 요청 수(웹 도구 서버 기록, 2026-11-07 이후분), day_web_paths: 날짜×경로별 같은 값, questions: 사용자×에이전트 질문 수(화면·클라우드 실행 구분, 페이지 17판 이후분 — 통합 질문과 개별 에이전트 중 어디에 묻는지 보는 용도), agent_questions: 에이전트별 질문 수·질문한 사용자 수, day_questions: 날짜×에이전트 질문 수, via: 맡긴 에이전트(주로 통합 질문)×맡은 에이전트별 조회 호출(맡은 에이전트 집계와 중복), opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 이름표에 있는데 기간 중 기록이 없는 사람은 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
+      group_by: { type: "string", enum: ["user", "user_tool", "day", "day_user", "user_page", "agent", "user_agent", "day_agent", "agent_tool", "failures", "issues", "opens", "questions", "agent_questions", "day_questions", "via", "web_paths", "day_web_paths", "web_vendor", "web_vendor_summary", "web_vendor_sources", "web_vendor_daily", "web_vendor_monthly"], description: "집계 단위 — web_vendor_daily: Tavily·Nimble 날짜별 사용(지난달 1일부터 — Nimble은 회사 일별 집계 UTC, Tavily는 매일 저장한 누적값의 전날 대비 차, 저장 시작 전 날짜는 비어 있음), web_vendor_monthly: 월별 합계(최근 3개월 — Tavily는 그 달 마지막 저장값, Nimble은 회사 월 합계, 커넥터 직접·전용 키·본인 키 구분), web_vendor_summary: Tavily·Nimble 서비스별 이번 달(1일~오늘) 사용·무료 제공·사용률·과금 사용·월말 추정, web_vendor_sources: 같은 달의 출처별 내역(계정 채팅 커넥터 직접 호출 / 계정 웹 도구 커넥터 / 업무 에이전트 사용자별 / 본인 키 서버 / 미분류 — 더하면 계정 전체), web_vendor: Tavily·Nimble 회사가 집계한 이번 달 사용량(계정 전체 / 웹 도구 서버 전용 키 / 그 밖 — 계정 채팅에서 Tavily·Nimble 커넥터를 직접 부른 것 등. Tavily는 크레딧, Nimble은 요청 수. from·to는 쓰지 않음), web_paths: 사용자×경로(계정 커넥터/업무 에이전트)별 웹 도구 호출과 Tavily·Nimble 외부 요청 수(웹 도구 서버 기록, 2026-11-07 이후분), day_web_paths: 날짜×경로별 같은 값, questions: 사용자×에이전트 질문 수(화면·클라우드 실행 구분, 페이지 17판 이후분 — 통합 질문과 개별 에이전트 중 어디에 묻는지 보는 용도), agent_questions: 에이전트별 질문 수·질문한 사용자 수, day_questions: 날짜×에이전트 질문 수, via: 맡긴 에이전트(주로 통합 질문)×맡은 에이전트별 조회 호출(맡은 에이전트 집계와 중복), opens: 사용자×페이지 버전별로 페이지를 연 기록(처음·마지막 연 날, 연 날수, 설정 받기 횟수 — 질문하지 않고 열어만 본 사본도 나옴, 2026-11-06 배포 이후분. 기간 중 연 기록이 없는 사람은 최근 90일 도구 호출 기록에서 마지막으로 쓴 판을 근거 '도구 호출'로 보탬(판 번호 없는 옛 호출뿐이면 '판 확인 불가'), 둘 다 없으면 '기록 없음' 행), issues: 실패 원인별 묶음(상태 확인 필요·재발·개선완료·조치불필요, status로 거름), failures: 실패한 호출 한 건씩(시각·사용자·에이전트·도구·소요·오류 문구·인자 요약, 2026-11-02 배포 이후 실패분부터), user: 사용자별(기본), user_tool: 사용자×도구, day: 날짜별, day_user: 날짜×사용자, user_page: 사용자×페이지 버전(v1 = 옛 페이지), agent: 에이전트별, user_agent: 사용자×에이전트, day_agent: 날짜×에이전트, agent_tool: 에이전트×도구(에이전트 구분은 에이전트 id를 함께 보내는 페이지 사본부터 기록되고, 그 전 호출은 (미구분))" }
     },
     additionalProperties: false
   },
@@ -531,12 +531,30 @@ async function openReport(from, to) {
   }
   const list = [...agg.values()].sort((x, y) => (x.caller < y.caller ? -1 : x.caller > y.caller ? 1 : y.last < x.last ? -1 : y.last > x.last ? 1 : 0));
   // 마지막 연 시각은 기간 끝보다 늦을 수 있어(기간을 과거로 잡은 경우) 그 판의 마지막 연 날과 날짜가 같을 때만 쓴다
-  const out = list.map(a => ({ "사용자": a.caller, "사용자명": names[a.caller] || "", "페이지": a.page, "처음 연 날": a.first, "마지막 연 날": a.last, "마지막 연 시각": a.at && a.at.slice(0, 10) === a.last ? a.at : "", "연 날수": a.days.size, "설정 받기": a.n }));
+  const out = list.map(a => ({ "사용자": a.caller, "사용자명": names[a.caller] || "", "페이지": a.page, "처음 연 날": a.first, "마지막 연 날": a.last, "마지막 연 시각": a.at && a.at.slice(0, 10) === a.last ? a.at : "", "연 날수": a.days.size, "설정 받기": a.n, "근거": "페이지 열기" }));
   const seen = new Set(list.map(a => a.caller));
-  Object.keys(names).filter(l => !seen.has(l)).sort().forEach(l => out.push({ "사용자": l, "사용자명": names[l], "페이지": "기록 없음", "처음 연 날": "", "마지막 연 날": "", "마지막 연 시각": "", "연 날수": 0, "설정 받기": 0 }));
-  const head = ["사용자", "사용자명", "페이지", "처음 연 날", "마지막 연 날", "마지막 연 시각", "연 날수", "설정 받기"];
+  // 기간 중 연 기록이 없는 사람은 도구 호출 기록(u:<날짜>:<사용자>의 @page:<판>)에서 마지막으로 쓴 판을 찾는다(2026-11-10).
+  // 열기 기록은 2026-11-06 밤부터라 그 전에만 쓴 사람이 '기록 없음'으로 빠지던 것을 메우려는 것. 보관 기간(RETENTION_DAYS) 전체를 본다.
+  // 마지막 사용일에 판 표시가 없으면(판 번호를 남기기 전 호출) '판 확인 불가'
+  const back = new Date(new Date(`${to}T00:00:00Z`).getTime() - (usage.RETENTION_DAYS - 1) * 86400000).toISOString().slice(0, 10);
+  const calls = await usage.readUsage(back, to);
+  const lastUse = new Map();
+  for (const r of calls) {
+    if (seen.has(r.caller) || r.calls <= 0) continue;
+    let u = lastUse.get(r.caller);
+    if (!u || r.date > u.date) { u = { date: r.date, pages: new Map() }; lastUse.set(r.caller, u); }
+    if (r.date === u.date && r.tool.startsWith("@page:")) u.pages.set(r.tool.slice(6), (u.pages.get(r.tool.slice(6)) || 0) + r.calls);
+  }
+  const pgNum = v => (/^\d+$/.test(v) ? Number(v) : v === "v1" ? 0.5 : -1);
+  [...lastUse.keys()].sort().forEach(l => {
+    const u = lastUse.get(l), pgs = [...u.pages.keys()].filter(v => v !== "test").sort((x, y) => pgNum(y) - pgNum(x));
+    out.push({ "사용자": l, "사용자명": names[l] || "", "페이지": pgs[0] || "판 확인 불가", "처음 연 날": "", "마지막 연 날": u.date, "마지막 연 시각": "", "연 날수": 0, "설정 받기": 0, "근거": "도구 호출" });
+    seen.add(l);
+  });
+  Object.keys(names).filter(l => !seen.has(l)).sort().forEach(l => out.push({ "사용자": l, "사용자명": names[l], "페이지": "기록 없음", "처음 연 날": "", "마지막 연 날": "", "마지막 연 시각": "", "연 날수": 0, "설정 받기": 0, "근거": "" }));
+  const head = ["사용자", "사용자명", "페이지", "처음 연 날", "마지막 연 날", "마지막 연 시각", "연 날수", "설정 받기", "근거"];
   const md = [
-    `페이지 열기 기록 ${from} ~ ${to} (한국시간, 사용자×페이지 버전, v1 = 옛 페이지) — 2026-11-06 배포 이후분만 있습니다`,
+    `페이지 열기 기록 ${from} ~ ${to} (한국시간, 사용자×페이지 버전, v1 = 옛 페이지) — 열기 기록은 2026-11-06 배포 이후분. 그 기간에 연 기록이 없는 사람은 최근 ${usage.RETENTION_DAYS}일 도구 호출 기록에서 마지막으로 쓴 판을 근거 '도구 호출'로 보탭니다(판 번호를 남기기 전 호출뿐이면 '판 확인 불가')`,
     "",
     "| " + head.join(" | ") + " |",
     "|" + head.map(() => "---").join("|") + "|",
