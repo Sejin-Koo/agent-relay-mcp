@@ -1,5 +1,5 @@
 {
- "version": "2026-11-10.2",
+ "version": "2026-11-10.3",
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -4486,7 +4486,7 @@
   "ct_landscape": "{조건 하나 이상(condition·intervention·sponsor·query…), max_scan(≤5000), top} 단계·상태·상위 스폰서·상위 약물·시작연도별 집계. 응답의 잘림이 true면 일부 표본이다.",
   "ct_company_pipeline": "{companies[](필수, 표기 여러 개), status[], lead_only, drug_only, max_scan, max_drugs} 주관 시험을 약물별로 묶은 파이프라인(최고 단계·적응증·상태·최신 시험). 스폰서표기로 실제 잡힌 표기를 확인한다.",
   "fda_approvals": "{brand, ingredient, sponsor, application, date_from/date_to, submission_type(ORIG|SUPPL), status_code, max_results, max_scan} 미국 승인 이력. 기간 조건은 제출 단위로 다시 걸러 조건일치_제출에 담는다. 스폰서는 FDA 대문자 표기의 첫 단어로 찾는다.",
-  "fda_label": "{brand | generic | set_id, sections[], max_chars, max_results} 허가사항 섹션별 발췌(적응증·박스경고·용법·금기·경고·이상반응·작용기전 등).",
+  "fda_label": "{brand | generic | set_id, sections[], max_chars, max_results} 허가사항 섹션별 발췌. sections는 짧은 이름만: indications·boxed_warning·dosage·contraindications·warnings·adverse_reactions·mechanism·clinical_studies·description·pregnancy·pediatric·pharmacokinetics·how_supplied·drug_interactions(openFDA 원 필드명 indications_and_usage 등이 아님).",
   "fda_adverse_events": "{drug(필수), group_by(reaction|country|sex|serious|indication|year|reporter), reaction, date_from/date_to, serious, top} FAERS 이상사례 보고 집계. 자발보고라 인과관계·발생률이 아니다.",
   "fda_recalls": "{kind(drug|device|food), firm, product, classification, status, date_from/date_to, max_results} 회수 보고, 보고일 최신순.",
   "ema_search": "{dataset(medicines|orphan|pip|shortages|referrals|dhpc), query(공백=AND), filters{}, date_field, date_from/date_to, sort, max_results(≤200), offset} EMA 공개 데이터 통파일을 필터링한다. 응답의 데이터기준시각을 함께 밝힌다.",
