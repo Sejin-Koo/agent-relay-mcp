@@ -519,8 +519,10 @@ const MONITOR_TOOL = {
 
 // 페이지를 연 기록(relay_config) — 사용자×페이지 버전. 질문하지 않아 도구 호출이 없는 사람도 사본을 열었는지 볼 수 있다.
 async function openReport(from, to) {
-  const rows = await usage.readOpens(from, to);
-  const names = await usage.readNames();
+  // 사람이 아닌 호출자(자동 점검 키, 대화 세션의 로컬 시험)는 접속 현황에서 뺀다(2026-11-10 사용자 요청)
+  const internal = c => isMonitor(c) || c === "local" || c === "monitor";
+  const rows = (await usage.readOpens(from, to)).filter(r => !internal(r.caller));
+  const names = Object.fromEntries(Object.entries(await usage.readNames()).filter(([k]) => !internal(k)));
   const agg = new Map();
   for (const r of rows) {
     const id = r.caller + "\u0000" + r.page;
@@ -541,7 +543,7 @@ async function openReport(from, to) {
   const calls = await usage.readUsage(back, to);
   const lastUse = new Map();
   for (const r of calls) {
-    if (seen.has(r.caller) || r.calls <= 0) continue;
+    if (seen.has(r.caller) || r.calls <= 0 || internal(r.caller)) continue;
     let u = lastUse.get(r.caller);
     if (!u || r.date > u.date) { u = { date: r.date, pages: new Map() }; lastUse.set(r.caller, u); }
     if (r.date === u.date && r.tool.startsWith("@page:")) u.pages.set(r.tool.slice(6), (u.pages.get(r.tool.slice(6)) || 0) + r.calls);
