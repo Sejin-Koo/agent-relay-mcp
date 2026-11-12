@@ -96,7 +96,7 @@ if (cat.agents_v2) {
     // 이전 대화 목록 접기(페이지 15판부터): 켜기·처음 상태(true면 접힌 채로 시작)
     // 머리글 판 번호(페이지 20판부터 페이지가 그림, 19판 이하는 서버 applyPageVersion): 끄기
     if (cat.features.version_tag !== undefined && typeof cat.features.version_tag !== "boolean") e2.push("features.version_tag는 true|false");
-    for (const k of ["version_latest", "bg_quiet"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true|false`);
+    for (const k of ["version_latest", "bg_quiet", "bg_quiet_btns", "bg_late"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true|false`);
     if (cat.features.bg_warn_min !== undefined && !(Number(cat.features.bg_warn_min) > 0 && (!cat.features.bg_stale_min || Number(cat.features.bg_warn_min) < Number(cat.features.bg_stale_min)))) e2.push("features.bg_warn_min은 0보다 크고 bg_stale_min보다 작은 수");
     // 받지 못한 파일 보관(페이지 19판부터): 켜기·받으면 지우기
     for (const k of ["hist_fold", "hist_fold_default", "bg_draft", "file_keep", "file_keep_drop_on_get"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
