@@ -240,6 +240,7 @@ if (cat.agents_v2) {
           if (b.action === "agent" && !v2ids.has(b.agent)) e2.push(`${w}: agent 대상 없음 ${b.agent}`);
           if (b.action === "group" && !gids2.has(b.group)) e2.push(`${w}: group 대상 없음 ${b.group}`);
           if (b.action === "link" && !/^https:\/\/[^\s"'<>]+$/.test(String(b.url || ""))) e2.push(`${w}: url은 https 주소`);
+          if (b.new !== undefined && typeof b.new !== "boolean") e2.push(`${w}: new는 true/false`);
           if (b.q !== undefined && !(typeof b.q === "string" && b.q.length <= 2000)) e2.push(`${w}: q는 2000자 이내 글`);
           (b.agents || []).forEach(id => { if (!v2ids.has(id)) e2.push(`${w}: agents에 없는 에이전트 ${id}`); });
           if (b.agents && b.slot !== "pane") e2.push(`${w}: agents(에이전트별 표시)는 slot pane에서만`);
