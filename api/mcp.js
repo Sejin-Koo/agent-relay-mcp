@@ -279,6 +279,35 @@ function verGte(a, b) {
   }
   return true;
 }
+// 머리글 판 번호(2026-11-12 사용자 결정 — 판이 바뀔 때마다 공지하지 않고, 머리글에서 자기 판과 새 판이 있다는 것만 보이게 해
+// 사용자가 필요할 때 스스로 사본을 다시 만든다). 페이지 20판부터는 페이지가 page_latest를 받아 직접 그린다(문구 ui_v2.msgs ver_*).
+// 그 전 판(8~19판)은 페이지를 고칠 수 없으므로 서버가 판별로 채운다: 이름표(ui_v2.tag)를 판 번호로 바꾸고, 새 판이 있으면
+// '새 판 쓰는 법' 단추(서버 단추는 9판부터 — 누르면 첫 화면 '사용 준비'를 펼침)와 사용 준비 첫 단계로 바꾸는 법을 보인다.
+function applyPageVersion(out, page) {
+  const pv = CATALOG.page_version, latest = String(CATALOG.page_latest || "");
+  if (!pv || typeof pv !== "object" || !latest || !out.ui_v2) return;
+  if (verGte(page, String(pv.native_min || "20"))) return;
+  const url = /^https:\/\/[^\s"'<>()]+$/.test(String(out.ui_v2.version_url || "")) ? out.ui_v2.version_url : "";
+  const vars = { page, latest, url };
+  const fill = t => String(t || "").replace(/\{(page|latest|url)\}/g, (all, k) => vars[k]);
+  const old = !verGte(page, latest);
+  const ui = out.ui_v2 = Object.assign({}, out.ui_v2);
+  ui.tag = fill(old ? pv.tag_old : pv.tag);
+  const css = [];
+  if (Array.isArray(pv.css)) css.push(...pv.css);
+  if (old) {
+    if (verGte(page, "9") && pv.button) {
+      ui.buttons = (Array.isArray(ui.buttons) ? ui.buttons : []).concat([{ id: "newver", slot: "top", action: "setup", label: fill(pv.button).slice(0, 24), title: fill(pv.button_title).slice(0, 120) }]);
+      if (Array.isArray(pv.css_button)) css.push(...pv.css_button);
+    }
+    if (pv.step_title && ui.setup && Array.isArray(ui.setup.steps)) {
+      const step = { title: fill(pv.step_title), body: fill(pv.step_body) };
+      if (pv.step_note) step.note = fill(pv.step_note);
+      ui.setup = Object.assign({}, ui.setup, { steps: [step].concat(ui.setup.steps) });
+    }
+  }
+  if (css.length && verGte(page, "8")) ui.css = [].concat(ui.css || []).concat(css);
+}
 function noticesFor(caller, page) {
   return (CATALOG.notices || []).filter(n => {
     // page_min: 그 버전 이상 페이지에만(새 기능 안내를 옛 사본에 띄우지 않으려고)
@@ -367,6 +396,8 @@ async function configResult(args, caller) {
   else V2_KEYS.forEach(k => { delete out[k]; });
   delete out.recopy_notified; // 운영 현황 전용(사람 식별자) — 페이지에는 보내지 않는다
   if (page) out.notices = noticesFor(caller, page);
+  if (page) applyPageVersion(out, page);
+  delete out.page_version; // 판별로 채운 뒤에는 보낼 필요가 없다
   if (page && Number(page) >= 3 && Array.isArray(out.agents_v2)) {
     out.agents_v2 = out.agents_v2.map(a => { const b = Object.assign({}, a); if (typeof b.rules === "string") { b.rules_len = b.rules.length; delete b.rules; } return b; });
     out.rules_lazy = true;

@@ -94,12 +94,26 @@ if (cat.agents_v2) {
     if (hp !== undefined && !(Number.isInteger(hp) && hp >= 1 && hp <= 8)) e2.push("features.hub_parallel은 1~8 정수");
     if (hm !== undefined && !(Number.isInteger(hm) && hm >= 1 && hm <= 10)) e2.push("features.hub_max는 1~10 정수");
     // 이전 대화 목록 접기(페이지 15판부터): 켜기·처음 상태(true면 접힌 채로 시작)
+    // 머리글 판 번호(페이지 20판부터 페이지가 그림, 19판 이하는 서버 applyPageVersion): 끄기
+    if (cat.features.version_tag !== undefined && typeof cat.features.version_tag !== "boolean") e2.push("features.version_tag는 true|false");
     // 받지 못한 파일 보관(페이지 19판부터): 켜기·받으면 지우기
     for (const k of ["hist_fold", "hist_fold_default", "bg_draft", "file_keep", "file_keep_drop_on_get"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
     // 숫자 설정(페이지 14판부터, 페이지 applyNumbers와 같은 범위 — 벗어나면 페이지가 기본값을 쓴다)
     const NUMS = { hist_days: [7, 365], hist_list: [20, 300], hist_board_show: [1, 30], past_scan: [5, 100], past_read: [2000, 60000], convo_in_max: [20000, 400000], ctx_turns: [2, 40], ctx_last_max: [2000, 60000], ctx_prev_max: [500, 20000], draft_days: [1, 365], file_keep_days: [1, 90], file_keep_max: [1, 30] };
     for (const [k, [lo, hi]] of Object.entries(NUMS)) { const v = cat.features[k]; if (v !== undefined && !(typeof v === "number" && v >= lo && v <= hi)) e2.push(`features.${k}는 ${lo}~${hi} 숫자(벗어나면 페이지가 기본값을 씀)`); }
   }
+  // 최신 판 번호와 옛 사본용 판 번호 문구(2026-11-12). 원본을 새 판으로 게시하면 page_latest를 올린다
+  if (cat.page_latest !== undefined && !/^\d{1,3}$/.test(String(cat.page_latest))) e2.push("page_latest는 판 번호(숫자 글)");
+  if (cat.page_version !== undefined) {
+    const pv = cat.page_version;
+    if (!pv || typeof pv !== "object" || Array.isArray(pv)) e2.push("page_version은 객체");
+    else {
+      for (const k of ["native_min", "tag", "tag_old", "button", "button_title", "step_title", "step_body", "step_note"]) if (pv[k] !== undefined && typeof pv[k] !== "string") e2.push(`page_version.${k}는 글`);
+      if (pv.button && pv.button.replace(/\{\w+\}/g, "99").length > 24) e2.push("page_version.button은 24자 이내(서버 단추 이름 한도)");
+      for (const k of ["css", "css_button"]) if (pv[k] !== undefined && !(Array.isArray(pv[k]) && pv[k].every(x => typeof x === "string" && !/url\(|image-set\(|@import|@font-face|expression\(|javascript:|\\/i.test(x)))) e2.push(`page_version.${k}는 CSS 줄 배열(바깥 자원·역슬래시 금지)`);
+    }
+  }
+  if (cat.ui_v2 && cat.ui_v2.version_url !== undefined && !/^https:\/\/[^\s"'<>()]+$/.test(String(cat.ui_v2.version_url))) e2.push("ui_v2.version_url은 https 주소");
   if (cat.features && cat.features.background) for (const k of ["bg_stale_min", "bg_start_min", "bg_keep_days"]) if (!(Number(cat.features[k]) > 0)) e2.push(`features.${k}는 양수`);
   if (P2.convo) {
     for (const k of ["plan", "section"]) if (P2.convo[k] !== undefined && !(Array.isArray(P2.convo[k]) && P2.convo[k].length && P2.convo[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.convo.${k}는 문장 배열`);
