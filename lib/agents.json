@@ -1,6 +1,6 @@
 {
- "version": "2026-11-12.9",
- "page_latest": "23",
+ "version": "2026-11-12.10",
+ "page_latest": "24",
  "page_version": {
   "_설명": "머리글 판 번호 — 19판 이하 사본용(서버가 판별로 채움, api/mcp.js applyPageVersion). 20판부터는 페이지가 page_latest와 ui_v2.msgs ver_*로 직접 그린다. 자리표시 {page}·{latest}·{url}(ui_v2.version_url). 원본을 새 판으로 게시하면 page_latest를 올리고 설정 version도 올린다",
   "native_min": "20",
@@ -1042,6 +1042,9 @@
    "file_drafting": "{fmt} 원고를 정리하는 중…",
    "file_raw_md": " (답변 원문 그대로)",
    "file_md_fig": "MD에는 그래프 대신 자료 표를 넣었습니다(그래프는 Word·PDF로 받으세요).",
+   "file_figxlsx_saved": "그래프 원본도 저장했습니다:",
+   "file_figxlsx_fail": "그래프 원본(그림자료 엑셀)은 만들지 못했습니다. Excel로 받기를 누르면 같은 그래프 시트가 들어 있습니다.",
+   "file_figxlsx_skip": "그래프 원본(그림자료 엑셀)은 저장하지 않았습니다.",
    "file_raw_conv": " (답변 원문 그대로 변환)",
    "file_no_items": "파일에 담을 답변이 없습니다.",
    "report_plan": "답변 {n}개를 읽고 보고서 목차를 짜는 중…",
@@ -4230,6 +4233,7 @@
   "bg_quiet_btns": true,
   "bg_late": true,
   "version_latest": false,
+  "fig_xlsx": true,
   "bg_start_min": 5,
   "bg_keep_days": 7,
   "bg_draft": true,

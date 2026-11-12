@@ -1,9 +1,9 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-11-12.4",
+ "version": "2026-11-12.5",
  "copied": "2026-11-12",
  "files": {
-  "build.js": "eab0a09e900252a07d3d5a7c6bbf6589a3c34ee91811d7c685380d6c3060e45d",
+  "build.js": "5b83703c44f7de521f160a7ebf5d605e36e6a5603c5ed784a935f3e29cf9a2e7",
   "chart-spec.js": "df4f00ae1d360d8be8a8aa6fd3f3d9d0fea84ec53e8e197c7894e78224752b5f",
   "diagram.js": "eccf4c16a380be1ca3907f387ff76f77e787994ec9d5f696cb3a8d7b9be4d860",
   "docexport.js": "faddb0cfff24ba64c882ef0db3941a2389a7b4c83a91f4c09a851c9ce7152d57",
