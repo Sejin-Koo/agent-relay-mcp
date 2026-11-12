@@ -1,12 +1,12 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-11-12.1",
+ "version": "2026-11-12.2",
  "copied": "2026-11-12",
  "files": {
-  "build.js": "36b636c4bf4328f2b4e46822b573053d03c0e2576dddd33be5f1b3926a4d9813",
+  "build.js": "7b941734e592a89a21f36b72a9b449d42d3eb752e830bf45762c472890ab42d9",
   "chart-spec.js": "df4f00ae1d360d8be8a8aa6fd3f3d9d0fea84ec53e8e197c7894e78224752b5f",
   "diagram.js": "eccf4c16a380be1ca3907f387ff76f77e787994ec9d5f696cb3a8d7b9be4d860",
-  "docexport.js": "db494f1d3b53aeac01d71ad59528024f09e95284d69166979677f0ff1673dfd2",
+  "docexport.js": "4bb1c13419c482992fa6b4a98f458315303bcb8fe19b8935754ce5f29248d9fe",
   "hwpx-tpl.json": "18615b732c0a40c3092263ea0762ad3465cbf73a555f29e0c144fd6a774e60e6",
   "pdf.js": "a085ff9f05222c6211c64787f177106dadfac78a7307a7eb63cdfd6bcf515562",
   "pptx-chart.js": "6f901f5f799bf0e4053d89999f7e1f6709fe05ba0e422fbd42b837ef86d43f0d",
