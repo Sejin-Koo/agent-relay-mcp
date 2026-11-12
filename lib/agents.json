@@ -1,5 +1,23 @@
 {
- "version": "2026-11-12.2",
+ "version": "2026-11-12.3",
+ "page_latest": "20",
+ "page_version": {
+  "_설명": "머리글 판 번호 — 19판 이하 사본용(서버가 판별로 채움, api/mcp.js applyPageVersion). 20판부터는 페이지가 page_latest와 ui_v2.msgs ver_*로 직접 그린다. 자리표시 {page}·{latest}·{url}(ui_v2.version_url). 원본을 새 판으로 게시하면 page_latest를 올리고 설정 version도 올린다",
+  "native_min": "20",
+  "tag": "{page}판",
+  "tag_old": "{page}판 · 새 판({latest}판) 있음",
+  "button": "새 판 쓰는 법",
+  "button_title": "누르면 첫 화면 '사용 준비'에서 새 판으로 바꾸는 법을 보여 줍니다",
+  "step_title": "새 판으로 바꾸기 (지금 {page}판 → 최신 {latest}판)",
+  "step_body": "① 지금 사본에서 '이전 대화 → 모든 대화 내보내기'로 대화를 파일로 받아 둡니다. ② 원본 주소를 엽니다: {url} ③ 공유 메뉴의 '복제'로 새 사본을 만들고, 커넥터 허용 창이 뜨면 허용합니다. ④ 새 사본에서 '이전 대화 → 불러오기'로 ①의 파일을 불러옵니다. ⑤ 새 사본이 잘 되면 옛 사본은 지워도 됩니다.",
+  "step_note": "커넥터('업무 에이전트 MCP')는 지우지 말고 그대로 두세요. 필요할 때 편하실 때 바꾸시면 됩니다.",
+  "css": [
+   "@media (max-width: 760px) { .topbar-in { flex-wrap: wrap; row-gap: 2px; } .topbar-in > .brand { flex: none; } .topbar-in > .brand-tag { display: inline-block; } }"
+  ],
+  "css_button": [
+   ".topbar-in > .brand { order: -3; } .topbar-in > .brand-tag { order: -2; } .topbar-in > [data-srv-btn=\"newver\"] { order: -1; border-left: 0; padding-left: 0; color: var(--gold); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }"
+  ]
+ },
  "ui": {
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
@@ -1067,6 +1085,12 @@
    "bg_why_files": "첨부 파일이 있는 질문은 파일을 이 화면에서 읽기 때문에 클라우드 검색을 하지 않습니다.",
    "bg_why_draft": "문서 초안을 쌓아 가는 에이전트는 클라우드 실행을 하지 않습니다.",
    "draft_save": "작성한 보고서로 받기({n}자)",
+   "ver_label": "{page}판",
+   "ver_label_title": "지금 쓰는 사본은 {page}판입니다.",
+   "ver_label_title_old": "지금 쓰는 사본은 {page}판이고, 최신은 {latest}판입니다.",
+   "ver_new": "새 판({latest}판) 쓰는 법",
+   "ver_guide_title": "새 판으로 바꾸는 법",
+   "ver_guide_body": "지금 쓰시는 사본은 **{page}판**이고, 최신은 **{latest}판**입니다. 새 판의 기능은 사본을 다시 만들어야 쓸 수 있습니다. 필요할 때 편하실 때 바꾸시면 됩니다.\n\n1. 지금 사본에서 **이전 대화 → 모든 대화 내보내기**로 대화를 파일로 받아 둡니다.\n2. [원본 열기]({url})를 누릅니다.\n3. 원본 화면의 공유 메뉴에서 **복제**를 눌러 새 사본을 만듭니다. 처음 열 때 커넥터 허용 창이 뜨면 허용합니다.\n4. 새 사본에서 **이전 대화 → 불러오기**로 1번에서 받은 파일을 불러옵니다.\n5. 새 사본이 잘 되면 옛 사본은 지워도 됩니다. 커넥터('업무 에이전트 MCP')는 지우지 말고 그대로 두세요.\n\n원본 링크가 열리지 않으면 이 주소를 복사해 브라우저 주소창에 붙여 넣으세요: `{url}`",
    "keep_note": "저장 창이 닫혀 파일을 받지 못했습니다. 만든 파일은 {days}일 동안 보관되니 아래 '다시 받기'로 받으세요.",
    "keep_note_mem": "저장 창이 닫혀 파일을 받지 못했습니다. 이 화면을 닫기 전까지 아래 '다시 받기'로 받을 수 있습니다.",
    "keep_draft_note": "저장 창이 닫혀 파일을 받지 못했습니다. 보고서는 이 대화에 보관되어 있으니 다시 누르면 바로 받을 수 있습니다.",
@@ -1123,6 +1147,7 @@
    ]
   },
   "layout": "cards",
+  "version_url": "https://claude.ai/artifact/6FLpkQEVSJLmkYoQEF2syx",
   "update_title": "새 버전 페이지가 있습니다",
   "update_message": "이 페이지는 옛 버전입니다. 안내받은 새 페이지 주소를 열어 '복제'로 사본을 만든 뒤 그 사본을 쓰세요."
  },
