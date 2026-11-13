@@ -314,6 +314,8 @@ function noticesFor(caller, page) {
   return (CATALOG.notices || []).filter(n => {
     // page_min: 그 버전 이상 페이지에만(새 기능 안내를 옛 사본에 띄우지 않으려고)
     if (n && n.page_min && !(page && verGte(page, n.page_min))) return false;
+    // page_max: 그 버전 이하 페이지에만(사본을 다시 만들라는 공지가 새 사본에는 뜨지 않게)
+    if (n && n.page_max && !(page && verGte(n.page_max, page))) return false;
     const au = n && n.audience;
     if (!au || au === "all") return true;
     if (au === "v1") return !page;
