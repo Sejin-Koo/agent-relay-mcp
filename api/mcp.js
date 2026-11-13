@@ -399,6 +399,9 @@ async function configResult(args, caller) {
   delete out.recopy_notified; // 운영 현황 전용(사람 식별자) — 페이지에는 보내지 않는다
   if (page) out.notices = noticesFor(caller, page);
   if (page) applyPageVersion(out, page);
+  // 최신판 확인 창(24판 2026-11-13 수정본부터): 최신 판 안내를 꺼도 실제 최신판 번호·게시 시각은 따로 보낸다(사용자가 확인을 눌렀을 때만 보임)
+  if (page) out.page_latest_info = { v: String(CATALOG.page_latest || ""), at: String(CATALOG.page_published || "") };
+  delete out.page_published;
   // 20판 이상은 page_latest로 새 판을 판단하므로, 최신 판 안내를 끄면 요청한 판을 최신으로 보낸다
   if (page && out.features && out.features.version_latest === false) out.page_latest = String(page);
   delete out.page_version; // 판별로 채운 뒤에는 보낼 필요가 없다

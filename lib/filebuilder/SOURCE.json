@@ -1,6 +1,6 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-11-13.6",
+ "version": "2026-11-13.7",
  "copied": "2026-11-13",
  "files": {
   "build.js": "324ee02840c773f98fa8ec484b148aa2def801912d087e7fa0e0216fd9a78d4a",

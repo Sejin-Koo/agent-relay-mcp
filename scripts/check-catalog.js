@@ -106,6 +106,8 @@ if (cat.agents_v2) {
   }
   // 최신 판 번호와 옛 사본용 판 번호 문구(2026-11-12). 원본을 새 판으로 게시하면 page_latest를 올린다
   if (cat.page_latest !== undefined && !/^\d{1,3}$/.test(String(cat.page_latest))) e2.push("page_latest는 판 번호(숫자 글)");
+  // 최신판 게시 시각(원본을 올릴 때마다 페이지의 PAGE_BUILT와 같은 값으로 고친다)
+  if (cat.page_published !== undefined && !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(String(cat.page_published))) e2.push("page_published는 'YYYY-MM-DD HH:MM'");
   if (cat.page_version !== undefined) {
     const pv = cat.page_version;
     if (!pv || typeof pv !== "object" || Array.isArray(pv)) e2.push("page_version은 객체");

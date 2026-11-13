@@ -1,6 +1,7 @@
 {
- "version": "2026-11-13.5",
+ "version": "2026-11-13.6",
  "page_latest": "24",
+ "page_published": "2026-11-13 14:30",
  "page_version": {
   "_설명": "머리글 판 번호 — 19판 이하 사본용(서버가 판별로 채움, api/mcp.js applyPageVersion). 20판부터는 페이지가 page_latest와 ui_v2.msgs ver_*로 직접 그린다. 자리표시 {page}·{latest}·{url}(ui_v2.version_url). 원본을 새 판으로 게시하면 page_latest를 올리고 설정 version도 올린다",
   "native_min": "20",
@@ -1098,7 +1099,7 @@
    "bg_why_files": "첨부 자료를 활용해 답하는 질문입니다.",
    "bg_why_draft": "문서 초안을 쌓아 가는 에이전트는 클라우드 실행을 하지 않습니다.",
    "draft_save": "작성한 보고서로 받기({n}자)",
-   "ver_label": "{page}판",
+   "ver_label": "현재판 {page}판",
    "ver_label_title": "지금 쓰는 사본은 {page}판입니다.",
    "ver_label_title_old": "지금 쓰는 사본은 {page}판이고, 최신은 {latest}판입니다.",
    "ver_new": "새 판({latest}판) 쓰는 법",
@@ -4248,6 +4249,8 @@
   "export_keep": true,
   "file_no_author": true,
   "fig_upload": true,
+  "ms_keep": true,
+  "ms_keep_days": 7,
   "version_latest": false,
   "fig_xlsx": true,
   "bg_start_min": 5,
