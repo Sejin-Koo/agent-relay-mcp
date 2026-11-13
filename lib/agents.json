@@ -1,7 +1,7 @@
 {
- "version": "2026-11-13.8",
+ "version": "2026-11-13.9",
  "page_latest": "24",
- "page_published": "2026-11-13 14:00",
+ "page_published": "2026-11-13 18:00",
  "page_version": {
   "_설명": "머리글 판 번호 — 19판 이하 사본용(서버가 판별로 채움, api/mcp.js applyPageVersion). 20판부터는 페이지가 page_latest와 ui_v2.msgs ver_*로 직접 그린다. 자리표시 {page}·{latest}·{url}(ui_v2.version_url). 원본을 새 판으로 게시하면 page_latest를 올리고 설정 version도 올린다",
   "native_min": "20",
