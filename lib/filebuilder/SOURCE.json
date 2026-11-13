@@ -1,6 +1,6 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-11-13.12",
+ "version": "2026-11-13.13",
  "copied": "2026-11-13",
  "files": {
   "build.js": "324ee02840c773f98fa8ec484b148aa2def801912d087e7fa0e0216fd9a78d4a",
@@ -10,8 +10,8 @@
   "hwpx-tpl.json": "18615b732c0a40c3092263ea0762ad3465cbf73a555f29e0c144fd6a774e60e6",
   "pdf.js": "61534196ce2b0d1c3522263a0d01b52e3d2cf2284d0c10a9ad44d348f671f481",
   "pptx-chart.js": "6f901f5f799bf0e4053d89999f7e1f6709fe05ba0e422fbd42b837ef86d43f0d",
-  "pptx-native-chart.js": "9a619e9d951588508c6a3a6c47b7c4dcbd05a676fda9a22cac19ed2feac6205a",
-  "xlsx-bar.js": "14c7578235976bf101d6139aa57f2aeb58f150f77a8f4ba2a39aa923fb3b08ef",
+  "pptx-native-chart.js": "d2489042ee5e309d58c80f3e503d5ead88f6f657e8234c08b2b833137c879ee4",
+  "xlsx-bar.js": "47fbe0d3512c9a5e33d1caef66b6234f383ea02d5099aec31f12a6b8e4849ffe",
   "xlsx-chart.js": "dff9189d38e61160c62f4ffd7ccc6d91504c95a504e0eb4a62b0e0f7d2b0a017",
   "xlsx-generic.js": "532db86f9f5ae54dd52438c2c2302405fef4961e8f14b8f0ce6bbb0c069f3a9d",
   "xlsx-valuation.js": "c2d14aa461ce321eb71de2e82a5c222e6011aea7e11f8c6c32c3ce750d16c4a0"
