@@ -1,17 +1,17 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-11-13.10",
+ "version": "2026-11-13.11",
  "copied": "2026-11-13",
  "files": {
   "build.js": "324ee02840c773f98fa8ec484b148aa2def801912d087e7fa0e0216fd9a78d4a",
-  "chart-spec.js": "fecc81cf644d65eaa9f3bdbc9ce2e9890078c643370f64fc074290649145434d",
+  "chart-spec.js": "d2452c664e0d14941b14f36db4a0cfd12fe1568989fde7fb1d9d67d8721362c7",
   "diagram.js": "79813252ba03d0a2a957726c0362b453e6f8fafb7dbe672449851985799bb615",
   "docexport.js": "bee12c2227fb8e3ac13fa568dca85b298fa69a4714d0dc60d75b93658f8a1f17",
   "hwpx-tpl.json": "18615b732c0a40c3092263ea0762ad3465cbf73a555f29e0c144fd6a774e60e6",
   "pdf.js": "61534196ce2b0d1c3522263a0d01b52e3d2cf2284d0c10a9ad44d348f671f481",
   "pptx-chart.js": "6f901f5f799bf0e4053d89999f7e1f6709fe05ba0e422fbd42b837ef86d43f0d",
-  "pptx-native-chart.js": "1d0aadedcf772b7d93cf6cbd2f11ad6be6e57bd3d062c19be7906d192fe55427",
-  "xlsx-bar.js": "8f5206e6d570211ea47879c5dfa1c12a2d106096cef89214727ccc4d6db91e04",
+  "pptx-native-chart.js": "264db14d6c9f228448eec7fb8b1087a1381f8c0cd2957daf46cb11f564dd4efe",
+  "xlsx-bar.js": "7f35b4d7143d3df868aa4b0057549f67e5b9823671309011f8b1a02a6ae5eb5b",
   "xlsx-chart.js": "dff9189d38e61160c62f4ffd7ccc6d91504c95a504e0eb4a62b0e0f7d2b0a017",
   "xlsx-generic.js": "532db86f9f5ae54dd52438c2c2302405fef4961e8f14b8f0ce6bbb0c069f3a9d",
   "xlsx-valuation.js": "c2d14aa461ce321eb71de2e82a5c222e6011aea7e11f8c6c32c3ce750d16c4a0"
