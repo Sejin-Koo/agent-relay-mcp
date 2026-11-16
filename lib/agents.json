@@ -1,5 +1,5 @@
 {
- "version": "2026-11-16.6",
+ "version": "2026-11-16.7",
  "page_latest": "24",
  "page_published": "2026-11-13 21:12",
  "page_version": {
@@ -998,7 +998,8 @@
     ".export.convo:has(+ .export:not(.convo))::after { content: \"지금까지의 채팅 답변들을 모아 보고서 한 편으로 새로 정리합니다. 누르면 그때 작성합니다. 요청하신 보고서는 들어가지 않으니 아래 줄에서 받으세요.\"; }",
     ".export.draft::after, .export.convo + .export:not(.convo)::after, .export:not(.convo) + .export:not(.convo)::after { content: \"요청하신 보고서 전체를 받는 곳입니다. 채팅 답변은 이 보고서의 요약이므로, 근거·세부 분석까지 보려면 여기서 받으세요.\"; }",
     "/* 화면 맨 아래 '저장된 대화' 안내 줄: 고정폭 글꼴 대신 본문 글꼴 */ .foot { font-family: inherit; }",
-    "/* 사용 준비: 실행기 요청 문구 단계(끝에서 두 번째)는 한 줄 전체 폭, 줄바꿈 살림 */ .steps-guide li:nth-last-child(2) { grid-column: 1 / -1; } .steps-guide li:nth-last-child(2) .x { white-space: pre-line; user-select: text; }"
+    "/* 사용 준비: 실행기 요청 문구 단계(끝에서 두 번째)는 한 줄 전체 폭, 요청 문구는 그대로 복사할 상자(남색 바탕·밝은 글자) */ .steps-guide li:nth-last-child(2) { grid-column: 1 / -1; } .steps-guide li:nth-last-child(2) .x { white-space: pre-line; user-select: text; background: var(--navy); color: var(--navy-fg); border-left: 4px solid var(--gold); border-radius: 6px; padding: 10px 14px; font-size: 13px; line-height: 1.6; } .steps-guide li:nth-last-child(2) .x::before { content: \"아래 문구 전체를 그대로 복사해 새 채팅에 보내세요\"; display: block; color: var(--gold); font-weight: 700; margin-bottom: 6px; }",
+    "/* 공지: 내용 보기 단추는 손가락 커서, 공지 안 인용 상자는 그대로 복사할 문구 상자(남색 바탕·밝은 글자) */ .notice summary { cursor: pointer; } .notice blockquote { background: var(--navy); color: var(--navy-fg); border-left: 4px solid var(--gold); border-radius: 6px; padding: 10px 14px; margin: 8px 0 12px; user-select: text; } .notice blockquote::before { content: \"아래 문구 전체를 그대로 복사해 새 채팅에 보내세요\"; display: block; color: var(--gold); font-weight: 700; margin-bottom: 6px; } .notice blockquote p, .notice blockquote li { color: var(--navy-fg); } .notice blockquote ol { margin: 4px 0; padding-left: 20px; }"
   ],
   "title": "업무 에이전트",
   "brand": "업무 에이전트",
