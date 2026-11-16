@@ -1,5 +1,5 @@
 {
- "version": "2026-11-16.9",
+ "version": "2026-11-16.10",
  "page_latest": "24",
  "page_published": "2026-11-16 17:30",
  "page_version": {
@@ -4283,8 +4283,6 @@
    "title": "답변이 화면 안에서만 실행되는 분 — 클라우드 실행기를 한 번 만들어 주세요",
    "from": "2026-11-16",
    "audience": [
-    "jangyoungjin",
-    "kangyunkyung",
     "leesinseong",
     "kimseongyu",
     "yunseunghyun",
