@@ -906,8 +906,12 @@ async function callTool(params, caller, page, viaPage, agent) {
       }
       if (a.action === "proposals") {
         const r = proposals.withLinks(await proposals.list(a.status || "open"));
-        const lines = r.items.map(p => `- ${p.id} [${p.kind}] ${p.target} | ${p.status} | 처음 ${String(p.first_at).slice(0, 10)} · 확인 ${p.seen}회 | ${p.summary}`);
-        return { result: { content: [{ type: "text", text: lines.length ? `제안 ${lines.length}건(링크는 structuredContent)\n${lines.join("\n")}` : "제안 없음" }], structuredContent: r } };
+        // 클라이언트가 structuredContent를 보여 주지 않는 경우가 있어(2026-11-17 실측) 링크를 글에도 싣는다
+        const lines = r.items.map(p => [`- ${p.id} [${p.kind}] ${p.target} | ${p.status} | 처음 ${String(p.first_at).slice(0, 10)} · 확인 ${p.seen}회(마지막 ${String(p.last_at).slice(0, 10)}) | ${p.summary}`,
+          p.note ? `  메모: ${p.note}` : "", p.link ? `  링크: ${p.link}` : "", p.detail && a.detail !== false ? `  수정안: ${String(p.detail).replace(/\s+/g, " ").slice(0, 1500)}` : "",
+          p.approve_url ? `  승인: ${p.approve_url}\n  삭제: ${p.reject_url}` : ""].filter(Boolean).join("\n"));
+        const all = r.approve_all_url ? `\n전체 승인: ${r.approve_all_url}` : "";
+        return { result: { content: [{ type: "text", text: lines.length ? `제안 ${lines.length}건${all}\n${lines.join("\n")}` : "제안 없음" }], structuredContent: r } };
       }
       if (a.action === "proposal_set") {
         const r = await proposals.setStatus(a.id, a.status, a.note, a.link);
