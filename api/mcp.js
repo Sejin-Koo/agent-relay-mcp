@@ -4,6 +4,7 @@
 //   ① initialize 버전 협상(지원 목록과 대조) ② 미지원 MCP-Protocol-Version 헤더에 400 ③ 알림에 202
 
 const { BACKENDS, ROUTE, UPSTREAM } = require("../lib/backends");
+const proposals = require("../lib/proposals");
 const usage = require("../lib/usage");
 const files = require("../lib/files");
 const LOCAL = { files }; // 이 서버가 직접 수행하는 도구 묶음(backends.js의 local 항목 module 이름) — 페이지 전용 파일 만들기만 남긴다
@@ -546,7 +547,16 @@ const MONITOR_TOOL = {
   inputSchema: {
     type: "object",
     properties: {
-      action: { type: "string", enum: ["report", "beat", "expire"], description: "report: 문제 1건 기록, beat: 점검 완료 기록, expire: 관찰 중 원인 정리(표시 뒤 days일 재발 없으면 종료, 재발했으면 확인 필요로 되돌림)" },
+      action: { type: "string", enum: ["report", "beat", "expire", "propose", "proposals", "proposal_set"], description: "report: 문제 1건 기록, beat: 점검 완료 기록, expire: 관찰 중 원인 정리(표시 뒤 days일 재발 없으면 종료, 재발했으면 확인 필요로 되돌림), propose: 개선 제안 등록(같은 kind·target·key면 '다시 확인됨'으로 갱신, 사용자가 삭제한 제안은 다시 올리지 않음), proposals: 제안 목록(status — open(기본: pending·approved·carded)·all·쉼표 목록)과 메일용 서명 링크(approve_url·reject_url·approve_all_url, 30일), proposal_set: 제안 상태 변경(id·status: approved·carded·applied·rejected·pending, note·link)" },
+      kind: { type: "string", enum: ["skill", "agent", "server", "other"], description: "propose — 제안 종류(skill 계정 스킬, agent 에이전트 지침·공통 규칙, server 서버 코드)" },
+      target: { type: "string", description: "propose — 대상(스킬 이름, agents_v2.<id>.rules, prompts_v2.report, 저장소 이름 등)" },
+      key: { type: "string", description: "propose — 같은 제안을 가리키는 짧은 이름(표현이 달라도 같은 제안이면 같은 key — 기존 목록을 보고 맞춘다)" },
+      summary: { type: "string", description: "propose — 메일에 실을 요지 한두 줄" },
+      detail: { type: "string", description: "propose — 자세한 수정안(바꿀 위치·문구, 근거)" },
+      id: { type: "string", description: "proposal_set — 제안 번호(10자리). propose에서 주면 그 제안을 갱신" },
+      status: { type: "string", description: "proposals — 거를 상태 / proposal_set — 바꿀 상태" },
+      note: { type: "string", description: "proposal_set — 메모" },
+      link: { type: "string", description: "proposal_set — 관련 링크(PR·실행 기록)" },
       days: { type: "number", description: "expire — 관찰 기간(기본 7일)" },
       tool: { type: "string", description: "report — 문제가 난 도구 이름" },
       err: { type: "string", description: "report — 문제 문구(같은 문구면 한 원인으로 묶임)" },
@@ -890,6 +900,19 @@ async function callTool(params, caller, page, viaPage, agent) {
         await usage.recordFailure({ caller, tool: String(a.tool).slice(0, 80), backend: "monitor", agent: "", ms: 0, err: oneLine(a.err, 300), args: oneLine(a.detail || "", 300) });
         return { result: { content: [{ type: "text", text: "기록했습니다." }], structuredContent: { ok: true } } };
       }
+      if (a.action === "propose") {
+        const r = await proposals.upsert(a);
+        return { result: { content: [{ type: "text", text: r.skipped ? `제안 ${r.id}: ${r.skipped}` : `제안 ${r.id} ${r.created ? "새로 등록" : "다시 확인됨으로 갱신"}(상태 ${r.status})` }], structuredContent: r } };
+      }
+      if (a.action === "proposals") {
+        const r = proposals.withLinks(await proposals.list(a.status || "open"));
+        const lines = r.items.map(p => `- ${p.id} [${p.kind}] ${p.target} | ${p.status} | 처음 ${String(p.first_at).slice(0, 10)} · 확인 ${p.seen}회 | ${p.summary}`);
+        return { result: { content: [{ type: "text", text: lines.length ? `제안 ${lines.length}건(링크는 structuredContent)\n${lines.join("\n")}` : "제안 없음" }], structuredContent: r } };
+      }
+      if (a.action === "proposal_set") {
+        const r = await proposals.setStatus(a.id, a.status, a.note, a.link);
+        return { result: { content: [{ type: "text", text: `제안 ${r.id} 상태를 ${r.status}(으)로 바꿨습니다.` }], structuredContent: { id: r.id, status: r.status } } };
+      }
       if (a.action === "expire") {
         const r = await usage.expireWatching(a.days);
         return { result: { content: [{ type: "text", text: `관찰 중 정리: 종료 ${r.closed.length}건, 재발로 되돌림 ${r.reopened.length}건(기준 ${r.days}일)` }], structuredContent: r } };
@@ -898,7 +921,7 @@ async function callTool(params, caller, page, viaPage, agent) {
         await usage.setMonitorBeat(Object.assign({ at: new Date().toISOString(), caller }, (a.summary && typeof a.summary === "object") ? a.summary : {}));
         return { result: { content: [{ type: "text", text: "점검 완료를 기록했습니다." }], structuredContent: { ok: true } } };
       }
-      throw new Error("action은 report·beat·expire 중 하나여야 합니다");
+      throw new Error("action은 report·beat·expire·propose·proposals·proposal_set 중 하나여야 합니다");
     } catch (e) {
       return { result: { isError: true, content: [{ type: "text", text: `점검 기록 오류: ${e.message}` }] } };
     }
