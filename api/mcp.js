@@ -542,11 +542,12 @@ const FAILURES_TOOL = {
 // beat: 점검 1회가 끝났음을 남긴다 — relay_usage issues 결과 맨 위에 마지막 실행 시각이 나오고, 오래 안 돌면 경고가 붙는다.
 const MONITOR_TOOL = {
   name: "relay_monitor",
-  description: "자동 점검 결과를 기록합니다(점검 키·관리자 전용). report는 도구 인자 변경처럼 시험 호출 밖에서 찾은 문제를 개선 필요 오류 목록에 올리고, beat는 점검 1회 완료(시험 수·실패 수 등)를 남깁니다.",
+  description: "자동 점검 결과를 기록합니다(점검 키·관리자 전용). report는 도구 인자 변경처럼 시험 호출 밖에서 찾은 문제를 개선 필요 오류 목록에 올리고, beat는 점검 1회 완료(시험 수·실패 수 등)를 남기며, expire는 관찰 중 원인을 정리합니다(7일 재발 없으면 종료).",
   inputSchema: {
     type: "object",
     properties: {
-      action: { type: "string", enum: ["report", "beat"], description: "report: 문제 1건 기록, beat: 점검 완료 기록" },
+      action: { type: "string", enum: ["report", "beat", "expire"], description: "report: 문제 1건 기록, beat: 점검 완료 기록, expire: 관찰 중 원인 정리(표시 뒤 days일 재발 없으면 종료, 재발했으면 확인 필요로 되돌림)" },
+      days: { type: "number", description: "expire — 관찰 기간(기본 7일)" },
       tool: { type: "string", description: "report — 문제가 난 도구 이름" },
       err: { type: "string", description: "report — 문제 문구(같은 문구면 한 원인으로 묶임)" },
       detail: { type: "string", description: "report — 자세한 내용(바뀐 인자 등, 300자까지)" },
@@ -889,11 +890,15 @@ async function callTool(params, caller, page, viaPage, agent) {
         await usage.recordFailure({ caller, tool: String(a.tool).slice(0, 80), backend: "monitor", agent: "", ms: 0, err: oneLine(a.err, 300), args: oneLine(a.detail || "", 300) });
         return { result: { content: [{ type: "text", text: "기록했습니다." }], structuredContent: { ok: true } } };
       }
+      if (a.action === "expire") {
+        const r = await usage.expireWatching(a.days);
+        return { result: { content: [{ type: "text", text: `관찰 중 정리: 종료 ${r.closed.length}건, 재발로 되돌림 ${r.reopened.length}건(기준 ${r.days}일)` }], structuredContent: r } };
+      }
       if (a.action === "beat") {
         await usage.setMonitorBeat(Object.assign({ at: new Date().toISOString(), caller }, (a.summary && typeof a.summary === "object") ? a.summary : {}));
         return { result: { content: [{ type: "text", text: "점검 완료를 기록했습니다." }], structuredContent: { ok: true } } };
       }
-      throw new Error("action은 report·beat 중 하나여야 합니다");
+      throw new Error("action은 report·beat·expire 중 하나여야 합니다");
     } catch (e) {
       return { result: { isError: true, content: [{ type: "text", text: `점검 기록 오류: ${e.message}` }] } };
     }
