@@ -3,9 +3,9 @@
 // POST(단추): 상태를 바꾸고, 반영 시점과 '지금 실행' 경로를 안내한다.
 const props = require("../lib/proposals");
 
-const TASK_URL = process.env.TRIAGE_TASK_URL || "https://claude.ai/scheduled-task/trig_012cMCDLtRotVJZ5uisiWUTD";
+const TASK_URL = process.env.TRIAGE_TASK_URL || "https://claude.ai/scheduled-task/trig_01P1mK67uH6SaywrZATR5WQ4";
 const KIND_KO = { skill: "계정 스킬", agent: "에이전트 지침", server: "서버 코드", other: "기타" };
-const STATE_KO = { pending: "결정 대기", approved: "승인됨(다음 실행이 반영)", carded: "승인됨 — 스킬 카드 대기", applied: "반영 끝", rejected: "삭제됨" };
+const STATE_KO = { pending: "결정 대기", approved: "승인됨(다음 실행이 반영)", carded: "승인됨 — 새 대화에서 스킬 반영 요청 대기", applied: "반영 끝", rejected: "삭제됨" };
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const kst = iso => { const d = new Date(new Date(iso).getTime() + 9 * 3600000); return isNaN(d) ? "" : d.toISOString().slice(0, 16).replace("T", " "); };
 
@@ -25,7 +25,7 @@ function itemHtml(p) {
 ${p.detail ? `<details><summary class="meta">자세한 수정안</summary><pre>${esc(p.detail)}</pre></details>` : ""}</div>`;
 }
 const nextNote = () => `<div class="note">반영은 이 예약 작업이 합니다. 오늘 밤 22:00(평일) 정기 실행을 기다리지 않으려면 <a href="${esc(TASK_URL)}" target="_blank">예약 작업 화면</a>에서 <b>지금 실행</b>을 누르세요.<br>
-계정 스킬은 실행이 스킬마다 수정 카드를 만들어 둡니다 — 같은 화면의 실행 기록을 열어 카드를 눌러야 반영됩니다(결과 메일에도 안내).</div>`;
+계정 스킬은 실행이 결과 메일에 새 대화 요청 문구를 넣어 드립니다 — 그 문구를 새 대화에 붙여 넣으면 스킬마다 수정 카드가 뜨고, 카드를 눌러야 반영됩니다.</div>`;
 
 async function targets(p) {
   if (Array.isArray(p.ids)) return (await Promise.all(p.ids.map(i => props.read(i)))).filter(Boolean);
