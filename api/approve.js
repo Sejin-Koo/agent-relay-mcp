@@ -3,7 +3,7 @@
 // POST(단추): 상태를 바꾸고, 반영 시점과 '지금 실행' 경로를 안내한다.
 const props = require("../lib/proposals");
 
-const TASK_URL = process.env.TRIAGE_TASK_URL || "https://claude.ai/scheduled-task/trig_01LLDn6CDcnuc6zJ8MYa4J6b";
+const TASK_URL = process.env.TRIAGE_TASK_URL || "https://claude.ai/scheduled-task/trig_012cMCDLtRotVJZ5uisiWUTD";
 const KIND_KO = { skill: "계정 스킬", agent: "에이전트 지침", server: "서버 코드", other: "기타" };
 const STATE_KO = { pending: "결정 대기", approved: "승인됨(다음 실행이 반영)", carded: "승인됨 — 스킬 카드 대기", applied: "반영 끝", rejected: "삭제됨" };
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
