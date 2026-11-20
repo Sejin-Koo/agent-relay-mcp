@@ -930,9 +930,16 @@ function argSummary(args) {
     return "";
   }
 }
+// splitRetry 도구(외부 밸류에이션)의 504·끊김은 외부 서버에 그 분기말 자료가 아직 없다는 뜻이고, 우리 쪽에서 고칠 수 없으며
+// 에이전트는 대체 도구로 넘어간다 — 사용자 호출분은 실패 상세·숫자에만 남기고 오류 원인 목록에는 올리지 않는다
+// (2026-11-20 사용자 결정: 언제 고쳐질지 모르는 항목을 목록에 두는 실익이 없음). 자동 점검은 이미 준비된 분기말로 시험하므로
+// 점검 키의 504는 외부 서버 자체 장애로 보고 목록에 올린다.
+const SPLIT_TOOLS = new Set(Object.values(BACKENDS).map(b => b && b.splitRetry && b.splitRetry.tool).filter(Boolean));
+const EXT_NOT_READY_RE = /HTTP 504|처리 시간 한도|결과 없이 끊|응답을 해석하지 못/;
 async function noteFail(caller, name, id, ms, err, args, agent) {
   console.log(`[fail] caller=${caller} tool=${name} backend=${id} ms=${ms} agent=${agent || "-"} err=${err} args=${argSummary(args)}`);
-  await usage.recordFailure({ caller, tool: name, backend: id, agent: agent || "", ms, err, args: argSummary(args) });
+  const noIssue = SPLIT_TOOLS.has(name) && !isMonitor(caller) && EXT_NOT_READY_RE.test(String(err || ""));
+  await usage.recordFailure({ caller, tool: name, backend: id, agent: agent || "", ms, err, args: argSummary(args) }, { noIssue });
 }
 
 // 자동 점검 키의 호출은 사용량 합계(사용자별·도구별)에 넣지 않는다 — 실패는 noteFail로 따로 남는다
