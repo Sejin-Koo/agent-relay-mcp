@@ -21,7 +21,15 @@ module.exports = async (req, res) => {
   const send = (code, o) => { res.statusCode = code; res.setHeader("Content-Type", "application/json; charset=utf-8"); res.end(JSON.stringify(o)); };
   const secret = process.env.CRON_SECRET;
   if (secret && String(req.headers["authorization"] || "") !== `Bearer ${secret}`) return send(401, { ok: false, reason: "unauthorized" });
-  const token = process.env.MONITOR_DISPATCH_TOKEN;
+  // 붙여 넣을 때 앞뒤에 설명·공백·한글이 섞이면 헤더에 실을 수 없다(2026-11-20 실측: 맨 앞이 한글) —
+  // GitHub 토큰 모양(github_pat_…·ghp_ 등)만 골라 쓰고, 없으면 값을 다시 넣으라고 알린다(값 자체는 기록하지 않음).
+  const raw = String(process.env.MONITOR_DISPATCH_TOKEN || "");
+  const m = raw.match(/(github_pat_[A-Za-z0-9_]+|gh[pousr]_[A-Za-z0-9]+)/);
+  const token = m ? m[1] : (/^[\x21-\x7e]+$/.test(raw.trim()) ? raw.trim() : "");
+  if (raw && !token) {
+    await note({ ok: false, reason: "MONITOR_DISPATCH_TOKEN 값이 토큰 모양이 아님(영문·숫자 외 글자 포함)" });
+    return send(200, { ok: false, reason: `MONITOR_DISPATCH_TOKEN 값이 GitHub 토큰 모양이 아닙니다(길이 ${raw.length}자, 영문·숫자 외 글자 포함) — Vercel 환경변수에 토큰 값만 다시 넣고 재배포해 주세요` });
+  }
   if (!token) { await note({ ok: false, reason: "MONITOR_DISPATCH_TOKEN 없음" }); return send(200, { ok: false, reason: "MONITOR_DISPATCH_TOKEN 환경변수가 없습니다" }); }
   if (usage.configured()) {
     try {
