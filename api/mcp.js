@@ -171,6 +171,49 @@ async function callSplitRetry(b, upName, args, caller, budget) {
   return { result: { content: [{ type: "text", text: JSON.stringify(rows) }] } };
 }
 
+// ---------- 끊긴 평가기준일 건너뛰기(splitRetry 도구) ----------
+// 외부 서버에 그 분기말 사전 수집이 없으면 한 종목이라도 매번 약 120초를 기다린 뒤 504로 끝난다(2026-11-19~20 실측: 20260930).
+// 그래서 같은 평가기준일이 처리 시간 한도로 끊기면(모든 종목 실패) 그 기준일은 SKIP_TTL_SEC 동안 뒤 서버를 부르지 않고
+// 종목마다 {code, error} 행을 바로 돌려준다 — 에이전트 지침대로 이자부부채는 dart_interest_bearing_debt, 나머지는 재무 도구로 채운다
+// (2026-11-20 사용자 결정). 한 종목이라도 받으면 표시를 지운다. 자동 점검 키는 건너뛰지 않고 실제로 불러, 외부가 준비됐는지 매일 확인한다.
+// 표시: Redis cut:<도구>:<YYYYMMDD> (JSON {at, why}), 만료 SKIP_TTL_SEC.
+const SKIP_TTL_SEC = Number(process.env.SPLIT_SKIP_TTL_SEC || 6 * 3600);
+function cutKey(tool, args) {
+  const d = String((args && args.valuation_date) || "").replace(/[^0-9]/g, "");
+  return d.length === 8 ? `cut:${tool}:${d}` : null;
+}
+async function cutGet(k) {
+  if (!k || !usage.configured()) return null;
+  try { const v = (await usage.pipeline([["GET", k]], 1500))[0]; return v ? (jsonOr(v) || {}) : null; } catch (e) { return null; }
+}
+async function cutSet(k, why) {
+  if (!k || !usage.configured()) return;
+  const at = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 16).replace("T", " ");
+  try { await usage.pipeline([["SET", k, JSON.stringify({ at, why: oneLine(String(why || "")).slice(0, 120) }), "EX", String(SKIP_TTL_SEC)]], 1500); } catch (e) { console.log(`[cut] 표시 실패 ${k}: ${e.message}`); }
+}
+async function cutDel(k) {
+  if (!k || !usage.configured()) return;
+  try { await usage.pipeline([["DEL", k]], 1500); } catch (e) { /* 다음 성공 때 다시 지운다 */ }
+}
+function cutRows(b, sr, args, mark) {
+  let codes = args[sr.arg] !== undefined ? args[sr.arg] : args.stock_code;
+  if (typeof codes === "string") { const j = jsonOr(codes); codes = Array.isArray(j) ? j : [codes]; }
+  if (!Array.isArray(codes) || !codes.length) codes = ["(전체)"];
+  const d = String(args.valuation_date || "").replace(/[^0-9]/g, "");
+  const ymd = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
+  const hrs = Math.round(SKIP_TTL_SEC / 3600);
+  const msg = `${b.label} 서버가 평가기준일 ${ymd} 자료를 처리 시간 한도 안에 내지 못했습니다(${mark.at || "최근"} 끊김). ` +
+    `이 기준일은 ${hrs}시간 동안 그 서버를 다시 부르지 않습니다 — 같은 도구를 다시 부르지 말고, 이자부부채는 dart_interest_bearing_debt, ` +
+    `현금·자본·실적은 재무 도구로 채운 뒤 어느 도구 값인지 밝히세요`;
+  return { result: { content: [{ type: "text", text: JSON.stringify(codes.map(c => ({ code: c, error: msg }))) }] } };
+}
+// 결과가 '모든 종목 끊김'인지: 예외(끊김)거나, 합친 행이 전부 끊김 안내 행
+function allCut(msg, err) {
+  if (err) return isCutOff(err);
+  const rows = msg && msg.result && rowsOfResult(msg.result);
+  return Array.isArray(rows) && rows.length > 0 && rows.every(r => r && r.error && /처리 시간 한도/.test(String(r.error)));
+}
+
 // ---------- tools/list: 서버별 도구 정의를 받아 허용 목록만 남긴다 ----------
 const listCache = {}; // id -> { at, tools }
 async function backendTools(id) {
@@ -1076,9 +1119,23 @@ async function callTool(params, caller, page, viaPage, agent) {
     await noteFail(caller, name, id, Date.now() - t0, "중계 서버에 이 담당 서버의 전용 키가 설정되지 않음", failArgs, agent);
     return { result: { isError: true, content: [{ type: "text", text: `${b.label} 도구가 아직 준비되지 않았습니다(서버 설정 필요). 이 도구 없이 진행하고 확인하지 못한 항목으로 밝히세요.` }] } };
   }
+  // 끊긴 평가기준일 건너뛰기 — 자동 점검 키는 건너뛰지 않는다(외부가 준비됐는지 확인하는 역할)
+  const split = !!(b.splitRetry && b.splitRetry.tool === name);
+  const ck = split ? cutKey(name, args || {}) : null;
+  if (ck && !isMonitor(caller)) {
+    const mark = await cutGet(ck);
+    if (mark) {
+      const ms = Date.now() - t0;
+      console.log(`[cut] caller=${caller} tool=${name} skip key=${ck} since=${mark.at}`);
+      await recordCallFor(caller, name, ms, true, page, agent);
+      return { result: attachText(cutRows(b, b.splitRetry, args || {}, mark).result) };
+    }
+  }
   try {
-    const msg = (b.splitRetry && b.splitRetry.tool === name)
+    const msg = split
       ? await callSplitRetry(b, UPSTREAM[name] || name, args || {}, caller, { n: 0, t0: Date.now() })
+          .then(async (m) => { if (ck) { if (allCut(m)) await cutSet(ck, "모든 종목 끊김"); else if (!m.error && !(m.result && m.result.isError)) await cutDel(ck); } return m; },
+                async (e) => { if (ck && allCut(null, e)) await cutSet(ck, e.message); throw e; })
       : await rpcToBackend(b, "tools/call", { name: UPSTREAM[name] || name, arguments: args }, CALL_TIMEOUT_MS, caller);
     const ok = !msg.error && !(msg.result && msg.result.isError);
     const ms = Date.now() - t0;
