@@ -6,6 +6,15 @@
     },
     "api/approve.js": {
       "maxDuration": 30
+    },
+    "api/monitor-dispatch.js": {
+      "maxDuration": 30
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/monitor-dispatch",
+      "schedule": "0 11 * * *"
+    }
+  ]
 }
