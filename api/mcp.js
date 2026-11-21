@@ -451,6 +451,15 @@ async function configResult(args, caller) {
   if (page) applyPageVersion(out, page);
   // 최신판 확인 창(24판 2026-11-13 수정본부터): 최신 판 안내를 꺼도 실제 최신판 번호·게시 시각은 따로 보낸다(사용자가 확인을 눌렀을 때만 보임)
   if (page) out.page_latest_info = { v: String(CATALOG.page_latest || ""), at: String(CATALOG.page_published || "") };
+  // 소수점 판(2026-11-21 사용자 결정): 정수 판이 같고 최신판만 소수점으로 앞서면(24 → 24.2) 바꾸지 않아도 되는 판이므로
+  // '최신판 확인' 창의 '새 판이 있습니다' 문구(ver_state_old)를 ver_state_minor로 바꿔 보낸다. 정수 판이 다르면(24 → 25) 그대로
+  if (page && out.ui_v2 && out.ui_v2.msgs && typeof out.ui_v2.msgs.ver_state_minor === "string") {
+    const maj = v => { const m = /^(\d+)(?:\.\d+)?$/.exec(String(v || "")); return m ? Number(m[1]) : -1; };
+    const lp = String(CATALOG.page_latest || "");
+    if (maj(page) > 0 && maj(page) === maj(lp) && String(page) !== lp && verGte(lp, String(page))) {
+      out.ui_v2 = Object.assign({}, out.ui_v2, { msgs: Object.assign({}, out.ui_v2.msgs, { ver_state_old: out.ui_v2.msgs.ver_state_minor }) });
+    }
+  }
   delete out.page_published;
   // 20판 이상은 page_latest로 새 판을 판단하므로, 최신 판 안내를 끄면 요청한 판을 최신으로 보낸다
   if (page && out.features && out.features.version_latest === false) out.page_latest = String(page);
