@@ -100,10 +100,10 @@ if (cat.agents_v2) {
     if (cat.features.bg_warn_min !== undefined && !(Number(cat.features.bg_warn_min) > 0 && (!cat.features.bg_stale_min || Number(cat.features.bg_warn_min) < Number(cat.features.bg_stale_min)))) e2.push("features.bg_warn_min은 0보다 크고 bg_stale_min보다 작은 수");
     // 받지 못한 파일 보관(페이지 19판부터): 켜기·받으면 지우기
     // 24.1판: 질문 넘기기 단계 기록(trace), 보낸 뒤 연결 상태 다시 확인(status_after_send), 휴대폰에서 보낸 뒤 키보드 내리기(blur_after_send)
-    for (const k of ["trace", "status_after_send", "blur_after_send"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
+    for (const k of ["trace", "status_after_send", "blur_after_send", "hist_move"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
     for (const k of ["hist_fold", "hist_fold_default", "bg_draft", "file_keep", "file_keep_drop_on_get"]) if (cat.features[k] !== undefined && typeof cat.features[k] !== "boolean") e2.push(`features.${k}는 true/false`);
     // 숫자 설정(페이지 14판부터, 페이지 applyNumbers와 같은 범위 — 벗어나면 페이지가 기본값을 쓴다)
-    const NUMS = { hist_days: [7, 365], hist_list: [20, 300], hist_board_show: [1, 30], past_scan: [5, 100], past_read: [2000, 60000], convo_in_max: [20000, 400000], ctx_turns: [2, 40], ctx_last_max: [2000, 60000], ctx_prev_max: [500, 20000], draft_days: [1, 365], file_keep_days: [1, 90], file_keep_max: [1, 30], trace_keep_days: [1, 30] };
+    const NUMS = { hist_days: [7, 365], hist_list: [20, 300], hist_board_show: [1, 30], past_scan: [5, 100], past_read: [2000, 60000], convo_in_max: [20000, 400000], ctx_turns: [2, 40], ctx_last_max: [2000, 60000], ctx_prev_max: [500, 20000], draft_days: [1, 365], file_keep_days: [1, 90], file_keep_max: [1, 30], trace_keep_days: [1, 30], mv_hours: [1, 72] };
     for (const [k, [lo, hi]] of Object.entries(NUMS)) { const v = cat.features[k]; if (v !== undefined && !(typeof v === "number" && v >= lo && v <= hi)) e2.push(`features.${k}는 ${lo}~${hi} 숫자(벗어나면 페이지가 기본값을 씀)`); }
   }
   // 최신 판 번호와 옛 사본용 판 번호 문구(2026-11-12). 원본을 새 판으로 게시하면 page_latest를 올린다

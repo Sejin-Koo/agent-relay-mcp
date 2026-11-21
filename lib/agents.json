@@ -1,7 +1,7 @@
 {
- "version": "2026-11-21.3",
- "page_latest": "24.1",
- "page_published": "2026-11-21 14:45",
+ "version": "2026-11-21.4",
+ "page_latest": "24.2",
+ "page_published": "2026-11-21 23:00",
  "page_version": {
   "_설명": "머리글 판 번호 — 19판 이하 사본용(서버가 판별로 채움, api/mcp.js applyPageVersion). 20판부터는 페이지가 page_latest와 ui_v2.msgs ver_*로 직접 그린다. 자리표시 {page}·{latest}·{url}(ui_v2.version_url). 원본을 새 판으로 게시하면 page_latest를 올리고 설정 version도 올린다",
   "native_min": "20",
@@ -1158,7 +1158,24 @@
    "bg_runner_copied": "복사했습니다. Claude 첫 화면에서 새 채팅을 열어 붙여 보내 주세요.",
    "bg_runner_copy_fail": "복사하지 못했습니다. '요청 문구 보기'를 눌러 직접 선택해 복사해 주세요.",
    "bg_runner_show": "요청 문구 보기",
-   "bg_runner_hide": "요청 문구 접기"
+   "bg_runner_hide": "요청 문구 접기",
+   "ver_check_body_mv": "| 구분 | 판 | 게시 |\n|---|---|---|\n| 현재판 | {page}판 | {built} |\n| 최신판 | {latest}판 | {latest_at} |\n\n{state}\n\n**최신판 쓰는 법**\n\n아래 **대화 옮기고 새 사본 만들기**를 누르면 원본이 새 창으로 열립니다. 24시간 안에 원본의 공유 메뉴에서 **복제**를 눌러 새 사본을 만들어 주셔야 지금까지의 대화가 새 사본으로 자동으로 옮겨집니다. 처음 열 때 커넥터 허용 창이 뜨면 허용합니다.\n\n새 사본에 **'대화를 옮겼습니다'** 안내가 뜨면 지금 쓰는 이 사본은 지워도 됩니다(아티팩트에서 삭제). 커넥터('업무 에이전트 MCP')는 지우지 말고 그대로 두세요.",
+   "mv_btn": "대화 옮기고 새 사본 만들기",
+   "mv_open": "원본 열기",
+   "mv_collect": "대화를 모으는 중…",
+   "mv_empty": "옮길 대화가 없습니다. 원본에서 바로 복제하시면 됩니다.",
+   "mv_up": "대화를 올리는 중… ({i}/{n})",
+   "mv_up_done": "대화 {n}개를 올렸습니다. 원본이 새 창으로 열립니다(열리지 않으면 아래 '원본 열기'). 24시간 안에 공유 메뉴에서 복제해 주세요.",
+   "mv_up_fail": "대화를 올리지 못했습니다({why}). '대화 보관함 → 모든 대화 내보내기'로 옮겨 주세요.",
+   "mv_close": "닫기",
+   "mv_in_wait": "이전 사본에서 대화를 올리는 중입니다. 끝나면 이 사본으로 옮깁니다…",
+   "mv_in_ask": "이전 사본에서 보낸 대화 {n}개가 있습니다({at}). 이 사본으로 가져올까요?",
+   "mv_in_take": "가져오기",
+   "mv_in_drop": "버리기",
+   "mv_in_later": "나중에",
+   "mv_in_run": "이전 사본의 대화를 이 사본으로 옮기는 중…",
+   "mv_in_done": "대화를 옮겼습니다 — 이전 사본의 대화 {n}개가 이 사본에 들어왔습니다. 이전 사본은 지워도 됩니다(아티팩트에서 삭제).",
+   "mv_in_fail": "이전 사본의 대화를 가져오지 못했습니다({why}). 이전 사본은 지우지 말고 '대화 보관함 → 모든 대화 내보내기'와 이 사본의 '불러오기'로 옮겨 주세요."
  },
   "agencies_label": "원자료 기관",
   "agencies": [
@@ -4238,6 +4255,8 @@
   "papers": "PubMed·Europe PMC·OpenAlex·Semantic Scholar 등 논문 데이터베이스"
  },
  "features": {
+  "hist_move": true,
+  "mv_hours": 24,
   "trace": true,
   "trace_keep_days": 7,
   "status_after_send": false,

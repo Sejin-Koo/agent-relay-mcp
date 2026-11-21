@@ -7,7 +7,9 @@ const { BACKENDS, ROUTE, UPSTREAM } = require("../lib/backends");
 const proposals = require("../lib/proposals");
 const usage = require("../lib/usage");
 const files = require("../lib/files");
-const LOCAL = { files }; // 이 서버가 직접 수행하는 도구 묶음(backends.js의 local 항목 module 이름) — 페이지 전용 파일 만들기만 남긴다
+const move = require("../lib/move");
+// 이 서버가 직접 수행하는 도구 묶음(backends.js의 local 항목 module 이름) — 페이지 전용 파일 만들기와 대화 옮기기(24.2판)만 둔다
+const LOCAL = { files, move };
 const localOf = (b) => LOCAL[b.module];
 const { coerceArgs, missingRequired } = require("../lib/coerce");
 const CATALOG = require("../lib/agents.json");
@@ -955,7 +957,8 @@ function argSummary(args) {
     const o = {};
     Object.keys(args || {}).slice(0, 12).forEach(k => {
       const v = args[k];
-      o[k] = typeof v === "string" ? oneLine(v, 80) : (v && typeof v === "object" ? oneLine(JSON.stringify(v), 80) : v);
+      // data(그림 base64·옮기는 대화 내용)는 실패 기록에 남기지 않고 길이만 적는다
+      o[k] = k === "data" && typeof v === "string" ? `(${v.length}자 생략)` : typeof v === "string" ? oneLine(v, 80) : (v && typeof v === "object" ? oneLine(JSON.stringify(v), 80) : v);
     });
     return oneLine(JSON.stringify(o), 300);
   } catch (e) {
