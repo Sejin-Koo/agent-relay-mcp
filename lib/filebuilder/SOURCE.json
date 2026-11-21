@@ -1,10 +1,10 @@
 {
  "skill": "sys-file-builder",
- "version": "2026-11-21.1",
+ "version": "2026-11-21.2",
  "copied": "2026-11-21",
  "files": {
   "build.js": "3e9141bcabfea3bad06d9bcffecc764671e45a809684b7e819120bf23989354d",
-  "butterfly.js": "a259ff7d3be7c271a9ccaf1a39f80d82b841d149f5861af5e0c8160db36becb9",
+  "butterfly.js": "81b53d3bea588e6992c1d47500e44b0cb05ef5fb5ccaec5b2e6cc6aa8ab93f4e",
   "chart-spec.js": "d2452c664e0d14941b14f36db4a0cfd12fe1568989fde7fb1d9d67d8721362c7",
   "diagram.js": "2370b6e1c35ef8697477a02b5d9ab6fd3a1568d99079a714bd32d49b0f997dc6",
   "docexport.js": "90ada08c76ec8dd9162c742c2abc680c976ab78fb8e467de46b058bc8bcb8bb9",
