@@ -1,5 +1,5 @@
 {
- "version": "2026-11-21.5",
+ "version": "2026-11-22.1",
  "page_latest": "24.2",
  "page_published": "2026-11-21 23:24",
  "page_version": {
@@ -764,7 +764,7 @@
     ],
     "get_law_history": [
      "법령 연혁",
-     "{query(법령명), display} 시행일자별 버전 목록(현행·시행예정 구분)."
+     "{query(법령명) 또는 law_id·mst, display} 시행일자별 버전 목록(현행·시행예정 구분). 법령명을 모르면 search_law 결과의 law_id나 mst만 넣어도 된다."
     ],
     "search_admin_rule": [
      "행정규칙 검색",
@@ -4596,7 +4596,7 @@
   "search_kakao": "{category(web|blog|cafe|vclip|image|book), query, sort(accuracy|recency), page(≤50), size(≤50, 동영상 30, 이미지 80), target(책 검색에서만: title|isbn|publisher|person)} 카카오(다음) 검색 결과(제목·요약·링크·날짜). 이미지는 원본·썸네일 주소와 출처, 책은 저자·출판사·ISBN·정가·출간일을 준다. 네이버와 색인이 달라 다른 문서가 잡힌다. 웹문서·블로그·카페는 검색어에 site:도메인을 넣으면 그 사이트만 찾는다. 한 검색어로 받을 수 있는 범위(노출가능건수)는 대개 1,000건 안팎이다.",
   "search_law": "{query, search(1 법령명|2 본문), display} 현행 법령 목록과 MST·시행일. 법률·시행령·시행규칙은 따로 나온다.",
   "get_law_text": "{mst, jo('제38조'|'38'|'10의2'|'부칙'|'부칙 21448'), law_id} 조문 원문. jo 생략 시 목차. jo='부칙'이면 최근 부칙 3건과 전체 부칙 목록, '부칙 <공포번호|공포일>'이면 그 부칙만. 시행예정 버전 여부를 표시한다.",
-  "get_law_history": "{query(법령명), display} 시행일자별 버전 목록(현행·시행예정 구분).",
+  "get_law_history": "{query(법령명) 또는 law_id·mst, display} 시행일자별 버전 목록(현행·시행예정 구분). 법령명을 모르면 search_law 결과의 law_id나 mst만 넣어도 된다.",
   "search_admin_rule": "{query, display} 고시·훈령·예규 검색. 결과의 행정규칙일련번호(13자리)를 get_admin_rule에 쓴다.",
   "get_admin_rule": "{id(행정규칙일련번호 13자리)}",
   "search_annex": "{query, display} 법령 별표·서식 목록과 HWP/PDF 링크. 공식 제목에 가깝게 검색한다.",
