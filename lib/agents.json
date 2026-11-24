@@ -1,7 +1,7 @@
 {
- "version": "2026-11-24.10",
- "page_latest": "24.3",
- "page_published": "2026-11-24 14:14",
+ "version": "2026-11-24.11",
+ "page_latest": "24.4",
+ "page_published": "2026-11-24 15:56",
  "page_version": {
   "_설명": "머리글 판 번호 — 19판 이하 사본용(서버가 판별로 채움, api/mcp.js applyPageVersion). 20판부터는 페이지가 page_latest와 ui_v2.msgs ver_*로 직접 그린다. 자리표시 {page}·{latest}·{url}(ui_v2.version_url). 원본을 새 판으로 게시하면 page_latest를 올리고 설정 version도 올린다",
   "native_min": "20",
@@ -4920,6 +4920,7 @@
    "- 도식 상자 shape: rect, roundRect(기본), ellipse(개인·외부 주체), diamond(판단), hexagon, can(데이터베이스), parallelogram(입출력), chevron·homePlate(단계), flowChartDocument(문서), cloud, text(테두리 없는 글). style: primary(핵심·강조), default, muted(외부·참고), accent(주의할 대상), warning(위험), white. 상자 설명(sub)이 길어 저절로 줄이 바뀌면 한두 낱말만 다음 줄로 넘어가 어색하므로, 설명은 한 줄에 들어가게 짧게 쓰거나 \"\\n\"으로 줄을 직접 나눕니다(예: \"sub\":\"KB국민은행·롯데GRS\\n한국투자증권·삼성생명\").",
    "- 도식 배치: 지분·지배구조와 계층형 구성은 \"TB\"(위에서 아래로, 지분은 소유자 → 피투자회사 방향 화살표에 지분율 label), 절차·흐름은 \"LR\". 위치를 직접 정하려면 상자마다 \"row\"·\"col\"(0부터)을 주고, 넓은 상자는 \"w\":2. 묶음(계층·법인 경계·국가)은 groups에 정의하고 상자에 \"group\":\"g\"(묶음을 쓰면 모든 상자에 row·col을 줘서 묶음끼리 겹치지 않게 함). 선은 \"dashed\":true(간접·계획), \"arrow\":\"both\"(양방향)·\"none\". 판단 분기 선에는 \"예\"·\"아니오\" label. 상자는 25개, 선은 40개 이내로 씁니다.",
    "- 단계 개요(밸류체인·추진 일정)는 {\"type\":\"chevron\",\"title\":\"…\",\"steps\":[{\"label\":\"단계\",\"sub\":\"짧은 설명\",\"highlight\":true}]}도 됩니다.",
+   "[p24.4]- 도식 종류(그래프·단계 개요 밖): 관계가 아니라 틀이 메시지인 그림은 아래 \"type\"으로 씁니다 — 상자 위치는 서버가 정하므로 row·col을 주지 않습니다. 부서·역할별 업무 흐름 {\"type\":\"swimlane\",\"lanes\":[{\"id\":\"a\",\"label\":\"영업팀\"}],\"nodes\":[{\"id\":\"n1\",\"label\":\"견적 요청\",\"lane\":\"a\"}],\"edges\":[{\"from\":\"n1\",\"to\":\"n2\",\"label\":\"승인\"}]} / 순환(PDCA·선순환) {\"type\":\"cycle\",\"steps\":[{\"label\":\"계획\",\"sub\":\"목표 설정\"}],\"center\":\"지속 개선\"} / 방사형(생태계·이해관계자) {\"type\":\"hub\",\"center\":\"플랫폼\",\"items\":[\"고객사\",\"협력사\"],\"arrow\":\"out|in|both|none\"} / 2×2 포지셔닝 {\"type\":\"matrix\",\"x\":{\"label\":\"시장 성장률\",\"low\":\"낮음\",\"high\":\"높음\"},\"y\":{\"label\":\"점유율\",\"low\":\"낮음\",\"high\":\"높음\"},\"quadrants\":[왼위,오른위,왼아래,오른아래],\"items\":[{\"label\":\"A사업\",\"x\":0.8,\"y\":0.7,\"highlight\":true}]}(x·y는 0~1) / SWOT {\"type\":\"swot\",\"s\":[…],\"w\":[…],\"o\":[…],\"t\":[…]} / 칸 나누기 {\"type\":\"grid\",\"cols\":2,\"cells\":[{\"title\":\"…\",\"items\":[…]}]} / 계층 {\"type\":\"pyramid\",\"levels\":[{\"label\":\"비전\",\"note\":\"오른쪽 설명\"}]}(위 → 아래) / 단계별 감소 {\"type\":\"funnel\",\"levels\":[{\"label\":\"상담\",\"value\":\"340\"}]} / 교집합 {\"type\":\"venn\",\"sets\":[{\"label\":\"보안\"},{\"label\":\"AI\"}],\"overlap\":\"겹친 영역\",\"pairs\":{\"AB\":\"…\"}}(집합 2~3개) / 동심원 {\"type\":\"onion\",\"rings\":[{\"label\":\"핵심\"}]}(안 → 밖) / 층 구조(시스템 아키텍처) {\"type\":\"layers\",\"layers\":[{\"label\":\"서비스\",\"items\":[\"인증\",\"보고서\"]}]}(위 → 아래) / 현재 → 목표·안 비교 {\"type\":\"compare\",\"columns\":[{\"title\":\"현재\",\"items\":[…]},{\"title\":\"목표\",\"items\":[…]}]} / 단계별 할 일 {\"type\":\"roadmap\",\"phases\":[{\"label\":\"1단계\",\"period\":\"2027 상반기\",\"items\":[…]}]}. 조직도·로직 트리·지분 구조는 graph에 edges만 주면(또는 nodes에 \"parent\") 자동으로 나무 모양이 되고, 되돌아가는 선(반려·재검토)도 graph에 그대로 쓰면 바깥으로 돌려 그립니다.",
    "- 그림 블록 앞에 그림이 말하는 바를 한 줄로, 뒤에 시사점을 한 줄로 씁니다. 그림 번호는 붙이지 않습니다(화면과 파일이 자동으로 붙임). 블록 안에는 JSON만 쓰고 주석을 달지 않습니다.",
     "- 한 축에는 같은 성격의 기간만 둡니다(연간·반기·누적을 한 꺾은선에 잇지 않음). 순위처럼 낮을수록 좋은 값은 막대 높이로 그리지 않고 표로 쓰거나 순위를 가른 비율을 그립니다."
   ],
