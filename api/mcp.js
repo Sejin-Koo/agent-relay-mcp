@@ -449,6 +449,16 @@ async function configResult(args, caller) {
   delete out.recopy_notified; // 운영 현황 전용(사람 식별자) — 페이지에는 보내지 않는다
   if (page) out.notices = noticesFor(caller, page);
   if (page) applyPageVersion(out, page);
+  // 판별 그림 지침(2026-11-24): prompts_v2.figure 줄 앞의 [p24.3]은 그 판 이상, [!p24.3]은 그 판 미만 페이지에만 보낸다(표시는 떼고) — 차트 서버 그림처럼
+  // 새 판 페이지만 그릴 수 있는 블록을 옛 사본의 모델이 쓰지 않게 한다
+  if (page && out.prompts_v2 && Array.isArray(out.prompts_v2.figure)) {
+    const keep = [];
+    out.prompts_v2.figure.forEach(line => {
+      const m = /^\[(!?)p(\d+(?:\.\d+)?)\]\s*/.exec(String(line));
+      if (!m) keep.push(line); else if (verGte(String(page), m[2]) !== (m[1] === "!")) keep.push(String(line).slice(m[0].length));
+    });
+    out.prompts_v2 = Object.assign({}, out.prompts_v2, { figure: keep });
+  }
   // 최신판 확인 창(24판 2026-11-13 수정본부터): 최신 판 안내를 꺼도 실제 최신판 번호·게시 시각은 따로 보낸다(사용자가 확인을 눌렀을 때만 보임)
   if (page) out.page_latest_info = { v: String(CATALOG.page_latest || ""), at: String(CATALOG.page_published || "") };
   // 소수점 판(2026-11-21 사용자 결정): 정수 판이 같고 최신판만 소수점으로 앞서면(24 → 24.2) 바꾸지 않아도 되는 판이므로
