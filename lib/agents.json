@@ -1,7 +1,7 @@
 {
- "version": "2026-11-26.11",
- "page_latest": "24.7",
- "page_published": "2026-11-26 13:10",
+ "version": "2026-11-26.12",
+ "page_latest": "24.8",
+ "page_published": "2026-11-26 14:14",
  "page_version": {
   "_설명": "머리글 판 번호 — 19판 이하 사본용(서버가 판별로 채움, api/mcp.js applyPageVersion). 20판부터는 페이지가 page_latest와 ui_v2.msgs ver_*로 직접 그린다. 자리표시 {page}·{latest}·{url}(ui_v2.version_url). 원본을 새 판으로 게시하면 page_latest를 올리고 설정 version도 올린다",
   "native_min": "20",
@@ -1180,6 +1180,8 @@
    "mv_in_drop": "버리기",
    "mv_in_later": "나중에",
    "mv_in_run": "서버에 잠시 보관한 대화를 이 사본으로 옮기는 중입니다. 끝날 때까지 이 창을 닫지 마세요.",
+      "mv_in_prog_get": "서버에서 받는 중 ({k}/{n})",
+      "mv_in_prog": "대화 {n}개 중 {k}개 옮김",
    "mv_in_done": "대화를 모두 옮겼습니다 — 새로 들어온 대화 {n}개. 이전 사본은 지워도 됩니다(아티팩트에서 삭제). 커넥터('업무 에이전트 MCP')는 그대로 두세요.",
    "mv_in_fail": "이전 사본의 대화를 가져오지 못했습니다({why}). 이전 사본은 지우지 말고 이전 사본의 에이전트 화면 '대화 보관함' 맨 아래 '모든 대화 내보내기'와 이 사본의 같은 자리 '불러오기'로 옮겨 주세요.",
    "hist_export": "모든 대화 내보내기",
