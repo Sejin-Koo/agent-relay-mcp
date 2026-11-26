@@ -1,7 +1,7 @@
 {
- "version": "2026-11-26.6",
- "page_latest": "24.6",
- "page_published": "2026-11-26 11:40",
+ "version": "2026-11-26.7",
+ "page_latest": "24.7",
+ "page_published": "2026-11-26 13:10",
  "page_version": {
   "_설명": "머리글 판 번호 — 19판 이하 사본용(서버가 판별로 채움, api/mcp.js applyPageVersion). 20판부터는 페이지가 page_latest와 ui_v2.msgs ver_*로 직접 그린다. 자리표시 {page}·{latest}·{url}(ui_v2.version_url). 원본을 새 판으로 게시하면 page_latest를 올리고 설정 version도 올린다",
   "native_min": "20",
@@ -1180,6 +1180,10 @@
    "mv_in_run": "이전 사본의 대화를 이 사본으로 옮기는 중…",
    "mv_in_done": "대화를 옮겼습니다 — 이전 사본의 대화 {n}개가 이 사본에 들어왔습니다. 이전 사본은 지워도 됩니다(아티팩트에서 삭제).",
    "mv_in_fail": "이전 사본의 대화를 가져오지 못했습니다({why}). 이전 사본은 지우지 말고 이전 사본의 에이전트 화면 '대화 보관함' 맨 아래 '모든 대화 내보내기'와 이 사본의 같은 자리 '불러오기'로 옮겨 주세요.",
+   "hist_export": "모든 대화 내보내기",
+   "hist_import": "불러오기",
+   "hist_export_run": "모으는 중…",
+   "hist_export_done": "대화 {n}개를 파일로 내보냈습니다.",
    "file_chartxlsx_saved": "차트 원본(엑셀)도 저장했습니다:",
    "file_chartxlsx_fail": "차트 원본(엑셀)은 만들지 못했습니다.",
    "file_chartxlsx_skip": "차트 원본(엑셀)은 저장하지 않았습니다.",
@@ -4352,6 +4356,7 @@
  "features": {
   "hist_move": true,
   "mv_hours": 24,
+  "hist_board_io": true,
   "trace": true,
   "trace_keep_days": 7,
   "status_after_send": false,
