@@ -175,6 +175,33 @@ if (cat.agents_v2) {
       });
     }
   }
+  // 파일 확인 단계(페이지 24.9판): features.file_steps[형식] = 단계 배열. 동작은 페이지 runFileSteps가 아는 것만
+  {
+    const FS = cat.features && cat.features.file_steps;
+    const DO = ["status", "render", "ask", "revise", "log", "note"];
+    const MSG = (cat.ui_v2 && cat.ui_v2.msgs) || {};
+    const FR = (P2 && P2.file_review) || {};
+    if (FS !== undefined) {
+      if (!FS || typeof FS !== "object" || Array.isArray(FS)) e2.push("features.file_steps는 형식 → 단계 배열 객체");
+      else for (const [f, list] of Object.entries(FS)) {
+        if (!["docx", "pptx", "xlsx", "pdf", "hwpx", "md"].includes(f)) e2.push(`features.file_steps.${f}: 모르는 형식`);
+        if (!Array.isArray(list)) { e2.push(`features.file_steps.${f}는 배열`); continue; }
+        list.forEach((st, i) => {
+          const at = `features.file_steps.${f}[${i}]`;
+          if (!st || !DO.includes(st.do)) { e2.push(`${at}: do는 ${DO.join("·")} 중 하나`); return; }
+          for (const k of ["msg", "ok_msg", "issues_msg"]) if (st[k] !== undefined && typeof MSG[st[k]] !== "string") e2.push(`${at}: ui_v2.msgs에 없는 문구 키 ${st[k]}`);
+          if (st.do === "ask" && !(Array.isArray(FR[st.prompt || "review"]) || typeof FR[st.prompt || "review"] === "string")) e2.push(`${at}: prompts_v2.file_review에 없는 지침 ${st.prompt || "review"}`);
+          if (st.do === "ask" && list.findIndex(x => x && x.do === "render") > i) e2.push(`${at}: ask 앞에 render가 있어야 함`);
+          if (st.do === "render" && st.args !== undefined && (typeof st.args !== "object" || Array.isArray(st.args))) e2.push(`${at}: args는 객체`);
+        });
+      }
+    }
+    for (const [k, v] of Object.entries(FR)) {
+      const t = Array.isArray(v) && v.every(x => typeof x === "string") ? v.join("\n") : typeof v === "string" ? v : null;
+      if (t === null) e2.push(`prompts_v2.file_review.${k}는 글 또는 줄 배열`);
+      else if (k === "review" && !t.includes("{{markdown}}")) e2.push("prompts_v2.file_review.review에 {{markdown}} 자리표시자가 없음(원고를 고치려면 필요)");
+    }
+  }
   if (P2.doc) for (const k of ["rules", "pptx", "other", "tail"]) if (P2.doc[k] && !(Array.isArray(P2.doc[k]) && P2.doc[k].every(x => typeof x === "string"))) e2.push(`prompts_v2.doc.${k}는 문장 배열`);
   if (cat.models !== undefined) {
     if (!Array.isArray(cat.models) || !cat.models.length) e2.push("models는 비어 있지 않은 배열");
