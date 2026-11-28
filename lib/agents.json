@@ -1,5 +1,5 @@
 {
- "version": "2026-11-28.5",
+ "version": "2026-11-28.6",
  "page_latest": "24.8",
  "page_published": "2026-11-26 17:09",
  "page_version": {
@@ -1026,6 +1026,14 @@
    "대화 내용은 비공개이며 관리자도 볼 수 없습니다."
   ],
  "msgs": {
+   "frv_render": "{fmt} 파일을 Office 화면으로 확인하는 중…",
+   "frv_ask": "Office 화면을 검토하는 중…",
+   "frv_rebuild": "고친 원고로 {fmt} 파일을 다시 만드는 중…",
+   "frv_note": "Office 화면 확인: {shown}쪽, 원고로 고친 것 {fixed}건",
+   "frv_note_check": "Office 화면 확인: {shown}쪽",
+   "frv_note_ok": "Office 화면 확인: {shown}쪽, 문제 없음",
+   "frv_note_issues": ", 원고로 못 고친 문제 {issues}건(관리자에게 전달됨)",
+   "frv_skip": "Office 화면 확인을 하지 못해 처음 만든 파일로 저장했습니다{why}",
    "deep_label": "심층 검토",
    "plan_title": "작업 배정",
    "plan_count": "{done}/{total} 완료",
@@ -4400,6 +4408,36 @@
   "consult_continue": 2,
   "server_files": ["xlsx", "hwpx", "docx", "pptx", "pdf", "md"],
   "file_inline_max": 24000,
+  "file_review": true,
+  "file_review_max_sec": 240,
+  "file_steps": {
+   "docx": [
+    {"do": "status", "msg": "frv_render"},
+    {"do": "render", "args": {"pages": "1-8", "dpi": 60, "sheet": 4, "image_format": "jpeg"}, "max_images": 2},
+    {"do": "status", "msg": "frv_ask"},
+    {"do": "ask", "prompt": "review", "tier": "default"},
+    {"do": "revise", "rounds": 1, "recheck": false, "min_ratio": 0.9},
+    {"do": "log"},
+    {"do": "note", "msg": "frv_note", "ok_msg": "frv_note_ok", "issues_msg": "frv_note_issues"}
+   ],
+   "pptx": [
+    {"do": "status", "msg": "frv_render"},
+    {"do": "render", "args": {"pages": "1-8", "dpi": 60, "sheet": 4, "image_format": "jpeg"}, "max_images": 2},
+    {"do": "status", "msg": "frv_ask"},
+    {"do": "ask", "prompt": "review", "tier": "default"},
+    {"do": "revise", "rounds": 1, "recheck": false, "min_ratio": 0.9},
+    {"do": "log"},
+    {"do": "note", "msg": "frv_note", "ok_msg": "frv_note_ok", "issues_msg": "frv_note_issues"}
+   ],
+   "xlsx": [
+    {"do": "status", "msg": "frv_render"},
+    {"do": "render", "args": {"pages": "1-8", "dpi": 60, "sheet": 4, "image_format": "jpeg"}, "max_images": 2},
+    {"do": "status", "msg": "frv_ask"},
+    {"do": "ask", "prompt": "check", "tier": "default"},
+    {"do": "log"},
+    {"do": "note", "msg": "frv_note_check", "ok_msg": "frv_note_ok", "issues_msg": "frv_note_issues"}
+   ]
+  },
   "background": true,
   "bg_trigger_name": "업무 에이전트 작업 실행기",
   "bg_stale_min": 90,
@@ -4761,6 +4799,29 @@
   "pharma_api_status": "{live_check} 키 설정 여부와 소스별 실호출 확인."
  },
  "prompts_v2": {
+  "file_review": {
+   "review": [
+    "아래 그림은 방금 만든 {{format}} 파일을 마이크로소프트 Office 화면으로 연 모습입니다(전체 {{pages}}쪽 중 앞 {{shown}}쪽. 여러 쪽을 한 장에 모았고, 칸 위의 p.N이 쪽 번호입니다). 그 아래는 이 파일을 만든 원고(마크다운)입니다.",
+    "[확인할 것]",
+    "- 글자가 상자·표 칸·쪽 밖으로 잘리거나 넘침, 글자끼리 또는 글자와 그림이 겹침",
+    "- 표가 쪽 폭을 넘거나 열이 너무 좁아 한두 글자씩 줄이 바뀜",
+    "- 그래프의 축·범례·숫자 라벨이 겹치거나 빠짐, 그림이 비거나 깨짐",
+    "- 내용 없이 빈 쪽, 제목만 남고 본문이 다음 쪽으로 밀린 쪽",
+    "[답하는 형식]",
+    "- 첫 줄은 '판정: 문제 없음', '판정: 고침', '판정: 원고로 못 고침' 중 하나입니다. 문제가 없으면 이 한 줄만 씁니다.",
+    "- 문제마다 한 줄: 원고를 바꿔 고칠 수 있으면 '고침: 종류 | 위치', 원고로는 고칠 수 없으면(파일 변환 쪽 결함) '남은 문제: 종류 | 위치'. 종류는 글자 잘림·겹침·표 넘침·그래프 라벨·빈 쪽·그림 깨짐·기타 중 하나이고, 위치는 'p.3 표 2'처럼 쪽과 요소만 씁니다. 본문 내용은 옮겨 적지 않습니다.",
+    "- '고침'이 하나라도 있으면 끝에 고친 원고 전체를 <<<원고>>> 줄과 <<<끝>>> 줄 사이에 씁니다. 보이는 모양만 고칩니다(도식 상자 글자 줄이기, 넓은 표를 두 표로 나누기, 긴 항목 이름 줄이기 등). 숫자·표의 값·출처·그림 블록의 데이터는 그대로 두고, 내용을 빼거나 요약하지 않으며, 고칠 곳 밖은 한 글자도 바꾸지 않습니다.",
+    "- 그림에 없는 쪽은 판단하지 않습니다.",
+    "",
+    "[원고]",
+    "{{markdown}}"
+   ],
+   "check": [
+    "아래 그림은 방금 만든 {{format}} 파일을 마이크로소프트 Office 화면으로 연 모습입니다(전체 {{pages}}쪽 중 앞 {{shown}}쪽. 여러 쪽을 한 장에 모았고, 칸 위의 p.N이 쪽 번호입니다).",
+    "글자 잘림·겹침, 표·열이 화면 밖으로 넘침, 그래프의 축·범례·숫자 라벨 겹침이나 빠짐, 그림 깨짐이 있는지 봅니다.",
+    "첫 줄은 '판정: 문제 없음' 또는 '판정: 문제 있음'. 문제마다 한 줄 '남은 문제: 종류 | 위치'(종류는 글자 잘림·겹침·표 넘침·그래프 라벨·그림 깨짐·기타, 위치는 'p.2 그림1 시트'처럼 쪽·요소만, 내용은 옮겨 적지 않음)."
+   ]
+  },
   "by_shared": [12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31],
   "base": {
    "system": [
